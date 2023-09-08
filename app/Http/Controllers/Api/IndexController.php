@@ -51,6 +51,6 @@ class IndexController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        //tên bảng ::where('id', $id)->delete();
     }
 }
