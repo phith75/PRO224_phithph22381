@@ -19,10 +19,10 @@ const Header = () => {
                 <Link to={"#"} className="hover:text-[#EE2E24]">
                     F&B
                 </Link>
-                <Link to={"#"} className="hover:text-[#EE2E24]">
+                <Link to={"/cinema"} className="hover:text-[#EE2E24]">
                     Cinema
                 </Link>
-                <Link to={"#"} className="hover:text-[#EE2E24]">
+                <Link to={"/orther"} className="hover:text-[#EE2E24]">
                     Other
                 </Link>
                 <Link to={"#"}>
