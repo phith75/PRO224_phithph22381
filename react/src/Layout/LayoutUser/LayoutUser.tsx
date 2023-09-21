@@ -7,7 +7,7 @@ const LayoutUser = () => {
     return (
         <>
             <Outlet />
-            <Footer />
+           
         </>
     );
 };
