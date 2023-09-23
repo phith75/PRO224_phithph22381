@@ -2,10 +2,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import LayoutUser from "./Layout/LayoutUser/LayoutUser";
 import HomePages from "./pages/Clients/Homepages/home";
 import BookingSeat from "./pages/Clients/TICKET - SEAT LAYOUT/seat";
-import Movie_About from "./pages/Clients/MOVIE-ABOUT/Movie-About";
-import Ticket from "./pages/Clients/TICKET/Ticket";
-import Movies from "./pages/Clients/Movies/Movies";
-import F_B from "./pages/F&B/F&B";
+import Cinema from "./pages/Clients/Homepages/Cinema";
+import Orther from "./pages/Clients/Homepages/Orther";
 
 function App() {
     const router = createBrowserRouter([
@@ -22,20 +20,12 @@ function App() {
                     element: <BookingSeat />,
                 },
                 {
-                    path: "/movie-about",
-                    element: <Movie_About />,
+                    path: "/cinema",
+                    element: <Cinema />,
                 },
                 {
-                    path: "/ticket",
-                    element: <Ticket />,
-                },
-                {
-                    path: "/movies",
-                    element: <Movies />,
-                },
-                {
-                    path: "/F&B",
-                    element: <F_B />,
+                    path: "/orther",
+                    element: <Orther />,
                 },
             ],
         },

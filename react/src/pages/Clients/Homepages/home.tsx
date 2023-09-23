@@ -1,7 +1,6 @@
 import React from "react";
 import Header from "../../../Layout/LayoutUser/Header";
 import { Link } from "react-router-dom";
-import { Input } from "antd";
 
 const HomePages = () => {
     return (

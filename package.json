@@ -9,5 +9,9 @@
         "axios": "^1.1.2",
         "laravel-vite-plugin": "^0.8.0",
         "vite": "^4.0.0"
+    },
+    "dependencies": {
+        "antd": "^5.9.2",
+        "react-router-dom": "^6.16.0"
     }
 }
