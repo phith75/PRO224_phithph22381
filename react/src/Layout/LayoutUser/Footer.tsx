@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const Footer = () => {
     return (
-        <div className="max-w-5xl mx-auto text-[#8E8E8E] px-8 py-8">
+        <div className="max-w-5xl mx-auto text-[#8E8E8E] px-8 py-8 bg-black">
             <div className="mx-auto text-center my-10 space-y-1 ml-6">
                 <span className="block">
                     <u className="text-xl ">Kết nối cùng chúng tôi</u>

@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const Header = () => {
     return (
-        <header className="max-w-5xl mx-auto px-10">
+        <header className="max-w-5xl mx-auto px-10 bg-black">
             <div className="flex justify-between text-[18px]  items-center py-8 text-[#8E8E8E]">
                 <Link to={"/"}>
                     <img srcSet="/logo.png/" alt="" />

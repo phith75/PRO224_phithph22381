@@ -4,6 +4,8 @@ import HomePages from "./pages/Clients/Homepages/home";
 import BookingSeat from "./pages/Clients/TICKET - SEAT LAYOUT/seat";
 import Movie_About from "./pages/Clients/MOVIE-ABOUT/Movie-About";
 import Ticket from "./pages/Clients/TICKET/Ticket";
+import Movies from "./pages/Clients/Movies/Movies";
+import F_B from "./pages/F&B/F&B";
 
 function App() {
     const router = createBrowserRouter([
@@ -26,6 +28,14 @@ function App() {
                 {
                     path: "/ticket",
                     element: <Ticket />,
+                },
+                {
+                    path: "/movies",
+                    element: <Movies />,
+                },
+                {
+                    path: "/F&B",
+                    element: <F_B />,
                 },
             ],
         },
