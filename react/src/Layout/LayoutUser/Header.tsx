@@ -2,21 +2,21 @@ import { Link } from "react-router-dom";
 
 const Header = () => {
     return (
-        <header className="max-w-5xl mx-auto px-10 bg-black">
+        <header className="max-w-5xl mx-auto px-10 ">
             <div className="flex justify-between text-[18px]  items-center py-8 text-[#8E8E8E]">
                 <Link to={"/"}>
                     <img srcSet="/logo.png/" alt="" />
                 </Link>
-                <Link to={"#"} className="text-[#EE2E24] hover:text-[#EE2E24]">
+                <Link to={"/"} className="text-[#EE2E24] hover:text-[#EE2E24]">
                     Home
                 </Link>
-                <Link to={"#"} className="hover:text-[#EE2E24]">
+                <Link to={"/movies"} className="hover:text-[#EE2E24]">
                     Movie
                 </Link>
                 <Link to={"/book-ticket"} className="hover:text-[#EE2E24]">
                     Ticket
                 </Link>
-                <Link to={"#"} className="hover:text-[#EE2E24]">
+                <Link to={"/F&B"} className="hover:text-[#EE2E24]">
                     F&B
                 </Link>
                 <Link to={"/cinema"} className="hover:text-[#EE2E24]">
