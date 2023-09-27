@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('cinema_details', function (Blueprint $table) {
             $table->bigInteger('cinema_id');
             $table->bigInteger('film_id');
+            $table->timestamps();
             // Add foreign key constraints in a migration after creating the tables
         });
     }

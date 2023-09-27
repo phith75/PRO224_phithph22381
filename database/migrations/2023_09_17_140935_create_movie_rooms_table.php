@@ -15,6 +15,7 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->string('name', 100);
             $table->integer('quantity_chair');
+            $table->timestamps();
         });
     }
 

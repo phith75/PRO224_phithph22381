@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('chair');
             $table->integer('quantity');
             $table->double('price', 8, 2);
+            $table->timestamps();
         });
     }
 

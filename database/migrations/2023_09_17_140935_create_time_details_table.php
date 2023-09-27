@@ -18,6 +18,7 @@ return new class extends Migration
             $table->bigInteger('film_id');
             $table->bigInteger('room_id');
             $table->bigInteger('cinema_id');
+            $table->timestamps();
             // Add foreign key constraints in a migration after creating the tables
         });
     }

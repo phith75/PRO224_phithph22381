@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('amount');
             $table->double('price', 8, 2);
             $table->tinyInteger('status');
+            $table->timestamps();
         });
     }
 

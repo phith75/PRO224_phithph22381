@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('image', 255);
             $table->string('as', 255);
             $table->bigInteger('film_id');
+            $table->timestamps();
         });
     }
 

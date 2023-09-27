@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('image', 255);
             $table->text('content');
             $table->tinyInteger('status');
+            $table->timestamps();
         });
     }
 
