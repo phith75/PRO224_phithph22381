@@ -16,6 +16,7 @@ return new class extends Migration
             $table->bigInteger('user_id');
             $table->text('content');
             $table->tinyInteger('status');
+            $table->timestamps();
         });
     }
 

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('address', 150);
             $table->integer('quantity_room');
             $table->tinyInteger('status');
-            $table->timestamp('deleted_at')->nullable();
+            $table->timestamps();
         });
     }
 

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('email', 150);
             $table->string('address', 255);
             $table->string('phone', 11);
+            $table->timestamps();
         });
     }
 

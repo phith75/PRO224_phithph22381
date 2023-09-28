@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('movie_chairs', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name', 150);
-            $table->double('price', 8, 2);
+            $table->string('price');
+            $table->timestamps();
         });
     }
 

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->string('title', 150);
             $table->string('image', 255);
+            $table->timestamps();
         });
     }
 
