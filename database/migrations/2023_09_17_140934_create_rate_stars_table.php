@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('rate_stars', function (Blueprint $table) {
             $table->id();
+            $table->text('comment');
+            $table->integer('user_id');
+            $table->integer('film_id');
+            $table->integer('star');
             $table->timestamps();
         });
     }
