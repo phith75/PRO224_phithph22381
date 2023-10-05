@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name', 150);
             $table->string('price');
             $table->tinyInteger('type');
+            $table->tinyInteger('status');
             $table->timestamps();
         });
     }
