@@ -15,6 +15,7 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->string('name', 150);
             $table->string('price');
+            $table->tinyInteger('type');
             $table->timestamps();
         });
     }
