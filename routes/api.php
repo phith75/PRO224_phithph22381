@@ -17,7 +17,7 @@ use App\Models\Banner;
 use App\Models\Blogs;
 use App\Models\Book_ticket_detail;
 
-/*
+/*u
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
@@ -28,9 +28,6 @@ use App\Models\Book_ticket_detail;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
 Route::apiResource('Chairs', ChairsController::class);
 Route::apiResource('Cinemas', CinemasController::class);
 Route::apiResource('Category', CategoryController::class);
