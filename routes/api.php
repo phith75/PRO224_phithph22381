@@ -9,13 +9,17 @@ use App\Http\Controllers\Api\ChairsController;
 use App\Http\Controllers\Api\CinemasController;
 use App\Http\Controllers\Api\Contact_infosController;
 use App\Http\Controllers\Api\FeedbackController;
+use App\Http\Controllers\Api\FilmController;
 use App\Http\Controllers\Api\FoodController;
+use App\Http\Controllers\Api\MovieRoomController;
+use App\Http\Controllers\Api\TimeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiCategoriesController;
 use App\Models\Banner;
 use App\Models\Blogs;
 use App\Models\Book_ticket_detail;
+use App\Models\FilmMaker;
 
 /*u
 |--------------------------------------------------------------------------
@@ -38,3 +42,8 @@ Route::apiResource('Book_ticket', Book_ticketController::class);
 Route::apiResource('Contact', Contact_infosController::class);
 Route::apiResource('FeedBack', FeedbackController::class);
 Route::apiResource('Food', FoodController::class);
+Route::resource('film', FilmController::class);
+Route::resource('time', TimeController::class);
+Route::resource('filmMaker', FilmMakerController::class);
+Route::resource('movieRoom', MovieRoomControllerController::class);
+Route::resource('rateStar', FilmMakerController::class);
