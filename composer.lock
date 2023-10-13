@@ -5,7 +5,6 @@
         "This file is @generated automatically"
     ],
     "content-hash": "ad697d6656e21b19281012351c1aecbc",
-  
     "packages": [
         {
             "name": "brick/math",
@@ -561,17 +560,7 @@
                 "issues": "https://github.com/firebase/php-jwt/issues",
                 "source": "https://github.com/firebase/php-jwt/tree/v6.9.0"
             },
-
             "time": "2023-10-05T00:24:42+00:00"
-
-            "funding": [
-                {
-                    "url": "https://github.com/egulias",
-                    "type": "github"
-                }
-            ],
-         
-
         },
         {
             "name": "fruitcake/php-cors",
@@ -1113,7 +1102,6 @@
         },
         {
             "name": "laravel/framework",
-
             "version": "v10.28.0",
             "source": {
                 "type": "git",
@@ -1310,7 +1298,6 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-
             "time": "2023-10-10T13:01:37+00:00"
         },
         {
@@ -1403,7 +1390,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/laravel/prompts/zipball/cce65a90e64712909ea1adc033e1d88de8455ffd",
                 "reference": "cce65a90e64712909ea1adc033e1d88de8455ffd",
-
                 "shasum": ""
             },
             "require": {
@@ -1448,7 +1434,6 @@
                 "source": "https://github.com/laravel/prompts/tree/v0.1.11"
             },
             "time": "2023-10-03T01:07:35+00:00"
-
         },
         {
             "name": "laravel/sanctum",
@@ -1688,7 +1673,6 @@
             ],
             "authors": [
                 {
-
                     "name": "Luís Cobucci",
                     "email": "lcobucci@gmail.com"
                 }
@@ -2029,7 +2013,6 @@
         },
         {
             "name": "league/flysystem",
-
             "version": "3.17.0",
             "source": {
                 "type": "git",
@@ -2104,7 +2087,7 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/flysystem/issues",
-              "source": "https://github.com/thephpleague/flysystem/tree/3.17.0"
+                "source": "https://github.com/thephpleague/flysystem/tree/3.17.0"
             },
             "funding": [
                 {
@@ -2116,7 +2099,6 @@
                     "type": "github"
                 }
             ],
-
             "time": "2023-10-05T20:15:05+00:00"
         },
         {
@@ -6894,7 +6876,6 @@
         },
         {
             "name": "laravel/pint",
-
             "version": "v1.13.3",
             "source": {
                 "type": "git",
@@ -6915,7 +6896,6 @@
                 "php": "^8.1.0"
             },
             "require-dev": {
-
                 "friendsofphp/php-cs-fixer": "^3.34.1",
                 "illuminate/view": "^10.23.1",
                 "laravel-zero/framework": "^10.1.2",
@@ -6959,7 +6939,6 @@
                 "source": "https://github.com/laravel/pint"
             },
             "time": "2023-10-10T15:39:09+00:00"
-
         },
         {
             "name": "laravel/sail",
@@ -7172,7 +7151,6 @@
         },
         {
             "name": "nunomaduro/collision",
-
             "version": "v7.10.0",
             "source": {
                 "type": "git",
@@ -7190,7 +7168,6 @@
                 "nunomaduro/termwind": "^1.15.1",
                 "php": "^8.1.0",
                 "symfony/console": "^6.3.4"
-
             },
             "conflict": {
                 "laravel/framework": ">=11.0.0"
@@ -7266,9 +7243,7 @@
                     "type": "patreon"
                 }
             ],
-
             "time": "2023-10-11T15:45:01+00:00"
-
         },
         {
             "name": "phar-io/manifest",
@@ -7383,7 +7358,6 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-
             "version": "10.1.7",
             "source": {
                 "type": "git",
@@ -7705,7 +7679,6 @@
         },
         {
             "name": "phpunit/phpunit",
-
             "version": "10.4.1",
             "source": {
                 "type": "git",
@@ -7788,7 +7761,6 @@
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
                 "source": "https://github.com/sebastianbergmann/phpunit/tree/10.4.1"
-
             },
             "funding": [
                 {
@@ -9027,7 +8999,6 @@
                 }
             ],
             "time": "2023-10-09T12:55:26+00:00"
-
         },
         {
             "name": "symfony/yaml",
@@ -9161,5 +9132,5 @@
         "php": "^8.1"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }
