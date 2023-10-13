@@ -16,6 +16,8 @@ use App\Http\Controllers\ApiCategoriesController;
 use App\Models\Banner;
 use App\Models\Blogs;
 use App\Models\Book_ticket_detail;
+use App\Http\Controllers\Api\PassportAuthController;
+use App\Http\Controllers\Api\QuerryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,9 +30,9 @@ use App\Models\Book_ticket_detail;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::get('movie_rooms/{id}', [QuerryController::class, 'movies_rooms']);
+Route::get('chair_status/{id}', [QuerryController::class, 'chair_status']);
+Route::get('chair_count/{id}', [QuerryController::class, 'chair_count']);
 Route::apiResource('Chairs', ChairsController::class);
 Route::apiResource('Cinemas', CinemasController::class);
 Route::apiResource('Category', CategoryController::class);
@@ -41,3 +43,8 @@ Route::apiResource('Book_ticket', Book_ticketController::class);
 Route::apiResource('Contact', Contact_infosController::class);
 Route::apiResource('FeedBack', FeedbackController::class);
 Route::apiResource('Food', FoodController::class);
+Route::post('register', [PassportAuthController::class, 'register']);
+Route::post('login', [PassportAuthController::class, 'login']);
+Route::middleware('auth:api')->group(function () {
+    Route::get('get-user', [PassportAuthController::class, 'userInfo']);
+});
