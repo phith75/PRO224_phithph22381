@@ -19,7 +19,10 @@ use App\Http\Controllers\ApiCategoriesController;
 use App\Models\Banner;
 use App\Models\Blogs;
 use App\Models\Book_ticket_detail;
+use App\Http\Controllers\Api\PassportAuthController;
+use App\Http\Controllers\Api\QuerryController;
 use App\Models\FilmMaker;
+
 
 /*u
 |--------------------------------------------------------------------------
@@ -31,6 +34,12 @@ use App\Models\FilmMaker;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+
+Route::get('movie_rooms/{id}', [QuerryController::class, 'movies_rooms']);
+Route::get('chair_status/{id}', [QuerryController::class, 'chair_status']);
+Route::get('chair_count/{id}', [QuerryController::class, 'chair_count']);
+
 
 Route::apiResource('Chairs', ChairsController::class);
 Route::apiResource('Cinemas', CinemasController::class);
@@ -44,6 +53,7 @@ Route::apiResource('FeedBack', FeedbackController::class);
 Route::apiResource('Food', FoodController::class);
 Route::resource('film', FilmController::class);
 Route::resource('time', TimeController::class);
-Route::resource('filmMaker', FilmMakerController::class);
+Route::resource('filmMaker',FilmMakerController::class);
 Route::resource('movieRoom', MovieRoomControllerController::class);
 Route::resource('rateStar', FilmMakerController::class);
+

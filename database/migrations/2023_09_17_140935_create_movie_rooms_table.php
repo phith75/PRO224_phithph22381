@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('id_cinema');
             $table->string('name', 100);
-            $table->integer('quantity_chair');
             $table->timestamps();
+            $table->bigInteger('id_cinema');
         });
     }
 
