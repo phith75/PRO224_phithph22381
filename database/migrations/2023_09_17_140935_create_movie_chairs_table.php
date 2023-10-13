@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('price');
             $table->tinyInteger('type');
             $table->bigInteger('id_time_detail');
+
             $table->timestamps();
         });
     }

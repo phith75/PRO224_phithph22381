@@ -9,7 +9,10 @@ use App\Http\Controllers\Api\ChairsController;
 use App\Http\Controllers\Api\CinemasController;
 use App\Http\Controllers\Api\Contact_infosController;
 use App\Http\Controllers\Api\FeedbackController;
+use App\Http\Controllers\Api\FilmController;
 use App\Http\Controllers\Api\FoodController;
+use App\Http\Controllers\Api\MovieRoomController;
+use App\Http\Controllers\Api\TimeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiCategoriesController;
@@ -18,8 +21,10 @@ use App\Models\Blogs;
 use App\Models\Book_ticket_detail;
 use App\Http\Controllers\Api\PassportAuthController;
 use App\Http\Controllers\Api\QuerryController;
+use App\Models\FilmMaker;
 
-/*
+
+/*u
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
@@ -30,9 +35,12 @@ use App\Http\Controllers\Api\QuerryController;
 |
 */
 
+
 Route::get('movie_rooms/{id}', [QuerryController::class, 'movies_rooms']);
 Route::get('chair_status/{id}', [QuerryController::class, 'chair_status']);
 Route::get('chair_count/{id}', [QuerryController::class, 'chair_count']);
+
+
 Route::apiResource('Chairs', ChairsController::class);
 Route::apiResource('Cinemas', CinemasController::class);
 Route::apiResource('Category', CategoryController::class);
@@ -43,8 +51,9 @@ Route::apiResource('Book_ticket', Book_ticketController::class);
 Route::apiResource('Contact', Contact_infosController::class);
 Route::apiResource('FeedBack', FeedbackController::class);
 Route::apiResource('Food', FoodController::class);
-Route::post('register', [PassportAuthController::class, 'register']);
-Route::post('login', [PassportAuthController::class, 'login']);
-Route::middleware('auth:api')->group(function () {
-    Route::get('get-user', [PassportAuthController::class, 'userInfo']);
-});
+Route::resource('film', FilmController::class);
+Route::resource('time', TimeController::class);
+Route::resource('filmMaker',FilmMakerController::class);
+Route::resource('movieRoom', MovieRoomControllerController::class);
+Route::resource('rateStar', FilmMakerController::class);
+

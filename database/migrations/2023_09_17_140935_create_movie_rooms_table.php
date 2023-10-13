@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('movie_rooms', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->id();
+            $table->bigInteger('id_cinema');
             $table->string('name', 100);
             $table->timestamps();
             $table->bigInteger('id_cinema');
