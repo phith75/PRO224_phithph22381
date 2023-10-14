@@ -19,6 +19,7 @@ return new class extends Migration
             $table->bigInteger('id_time_detail');
 
             $table->timestamps();
+            $table->softDeletes(); // add
         });
     }
 

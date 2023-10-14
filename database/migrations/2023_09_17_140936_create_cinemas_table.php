@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('address', 150);
             $table->tinyInteger('status');
             $table->timestamps();
+            $table->softDeletes(); // add
         });
     }
 
