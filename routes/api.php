@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\BlogsController;
 use App\Http\Controllers\Api\Book_ticket_detailController;
 use App\Http\Controllers\Api\Book_ticketController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\CategoryDetailController;
 use App\Http\Controllers\Api\ChairsController;
 use App\Http\Controllers\Api\CinemasController;
 use App\Http\Controllers\Api\Contact_infosController;
@@ -21,6 +22,7 @@ use App\Models\Blogs;
 use App\Models\Book_ticket_detail;
 use App\Http\Controllers\Api\PassportAuthController;
 use App\Http\Controllers\Api\QuerryController;
+use App\Http\Controllers\Api\Time_detailController;
 use App\Models\FilmMaker;
 
 
@@ -55,6 +57,8 @@ Route::apiResource('FeedBack', FeedbackController::class);
 Route::apiResource('Food', FoodController::class);
 Route::resource('film', FilmController::class);
 Route::resource('time', TimeController::class);
+Route::resource('time_detail', Time_detailController::class); // crud cái này 
+Route::resource('category_detail', CategoryDetailController::class); // cái này nx
 Route::resource('filmMaker', FilmMakerController::class);
-Route::resource('movieRoom', MovieRoomControllerController::class);
+Route::resource('movieRoom', MovieRoomController::class);
 Route::resource('rateStar', FilmMakerController::class);

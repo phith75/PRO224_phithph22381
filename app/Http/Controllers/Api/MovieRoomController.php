@@ -34,8 +34,8 @@ class MovieRoomController extends Controller
     public function show(string $id)
     {
         $MovieRoom = MovieRoom::find($id);
-        if(!$MovieRoom){
-            return response()->json(['message'=>'MovieRoom not found'],404);
+        if (!$MovieRoom) {
+            return response()->json(['message' => 'MovieRoom not found'], 404);
         }
         return new MovieRoomResource($MovieRoom);
     }
@@ -46,8 +46,8 @@ class MovieRoomController extends Controller
     public function update(Request $request, string $id)
     {
         $MovieRoom = MovieRoom::find($id);
-        if(!$MovieRoom){
-            return response()->json(['message'=>'MovieRoom not found'],404);
+        if (!$MovieRoom) {
+            return response()->json(['message' => 'MovieRoom not found'], 404);
         }
         $MovieRoom->update($request->all());
         return new MovieRoomResource($MovieRoom);
@@ -59,10 +59,10 @@ class MovieRoomController extends Controller
     public function destroy(string $id)
     {
         $MovieRoom = MovieRoom::find($id);
-        if(!$MovieRoom){
-            return response()->json(['message'=>'MovieRoom not found'],404);
+        if (!$MovieRoom) {
+            return response()->json(['message' => 'MovieRoom not found'], 404);
         }
         $MovieRoom->delete();
-        return response()->json(null,204);
+        return response()->json(null, 204);
     }
 }
