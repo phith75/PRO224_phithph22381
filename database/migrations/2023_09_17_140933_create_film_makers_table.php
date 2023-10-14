@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('as', 255);
             $table->bigInteger('film_id');
             $table->timestamps();
+            $table->softDeletes(); // add
         });
     }
 
