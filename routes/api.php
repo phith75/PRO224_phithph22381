@@ -35,10 +35,11 @@ use App\Models\FilmMaker;
 |
 */
 
-
-Route::get('movie_rooms/{id}', [QuerryController::class, 'movies_rooms']);
+Route::get('film_cinema/{id}', [QuerryController::class, 'film_cinema']);
+Route::get('movie_rooms/{id}/{date}', [QuerryController::class, 'movie_rooms']);
 Route::get('chair_status/{id}', [QuerryController::class, 'chair_status']);
 Route::get('chair_count/{id}', [QuerryController::class, 'chair_count']);
+Route::get('categorie_detail_name/{id}', [QuerryController::class, 'categorie_detail_name']);
 
 
 Route::apiResource('Chairs', ChairsController::class);
@@ -53,7 +54,6 @@ Route::apiResource('FeedBack', FeedbackController::class);
 Route::apiResource('Food', FoodController::class);
 Route::resource('film', FilmController::class);
 Route::resource('time', TimeController::class);
-Route::resource('filmMaker',FilmMakerController::class);
+Route::resource('filmMaker', FilmMakerController::class);
 Route::resource('movieRoom', MovieRoomControllerController::class);
 Route::resource('rateStar', FilmMakerController::class);
-
