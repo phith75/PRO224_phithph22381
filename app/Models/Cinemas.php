@@ -10,5 +10,5 @@ class Cinemas extends Model
 {
     use HasFactory, SoftDeletes;
     protected $table = "cinemas"; // phải điền đúng tên bảng mà mình cần trỏ tới trong csdl
-    protected $fillable = ['id', 'name', 'address', 'quantity_room', 'status'];
+    protected $fillable = ['id', 'name', 'address', 'status'];
 }

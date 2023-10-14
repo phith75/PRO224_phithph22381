@@ -11,5 +11,5 @@ class MovieRoom extends Model
 {
     use HasFactory, SoftDeletes;
     protected $table = "movie_rooms";
-    protected $fillable = ['id', 'name', 'quantity_chair'];
+    protected $fillable = ['id', 'name', 'cinema_id'];
 }
