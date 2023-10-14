@@ -35,11 +35,12 @@ use App\Models\FilmMaker;
 |
 */
 
-Route::get('film_cinema/{id}', [QuerryController::class, 'film_cinema']);
-Route::get('movie_rooms/{id}/{date}', [QuerryController::class, 'movie_rooms']);
-Route::get('chair_status/{id}', [QuerryController::class, 'chair_status']);
-Route::get('chair_count/{id}', [QuerryController::class, 'chair_count']);
-Route::get('categorie_detail_name/{id}', [QuerryController::class, 'categorie_detail_name']);
+
+Route::get('film_cinema/{id}', [QuerryController::class, 'film_cinema']);  // Lấy thông tin phim theo rạp
+Route::get('movie_rooms/{id_cinema}/{date}/{filmId}', [QuerryController::class, 'movie_rooms']); // Lấy thông tin xuất chiếu của phim theo ngày và theo rạp
+Route::get('chair_status/{id}', [QuerryController::class, 'chair_status']); // Lấy thông tin ghế đã đặt
+Route::get('chair_count/{id}', [QuerryController::class, 'chair_count']);   // Lấy số ghế đã đặt (để tính còn bao nhiêu ghế trống)
+Route::get('categorie_detail_name/{id}', [QuerryController::class, 'categorie_detail_name']); // Lấy danh mục của phim (ví dụ: Hành động, Kinh điển)
 
 
 Route::apiResource('Chairs', ChairsController::class);

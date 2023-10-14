@@ -38,7 +38,7 @@ class QuerryController extends Controller
             ->names;
         return $names;
     }
-    public function movie_rooms($id, $date)
+    public function movie_rooms($id_cinema, $date, $filmId)
     {
         $movieRooms = DB::table('time_details')
             ->select([
@@ -58,10 +58,10 @@ class QuerryController extends Controller
 
             ->join('times', 'time_details.time_id', '=', 'times.id')
 
-            ->where('cinemas.id', $id)
+            ->where('cinemas.id', $id_cinema)
 
             ->whereDate('time_details.date', $date)
-
+            ->where('film_id', $filmId)
             ->get();
 
         return $movieRooms;
