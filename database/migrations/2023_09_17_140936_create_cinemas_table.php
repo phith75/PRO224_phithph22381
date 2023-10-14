@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('quantity_room');
             $table->tinyInteger('status');
             $table->timestamps();
+            $table->softDeletes(); // add
         });
     }
 

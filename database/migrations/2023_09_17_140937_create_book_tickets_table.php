@@ -19,6 +19,7 @@ return new class extends Migration
             $table->double('price', 8, 2);
             $table->tinyInteger('status');
             $table->timestamps();
+            $table->softDeletes(); // add
         });
     }
 

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->bigInteger('cinema_id');
             $table->bigInteger('film_id');
             $table->timestamps();
+            $table->softDeletes(); // add
             // Add foreign key constraints in a migration after creating the tables
         });
     }
