@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\CinemasResource;
 use App\Models\Cinemas;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CinemasController extends Controller
 {

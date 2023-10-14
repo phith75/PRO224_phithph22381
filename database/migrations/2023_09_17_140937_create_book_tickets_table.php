@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('book_tickets', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('user_id');
+            $table->bigInteger('id_time_detail');
             $table->tinyInteger('payment');
             $table->integer('amount');
             $table->double('price', 8, 2);

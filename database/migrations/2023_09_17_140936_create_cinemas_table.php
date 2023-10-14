@@ -15,7 +15,6 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->string('name', 100);
             $table->string('address', 150);
-            $table->integer('quantity_room');
             $table->tinyInteger('status');
             $table->timestamps();
             $table->softDeletes(); // add

@@ -19,9 +19,12 @@ use App\Http\Controllers\ApiCategoriesController;
 use App\Models\Banner;
 use App\Models\Blogs;
 use App\Models\Book_ticket_detail;
+use App\Http\Controllers\Api\PassportAuthController;
+use App\Http\Controllers\Api\QuerryController;
 use App\Models\FilmMaker;
 
-/*
+
+/*u
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
@@ -32,9 +35,14 @@ use App\Models\FilmMaker;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+
+Route::get('film_cinema/{id}', [QuerryController::class, 'film_cinema']);  // Lấy thông tin phim theo rạp
+Route::get('movie_rooms/{id_cinema}/{date}/{filmId}', [QuerryController::class, 'movie_rooms']); // Lấy thông tin xuất chiếu của phim theo ngày và theo rạp
+Route::get('chair_status/{id}', [QuerryController::class, 'chair_status']); // Lấy thông tin ghế đã đặt
+Route::get('chair_count/{id}', [QuerryController::class, 'chair_count']);   // Lấy số ghế đã đặt (để tính còn bao nhiêu ghế trống)
+Route::get('categorie_detail_name/{id}', [QuerryController::class, 'categorie_detail_name']); // Lấy danh mục của phim (ví dụ: Hành động, Kinh điển)
+
+
 Route::apiResource('Chairs', ChairsController::class);
 Route::apiResource('Cinemas', CinemasController::class);
 Route::apiResource('Category', CategoryController::class);
