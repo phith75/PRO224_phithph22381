@@ -15,6 +15,7 @@ return new class extends Migration
             $table->bigInteger('category_id');
             $table->bigInteger('film_id');
             $table->timestamps();
+            $table->softDeletes(); // add
         });
     }
 

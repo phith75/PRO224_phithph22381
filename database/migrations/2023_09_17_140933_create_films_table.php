@@ -22,6 +22,7 @@ return new class extends Migration
             $table->text('description');
             $table->tinyInteger('status');
             $table->timestamps();
+            $table->softDeletes(); // add
         });
     }
 

@@ -16,8 +16,9 @@ return new class extends Migration
             $table->bigInteger('user_id');
             $table->string('email', 150);
             $table->string('address', 255);
-            $table->string('phone', 11);
+            $table->string('phone', 14);
             $table->timestamps();
+            $table->softDeletes(); // add
         });
     }
 
