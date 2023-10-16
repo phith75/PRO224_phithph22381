@@ -46,8 +46,9 @@ class ChairsController extends Controller
     public function update(Request $request, string $id)
     {
 
-        ModelsChairs::where('id', $id)
+        $Chair = ModelsChairs::where('id', $id)
             ->update($request->except('_token'));
+        return new ChairsResource($Chair);
     }
 
     /**
@@ -55,8 +56,12 @@ class ChairsController extends Controller
      */
     public function destroy(string $id)
     {
-
-        ModelsChairs::where('id', $id)
+        $Chairs = ModelsChairs::find($id);
+        if (!$Chairs) {
+            return response()->json(['message' => "student not found"], 404);
+        }
+        $Chair = ModelsChairs::where('id', $id)
             ->delete();
+        return new ChairsResource($Chair);
     }
 }

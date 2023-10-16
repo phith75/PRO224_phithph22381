@@ -33,8 +33,8 @@ class TimeController extends Controller
     public function show(string $id)
     {
         $time = time::find($id);
-        if(!$time){
-            return response()->json(['message'=>'time not found'],404);
+        if (!$time) {
+            return response()->json(['message' => 'time not found'], 404);
         }
         return new TimeResource($time);
     }
@@ -45,8 +45,8 @@ class TimeController extends Controller
     public function update(Request $request, string $id)
     {
         $time = time::find($id);
-        if(!$time){
-            return response()->json(['message'=>'time not found'],404);
+        if (!$time) {
+            return response()->json(['message' => 'time not found'], 404);
         }
         $time->update($request->all());
         return new TimeResource($time);
@@ -58,10 +58,10 @@ class TimeController extends Controller
     public function destroy(string $id)
     {
         $time = time::find($id);
-        if(!$time){
-            return response()->json(['message'=>'time not found'],404);
+        if (!$time) {
+            return response()->json(['message' => 'time not found'], 404);
         }
         $time->delete();
-        return response()->json(null,204);
+        return response()->json(null, 204);
     }
 }

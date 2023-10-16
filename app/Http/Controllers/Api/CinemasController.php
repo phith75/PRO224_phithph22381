@@ -44,9 +44,9 @@ class CinemasController extends Controller
      */
     public function update(Request $request, string $id)
     {
-
-        Cinemas::where('id', $id)
-            ->update($request->except('_token'));
+        $cinemas = Cinemas::find($id);
+        $cinemas->update($request->except('_token'));
+        return new CinemasResource($cinemas);
     }
 
     /**

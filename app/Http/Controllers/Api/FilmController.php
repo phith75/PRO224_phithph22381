@@ -25,14 +25,12 @@ class FilmController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
-
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
             $data['image'] = uploadFile('image', $request->file('image'));
         }
+        $films = film::create($data);
 
-        $fims = film::create($data);
-
-        return new FilmResource($fims);
+        return new FilmResource($films);
     }
 
     /**
@@ -40,11 +38,14 @@ class FilmController extends Controller
      */
     public function show(string $id)
     {
-        $fims = Film::find($id);
-        if(!$fims){
+        $films = Film::find($id);
+
+        if(!$films){
             return response()->json(['error_code' => 404, 'message' => 'Mã lỗi 404: Không tìm film.'], 404);
+
+   
         }
-        return new FilmResource($fims);
+        return new FilmResource($films);
     }
 
     /**
@@ -53,26 +54,28 @@ class FilmController extends Controller
     public function update(Request $request, string $id)
     {
         $data = $request->all();
-        $fims = Film::find($id);
 
-        if (!$fims) {
+        $films = film::find($id);
+
+
+
+        if (!$films) {
             return response()->json(['error_code' => 404, 'message' => 'Mã lỗi 404: Không tìm thấy phim.'], 404);
         }
 
-        if($request->hasFile('image') && $request->file('image')->isValid()){
-              
-            $resultDelete = Storage::delete('/'.$fims->image);
-            if($resultDelete){
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+
+            $resultDelete = Storage::delete('/' . $films->image);
+            if ($resultDelete) {
                 $params['image'] = uploadFile('image', $request->file('image'));
-            }
-            else{
-                $params['image'] = $fims->image;
+            } else {
+                $params['image'] = $films->image;
             }
         }
-        
-        $fims->update($data);
 
-        return new FilmResource($fims);
+        $films->update($data);
+
+        return new FilmResource($films);
     }
 
     /**
@@ -87,7 +90,7 @@ class FilmController extends Controller
         }
 
         if ($fims->image && Storage::exists($fims->image)) {
-            Storage::delete('public/'.$fims->image);
+            Storage::delete('public/' . $fims->image);
         }
 
         $fims->delete();
