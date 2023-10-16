@@ -24,7 +24,7 @@ class FilmController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validated();
+        $data = $request->all();
 
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
             $data['image'] = uploadFile('image', $request->file('image'));
@@ -42,7 +42,7 @@ class FilmController extends Controller
     {
         $fims = Film::find($id);
         if(!$fims){
-            return response()->json(['error_code' => 404, 'message' => 'Mã lỗi 404: Không tìm phim.'], 404);
+            return response()->json(['error_code' => 404, 'message' => 'Mã lỗi 404: Không tìm film.'], 404);
         }
         return new FilmResource($fims);
     }
@@ -52,8 +52,8 @@ class FilmController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $data = $request->validated();
-        $fims = film::find($id);
+        $data = $request->all();
+        $fims = Film::find($id);
 
         if (!$fims) {
             return response()->json(['error_code' => 404, 'message' => 'Mã lỗi 404: Không tìm thấy phim.'], 404);
@@ -69,7 +69,7 @@ class FilmController extends Controller
                 $params['image'] = $fims->image;
             }
         }
-
+        
         $fims->update($data);
 
         return new FilmResource($fims);
@@ -83,7 +83,7 @@ class FilmController extends Controller
         $fims = film::find($id);
 
         if (!$fims) {
-            return response()->json(['error_code' => 404, 'message' => 'Mã lỗi 404: Không tìm thấy phim.'], 404);
+            return response()->json(['error_code' => 404, 'message' => 'Mã lỗi 404: Không tìm thấy film.'], 404);
         }
 
         if ($fims->image && Storage::exists($fims->image)) {
@@ -92,6 +92,6 @@ class FilmController extends Controller
 
         $fims->delete();
 
-        return response()->json(['message' => 'Sản phẩm đã được xóa']);
+        return response()->json(['message' => 'Film đã được xóa']);
     }
 }
