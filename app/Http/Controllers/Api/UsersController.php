@@ -24,7 +24,8 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
-        return User::create($request->all());
+        $User = User::create($request->all());
+        return new UserResource($User);
     }
 
     /**
@@ -34,7 +35,7 @@ class UsersController extends Controller
     {
         $User = User::find($id);
         if (!$User) {
-            return response()->json(['message' => "student not found"], 404);
+            return response()->json(['message' => "User not found"], 404);
         }
         return $User;
     }
@@ -44,9 +45,14 @@ class UsersController extends Controller
      */
     public function update(Request $request, string $id)
     {
-
+        $User = User::find($id);
+        if (!$User) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
         User::where('id', $id)
             ->update($request->except('_token'));
+
+        return new UserResource($User);
     }
 
     /**
@@ -55,7 +61,11 @@ class UsersController extends Controller
     public function destroy(string $id)
     {
 
-        User::where('id', $id)
-            ->delete();
+        $User = User::find($id);
+        if (!$User) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+        $User->delete();
+        return response()->json(null, 204);
     }
 }

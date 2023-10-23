@@ -23,7 +23,8 @@ class FoodController extends Controller
      */
     public function store(Request $request)
     {
-        return Food::create($request->all());
+        $Food = Food::create($request->all());
+        return new FoodResource($Food);
     }
 
     /**
@@ -33,7 +34,7 @@ class FoodController extends Controller
     {
         $Food = Food::find($id);
         if (!$Food) {
-            return response()->json(['message' => "student not found"], 404);
+            return response()->json(['message' => "food not found"], 404);
         }
         return new FoodResource($Food);
     }
@@ -44,8 +45,13 @@ class FoodController extends Controller
     public function update(Request $request, string $id)
     {
 
-        Food::where('id', $id)
-            ->update($request->except('_token'));
+        $Food = Food::find($id);
+        if (!$Food) {
+            return response()->json(['message' => 'Food not found'], 404);
+        }
+        $Food->update($request->except('_token'));
+
+        return new FoodResource($Food);
     }
 
     /**
@@ -54,7 +60,11 @@ class FoodController extends Controller
     public function destroy(string $id)
     {
 
-        Food::where('id', $id)
-            ->delete();
+        $Food = Food::find($id);
+        if (!$Food) {
+            return response()->json(['message' => 'Food not found'], 404);
+        }
+        $Food->delete();
+        return response()->json(null, 204);
     }
 }
