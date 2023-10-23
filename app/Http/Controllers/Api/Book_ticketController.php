@@ -43,7 +43,7 @@ class Book_ticketController extends Controller
      */
     public function update(Request $request, string $id)
     {
-
+        
         Book_ticket::where('id', $id)
             ->update($request->except('_token'));
     }

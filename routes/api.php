@@ -23,6 +23,8 @@ use App\Models\Book_ticket_detail;
 use App\Http\Controllers\Api\PassportAuthController;
 use App\Http\Controllers\Api\QuerryController;
 use App\Http\Controllers\Api\Time_detailController;
+use App\Http\Controllers\Api\UsersController;
+use App\Http\Controllers\authController;
 use App\Models\FilmMaker;
 
 
@@ -37,6 +39,13 @@ use App\Models\FilmMaker;
 |
 */
 
+Route::post('/signup', [authController::class, 'sign_up']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout']);
+
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::resource('film', FilmController::class);
+    });
 
 Route::get('film_cinema/{id}', [QuerryController::class, 'film_cinema']);  // Lấy thông tin phim theo rạp
 Route::get('movie_rooms/{id_cinema}/{date}/{filmId}', [QuerryController::class, 'movie_rooms']); // Lấy thông tin xuất chiếu của phim theo ngày và theo rạp
@@ -55,7 +64,7 @@ Route::apiResource('Book_ticket', Book_ticketController::class);
 Route::apiResource('Contact', Contact_infosController::class);
 Route::apiResource('FeedBack', FeedbackController::class);
 Route::apiResource('Food', FoodController::class);
-Route::resource('film', FilmController::class);
+
 Route::resource('time', TimeController::class);
 Route::resource('time_detail', Time_detailController::class); // crud cái này 
 Route::resource('category_detail', CategoryDetailController::class); // cái này nx

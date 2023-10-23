@@ -13,11 +13,10 @@ return new class extends Migration
     {
         Schema::create('category_details', function (Blueprint $table) {
             $table->bigIncrements('id');
-
             $table->bigInteger('category_id');
             $table->bigInteger('film_id');
             $table->timestamps();
-            $table->softDeletes(); // add
+            $table->softDeletes();
         });
     }
 
