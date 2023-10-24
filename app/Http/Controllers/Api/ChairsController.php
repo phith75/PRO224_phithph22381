@@ -55,8 +55,12 @@ class ChairsController extends Controller
      */
     public function destroy(string $id)
     {
-
-        ModelsChairs::where('id', $id)
+        $Chairs = ModelsChairs::find($id);
+        if (!$Chairs) {
+            return response()->json(['message' => "Chair not found"], 404);
+        }
+        $Chair = ModelsChairs::where('id', $id)
             ->delete();
+        return response()->json(['message' => "Delete success"], 200);
     }
 }

@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\FilmController;
 use App\Http\Controllers\Api\FoodController;
 use App\Http\Controllers\Api\MovieRoomController;
 use App\Http\Controllers\Api\TimeController;
+use App\Http\Controllers\Api\PaymentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiCategoriesController;
@@ -53,7 +54,7 @@ Route::apiResource('FeedBack', FeedbackController::class);
 Route::apiResource('Food', FoodController::class);
 Route::resource('film', FilmController::class);
 Route::resource('time', TimeController::class);
-Route::resource('filmMaker',FilmMakerController::class);
+Route::resource('filmMaker', FilmMakerController::class);
 Route::resource('movieRoom', MovieRoomControllerController::class);
 Route::resource('rateStar', FilmMakerController::class);
-
+Route::post('vnpay_payment', [PaymentController::class, 'vnpay_payment']);
