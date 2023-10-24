@@ -43,18 +43,26 @@ class CategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-
-        Categories::where('id', $id)
-            ->update($request->except('_token'));
+        $categories = Categories::find($id);
+        if (!$categories) {
+            return response()->json(['message' => 'category not found'], 404);
+        }
+        $categories->update($request->all());
+        return new CategoryResource($categories);
     }
+
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-
-        Categories::where('id', $id)
+        $Categories = Categories::find($id);
+        if (!$Categories) {
+            return response()->json(['message' => "student not found"], 404);
+        }
+        $Categories = Categories::where('id', $id)
             ->delete();
+        return new CategoryResource($Categories);
     }
 }

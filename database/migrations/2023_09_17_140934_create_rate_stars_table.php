@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('film_id');
             $table->integer('star');
             $table->timestamps();
+            $table->softDeletes(); // add
         });
     }
 

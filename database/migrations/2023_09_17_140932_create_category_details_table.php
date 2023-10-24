@@ -12,9 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('category_details', function (Blueprint $table) {
+            $table->bigIncrements('id');
             $table->bigInteger('category_id');
             $table->bigInteger('film_id');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

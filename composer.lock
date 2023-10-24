@@ -4,8 +4,12 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
+<<<<<<< HEAD
     "content-hash": "ad697d6656e21b19281012351c1aecbc",
   
+=======
+    "content-hash": "7ed5951bfbb2d4f03019f6e651be80ec",
+>>>>>>> 7bef63ef3b68826728f01362f36bc4e0909f94a9
     "packages": [
         {
             "name": "brick/math",
@@ -561,6 +565,7 @@
                 "issues": "https://github.com/firebase/php-jwt/issues",
                 "source": "https://github.com/firebase/php-jwt/tree/v6.9.0"
             },
+<<<<<<< HEAD
 
             "time": "2023-10-05T00:24:42+00:00"
 
@@ -572,6 +577,9 @@
             ],
          
 
+=======
+            "time": "2023-10-05T00:24:42+00:00"
+>>>>>>> 7bef63ef3b68826728f01362f36bc4e0909f94a9
         },
         {
             "name": "fruitcake/php-cors",
@@ -1113,7 +1121,10 @@
         },
         {
             "name": "laravel/framework",
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7bef63ef3b68826728f01362f36bc4e0909f94a9
             "version": "v10.28.0",
             "source": {
                 "type": "git",
@@ -1403,7 +1414,10 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/laravel/prompts/zipball/cce65a90e64712909ea1adc033e1d88de8455ffd",
                 "reference": "cce65a90e64712909ea1adc033e1d88de8455ffd",
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7bef63ef3b68826728f01362f36bc4e0909f94a9
                 "shasum": ""
             },
             "require": {
@@ -1448,7 +1462,10 @@
                 "source": "https://github.com/laravel/prompts/tree/v0.1.11"
             },
             "time": "2023-10-03T01:07:35+00:00"
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7bef63ef3b68826728f01362f36bc4e0909f94a9
         },
         {
             "name": "laravel/sanctum",
@@ -1688,7 +1705,10 @@
             ],
             "authors": [
                 {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7bef63ef3b68826728f01362f36bc4e0909f94a9
                     "name": "Luís Cobucci",
                     "email": "lcobucci@gmail.com"
                 }
@@ -2029,7 +2049,10 @@
         },
         {
             "name": "league/flysystem",
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7bef63ef3b68826728f01362f36bc4e0909f94a9
             "version": "3.17.0",
             "source": {
                 "type": "git",
@@ -2104,7 +2127,11 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/flysystem/issues",
+<<<<<<< HEAD
               "source": "https://github.com/thephpleague/flysystem/tree/3.17.0"
+=======
+                "source": "https://github.com/thephpleague/flysystem/tree/3.17.0"
+>>>>>>> 7bef63ef3b68826728f01362f36bc4e0909f94a9
             },
             "funding": [
                 {
@@ -2116,7 +2143,10 @@
                     "type": "github"
                 }
             ],
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7bef63ef3b68826728f01362f36bc4e0909f94a9
             "time": "2023-10-05T20:15:05+00:00"
         },
         {
@@ -3788,16 +3818,16 @@
         },
         {
             "name": "psy/psysh",
-            "version": "v0.11.21",
+            "version": "v0.11.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/psysh.git",
-                "reference": "bcb22101107f3bf770523b65630c9d547f60c540"
+                "reference": "128fa1b608be651999ed9789c95e6e2a31b5802b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/bcb22101107f3bf770523b65630c9d547f60c540",
-                "reference": "bcb22101107f3bf770523b65630c9d547f60c540",
+                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/128fa1b608be651999ed9789c95e6e2a31b5802b",
+                "reference": "128fa1b608be651999ed9789c95e6e2a31b5802b",
                 "shasum": ""
             },
             "require": {
@@ -3826,7 +3856,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "0.11.x-dev"
+                    "dev-0.11": "0.11.x-dev"
                 },
                 "bamarni-bin": {
                     "bin-links": false,
@@ -3862,9 +3892,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bobthecow/psysh/issues",
-                "source": "https://github.com/bobthecow/psysh/tree/v0.11.21"
+                "source": "https://github.com/bobthecow/psysh/tree/v0.11.22"
             },
-            "time": "2023-09-17T21:15:54+00:00"
+            "time": "2023-10-14T21:56:36+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
@@ -6894,7 +6924,10 @@
         },
         {
             "name": "laravel/pint",
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7bef63ef3b68826728f01362f36bc4e0909f94a9
             "version": "v1.13.3",
             "source": {
                 "type": "git",
@@ -6915,7 +6948,10 @@
                 "php": "^8.1.0"
             },
             "require-dev": {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7bef63ef3b68826728f01362f36bc4e0909f94a9
                 "friendsofphp/php-cs-fixer": "^3.34.1",
                 "illuminate/view": "^10.23.1",
                 "laravel-zero/framework": "^10.1.2",
@@ -6959,7 +6995,10 @@
                 "source": "https://github.com/laravel/pint"
             },
             "time": "2023-10-10T15:39:09+00:00"
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7bef63ef3b68826728f01362f36bc4e0909f94a9
         },
         {
             "name": "laravel/sail",
@@ -7172,7 +7211,10 @@
         },
         {
             "name": "nunomaduro/collision",
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7bef63ef3b68826728f01362f36bc4e0909f94a9
             "version": "v7.10.0",
             "source": {
                 "type": "git",
@@ -7191,6 +7233,9 @@
                 "php": "^8.1.0",
                 "symfony/console": "^6.3.4"
 
+            },
+            "conflict": {
+                "laravel/framework": ">=11.0.0"
             },
             "conflict": {
                 "laravel/framework": ">=11.0.0"
@@ -7266,9 +7311,13 @@
                     "type": "patreon"
                 }
             ],
+<<<<<<< HEAD
 
             "time": "2023-10-11T15:45:01+00:00"
 
+=======
+            "time": "2023-10-11T15:45:01+00:00"
+>>>>>>> 7bef63ef3b68826728f01362f36bc4e0909f94a9
         },
         {
             "name": "phar-io/manifest",
@@ -7383,7 +7432,10 @@
         },
         {
             "name": "phpunit/php-code-coverage",
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7bef63ef3b68826728f01362f36bc4e0909f94a9
             "version": "10.1.7",
             "source": {
                 "type": "git",
@@ -7705,7 +7757,10 @@
         },
         {
             "name": "phpunit/phpunit",
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7bef63ef3b68826728f01362f36bc4e0909f94a9
             "version": "10.4.1",
             "source": {
                 "type": "git",
@@ -7788,7 +7843,10 @@
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
                 "source": "https://github.com/sebastianbergmann/phpunit/tree/10.4.1"
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7bef63ef3b68826728f01362f36bc4e0909f94a9
             },
             "funding": [
                 {
@@ -9027,7 +9085,10 @@
                 }
             ],
             "time": "2023-10-09T12:55:26+00:00"
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7bef63ef3b68826728f01362f36bc4e0909f94a9
         },
         {
             "name": "symfony/yaml",

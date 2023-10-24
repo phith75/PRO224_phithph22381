@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('image', 255);
             $table->string('price', 20);
             $table->timestamps();
+            $table->softDeletes(); // add
         });
     }
 

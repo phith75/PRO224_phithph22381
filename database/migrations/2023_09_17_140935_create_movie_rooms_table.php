@@ -16,6 +16,7 @@ return new class extends Migration
             $table->bigInteger('id_cinema');
             $table->string('name', 100);
             $table->timestamps();
+            $table->softDeletes(); 
         });
     }
 
