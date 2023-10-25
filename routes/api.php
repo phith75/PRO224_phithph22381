@@ -23,46 +23,30 @@ use App\Models\Blogs;
 use App\Models\Book_ticket_detail;
 use App\Http\Controllers\Api\PassportAuthController;
 use App\Http\Controllers\Api\QuerryController;
-<<<<<<< HEAD
-=======
 use App\Http\Controllers\Api\Time_detailController;
 use App\Http\Controllers\Api\UsersController;
 use App\Http\Controllers\authController;
->>>>>>> 7bef63ef3b68826728f01362f36bc4e0909f94a9
 use App\Models\FilmMaker;
 
 
-/*u
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
-
-<<<<<<< HEAD
-
-Route::get('movie_rooms/{id}', [QuerryController::class, 'movies_rooms']);
-Route::get('chair_status/{id}', [QuerryController::class, 'chair_status']);
-Route::get('chair_count/{id}', [QuerryController::class, 'chair_count']);
-=======
 Route::post('/signup', [authController::class, 'sign_up']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout']);
+Route::post('/login', [authController::class, 'login']);
+Route::post('/logout', [authController::class, 'logout']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::resource('film', FilmController::class);
-    });
+});
 
 Route::get('film_cinema/{id}', [QuerryController::class, 'film_cinema']);  // Lấy thông tin phim theo rạp
 Route::get('movie_rooms/{id_cinema}/{date}/{filmId}', [QuerryController::class, 'movie_rooms']); // Lấy thông tin xuất chiếu của phim theo ngày và theo rạp
 Route::get('chair_status/{id}', [QuerryController::class, 'chair_status']); // Lấy thông tin ghế đã đặt
 Route::get('chair_count/{id}', [QuerryController::class, 'chair_count']);   // Lấy số ghế đã đặt (để tính còn bao nhiêu ghế trống)
+Route::get('categorie_detail_name/{id}', [QuerryController::class, 'categorie_detail_name']);
 Route::get('categorie_detail_name/{id}', [QuerryController::class, 'categorie_detail_name']); // Lấy danh mục của phim (ví dụ: Hành động, Kinh điển)
->>>>>>> 7bef63ef3b68826728f01362f36bc4e0909f94a9
+// Lấy danh mục của phim (ví dụ: Hành động, Kinh điển)
+Route::get('generateRandomString', [QuerryController::class, 'generateRandomString']); // Lấy danh mục của phim (ví dụ: Hành động, Kinh điển)
+
+
 
 
 Route::apiResource('Chairs', ChairsController::class);

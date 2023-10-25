@@ -144,11 +144,6 @@ return [
         // 'store'  => 'redis',
     ],
 
-    'providers' => [
-        // ...
-        Laravel\Passport\PassportServiceProvider::class,
-    ],
-
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers

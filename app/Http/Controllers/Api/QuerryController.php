@@ -10,9 +10,6 @@ use Illuminate\Support\Facades\DB;
 class QuerryController extends Controller
 {
 
-<<<<<<< HEAD
-    public function movies_rooms($id)
-=======
     public function film_cinema($id)
     {
         $films = DB::table('films')
@@ -42,7 +39,7 @@ class QuerryController extends Controller
         return $names;
     }
     public function movie_rooms($id_cinema, $date, $filmId)
->>>>>>> 7bef63ef3b68826728f01362f36bc4e0909f94a9
+
     {
         $movieRooms = DB::table('time_details')
             ->select([
@@ -53,13 +50,6 @@ class QuerryController extends Controller
                 DB::raw("CONCAT(DATE_FORMAT(time_details.date, '%d/%m'), ' - ', DATE_FORMAT(time_details.date, '%W')) AS formatted_date"),
                 'times.time',
                 'film_id',
-<<<<<<< HEAD
-            ])
-            ->join('movie_rooms', 'movie_rooms.id', '=', 'time_details.room_id')
-            ->join('cinemas', 'movie_rooms.id_cinema', '=', 'cinemas.id')
-            ->join('times', 'time_details.time_id', '=', 'times.id')
-            ->where('time_details.film_id', $id)->get();
-=======
 
             ])
 
@@ -75,7 +65,7 @@ class QuerryController extends Controller
             ->where('film_id', $filmId)
             ->get();
 
->>>>>>> 7bef63ef3b68826728f01362f36bc4e0909f94a9
+
         return $movieRooms;
     }
     public function chair_status($id)
@@ -96,8 +86,14 @@ class QuerryController extends Controller
             ->first();
         return $count;
     }
-<<<<<<< HEAD
+    public function generateRandomString($length = 50, $id = 1, $movie_rooms = 2)
+    {
+        $characters =  '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
+        }
+        return $movie_rooms . $randomString . $id;
+    }
 }
-=======
-}
->>>>>>> 7bef63ef3b68826728f01362f36bc4e0909f94a9

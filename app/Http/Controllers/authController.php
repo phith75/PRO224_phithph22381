@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Hash;
 
 class authController extends Controller
 {
-    public function sign_up(Request $request){
+    public function sign_up(Request $request)
+    {
         $data = $request->validate([
             'name' => 'required|string',
             'email' => 'required|string|unique:users,email',
@@ -39,7 +40,7 @@ class authController extends Controller
 
         $user = User::where('email', $data['email'])->first();
 
-if (!$user || !Hash::check($data['password'], $user->password)) {
+        if (!$user || !Hash::check($data['password'], $user->password)) {
             return response([
                 'msg' => 'incorrect username or password'
             ], 401);
@@ -62,5 +63,4 @@ if (!$user || !Hash::check($data['password'], $user->password)) {
             'message' => 'user logged out'
         ];
     }
-
 }
