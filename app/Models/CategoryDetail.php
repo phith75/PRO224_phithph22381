@@ -9,6 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes; // add soft delete
 class CategoryDetail extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $table = "category_details"; // phải điền đúng tên bảng mà mình cần trỏ tới trong csdl
+    protected $table = "category_details";
     protected $fillable = ['id', 'film_id', 'category_id'];
 }

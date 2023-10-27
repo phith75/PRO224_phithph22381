@@ -39,6 +39,7 @@ class QuerryController extends Controller
         return $names;
     }
     public function movie_rooms($id_cinema, $date, $filmId)
+
     {
         $movieRooms = DB::table('time_details')
             ->select([
@@ -64,6 +65,7 @@ class QuerryController extends Controller
             ->where('film_id', $filmId)
             ->get();
 
+
         return $movieRooms;
     }
     public function chair_status($id)
@@ -83,5 +85,15 @@ class QuerryController extends Controller
             ->where('td.id', $id)
             ->first();
         return $count;
+    }
+    public function generateRandomString($length = 50, $id = 1, $movie_rooms = 2)
+    {
+        $characters =  '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
+        }
+        return $movie_rooms . $randomString . $id;
     }
 }

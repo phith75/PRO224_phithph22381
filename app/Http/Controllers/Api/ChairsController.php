@@ -67,6 +67,6 @@ class ChairsController extends Controller
         }
         $Chair = ModelsChairs::where('id', $id)
             ->delete();
-        return new ChairsResource($Chair);
+        return response()->json(['message' => "Delete success"], 200);
     }
 }

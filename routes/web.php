@@ -1,7 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Http\Controllers\authController;
+use Illuminate\Support\Facades\Http;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,4 +17,9 @@ use App\Http\Controllers\authController;
 */
 
 
-Route::get('/login', [authController::class, 'login'])->name('login');
+Route::get('/', function () {
+    $apiURL = 'http://pro224_phithph22381.com/api/generateRandomString';
+
+    $response = Http::get($apiURL);
+    return view('welcome', compact('response'));
+});

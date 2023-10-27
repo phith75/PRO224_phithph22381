@@ -33,8 +33,8 @@ class RateStarController extends Controller
     public function show(string $id)
     {
         $RateStar = RateStar::find($id);
-        if(!$RateStar){
-            return response()->json(['message'=>'RateStar not found'],404);
+        if (!$RateStar) {
+            return response()->json(['message' => 'RateStar not found'], 404);
         }
         return new RateStarResource($RateStar);
     }
@@ -45,8 +45,8 @@ class RateStarController extends Controller
     public function update(Request $request, string $id)
     {
         $RateStar = RateStar::find($id);
-        if(!$RateStar){
-            return response()->json(['message'=>'RateStar not found'],404);
+        if (!$RateStar) {
+            return response()->json(['message' => 'RateStar not found'], 404);
         }
         $RateStar->update($request->all());
         return new RateStarResource($RateStar);
@@ -58,10 +58,10 @@ class RateStarController extends Controller
     public function destroy(string $id)
     {
         $RateStar = RateStar::find($id);
-        if(!$RateStar){
-            return response()->json(['message'=>'RateStar not found'],404);
+        if (!$RateStar) {
+            return response()->json(['message' => 'RateStar not found'], 404);
         }
         $RateStar->delete();
-        return response()->json(null,204);
+        return response()->json(null, 200);
     }
 }

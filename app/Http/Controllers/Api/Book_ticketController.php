@@ -50,6 +50,7 @@ class Book_ticketController extends Controller
             return response()->json(['message' => 'Book ticket not found'], 404);
         }
         $Book_ticket::where('id', $id)
+
             ->update($request->except('_token'));
 
         return new Book_ticketResource($Book_ticket);
