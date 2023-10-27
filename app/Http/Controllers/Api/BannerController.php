@@ -23,7 +23,8 @@ class BannerController extends Controller
      */
     public function store(Request $request)
     {
-        return Banner::create($request->all());
+        $Banner = Banner::create($request->all());
+        return new BannerResource($Banner);
     }
 
     /**
@@ -33,7 +34,7 @@ class BannerController extends Controller
     {
         $Banner = Banner::find($id);
         if (!$Banner) {
-            return response()->json(['message' => "student not found"], 404);
+            return response()->json(['message' => "Banner not found"], 404);
         }
         return new BannerResource($Banner);
     }
@@ -43,9 +44,14 @@ class BannerController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $Banner = Banner::find($id);
+        if (!$Banner) {
+            return response()->json(['message' => 'Banner not found'], 404);
+        }
 
-        Banner::where('id', $id)
-            ->update($request->except('_token'));
+        $Banner->update($request->all());
+
+        return new BannerResource($Banner);
     }
 
     /**
@@ -53,8 +59,11 @@ class BannerController extends Controller
      */
     public function destroy(string $id)
     {
-
-        Banner::where('id', $id)
-            ->delete();
+        $Banner = Banner::find($id);
+        if (!$Banner) {
+            return response()->json(['message' => 'Banner not found'], 404);
+        }
+        $Banner->delete();
+        return response()->json(null, 204);
     }
 }

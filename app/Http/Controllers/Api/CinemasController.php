@@ -24,7 +24,8 @@ class CinemasController extends Controller
      */
     public function store(Request $request)
     {
-        return Cinemas::create($request->all());
+        $Cinemas = Cinemas::create($request->all());
+        return new CinemasResource($Cinemas);
     }
 
     /**
@@ -34,7 +35,7 @@ class CinemasController extends Controller
     {
         $cinemas = Cinemas::find($id);
         if (!$cinemas) {
-            return response()->json(['message' => "student not found"], 404);
+            return response()->json(['message' => "Cinemas not found"], 404);
         }
         return new CinemasResource($cinemas);
     }
@@ -44,9 +45,14 @@ class CinemasController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $cinemas = Cinemas::find($id);
-        $cinemas->update($request->except('_token'));
-        return new CinemasResource($cinemas);
+        $Cinemas = Cinemas::find($id);
+        if (!$Cinemas) {
+            return response()->json(['message' => 'Cinemas not found'], 404);
+        }
+        Cinemas::where('id', $id)
+            ->update($request->except('_token'));
+
+        return new CinemasResource($Cinemas);
     }
 
     /**
@@ -54,8 +60,11 @@ class CinemasController extends Controller
      */
     public function destroy(string $id)
     {
-
-        Cinemas::where('id', $id)
-            ->delete();
+        $Cinemas = Cinemas::find($id);
+        if (!$Cinemas) {
+            return response()->json(['message' => 'Cinemas not found'], 404);
+        }
+        $Cinemas->delete();
+        return response()->json(null, 204);
     }
 }

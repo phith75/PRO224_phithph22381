@@ -23,7 +23,8 @@ class BlogsController extends Controller
      */
     public function store(Request $request)
     {
-        return Blogs::create($request->all());
+        $Blog = Blogs::create($request->all());
+        return new BlogsResource($Blog);
     }
 
     /**
@@ -33,7 +34,7 @@ class BlogsController extends Controller
     {
         $Blogs = Blogs::find($id);
         if (!$Blogs) {
-            return response()->json(['message' => "student not found"], 404);
+            return response()->json(['message' => "Blog not found"], 404);
         }
         return new BlogsResource($Blogs);
     }
@@ -43,9 +44,14 @@ class BlogsController extends Controller
      */
     public function update(Request $request, string $id)
     {
-
+        $Blogs = Blogs::find($id);
+        if (!$Blogs) {
+            return response()->json(['message' => 'Blog not found'], 404);
+        }
         Blogs::where('id', $id)
             ->update($request->except('_token'));
+
+        return new BlogsResource($Blogs);
     }
 
     /**
@@ -54,7 +60,11 @@ class BlogsController extends Controller
     public function destroy(string $id)
     {
 
-        Blogs::where('id', $id)
-            ->delete();
+        $Blog = Blogs::find($id);
+        if (!$Blog) {
+            return response()->json(['message' => 'Blog not found'], 404);
+        }
+        $Blog->delete();
+        return response()->json(null, 204);
     }
 }

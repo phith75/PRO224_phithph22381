@@ -33,7 +33,7 @@ class FeedbackController extends Controller
     {
         $Feedback = Feedback::find($id);
         if (!$Feedback) {
-            return response()->json(['message' => "student not found"], 404);
+            return response()->json(['message' => "Feedback not found"], 404);
         }
         return new FeedbackResource($Feedback);
     }
@@ -44,8 +44,14 @@ class FeedbackController extends Controller
     public function update(Request $request, string $id)
     {
 
+        $Feedback = Feedback::find($id);
+        if (!$Feedback) {
+            return response()->json(['message' => 'Feedback not found'], 404);
+        }
         Feedback::where('id', $id)
             ->update($request->except('_token'));
+
+        return new FeedbackResource($Feedback);
     }
 
     /**
@@ -54,7 +60,11 @@ class FeedbackController extends Controller
     public function destroy(string $id)
     {
 
-        Feedback::where('id', $id)
-            ->delete();
+        $Feedback = Feedback::find($id);
+        if (!$Feedback) {
+            return response()->json(['message' => 'Feedback not found'], 404);
+        }
+        $Feedback->delete();
+        return response()->json(null, 204);
     }
 }

@@ -23,7 +23,8 @@ class Book_ticketController extends Controller
      */
     public function store(Request $request)
     {
-        return Book_ticket::create($request->all());
+        $Book_ticket = Book_ticket::create($request->all());
+        return new Book_ticketResource($Book_ticket);
     }
 
     /**
@@ -43,9 +44,16 @@ class Book_ticketController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        
-        Book_ticket::where('id', $id)
+
+        $Book_ticket = Book_ticket::find($id);
+        if (!$Book_ticket) {
+            return response()->json(['message' => 'Book ticket not found'], 404);
+        }
+        $Book_ticket::where('id', $id)
+
             ->update($request->except('_token'));
+
+        return new Book_ticketResource($Book_ticket);
     }
 
     /**
@@ -53,8 +61,11 @@ class Book_ticketController extends Controller
      */
     public function destroy(string $id)
     {
-
-        Book_ticket::where('id', $id)
-            ->delete();
+        $Book_ticket = Book_ticket::find($id);
+        if (!$Book_ticket) {
+            return response()->json(['message' => 'Book ticket not found'], 404);
+        }
+        $Book_ticket->delete();
+        return response()->json(null, 204);
     }
 }

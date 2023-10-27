@@ -23,7 +23,8 @@ class Contact_infosController extends Controller
      */
     public function store(Request $request)
     {
-        return Contact_infos::create($request->all());
+        $Contact_infos = Contact_infos::create($request->all());
+        return new Contact_infosResource($Contact_infos);
     }
 
     /**
@@ -33,7 +34,7 @@ class Contact_infosController extends Controller
     {
         $Contact_infos = Contact_infos::find($id);
         if (!$Contact_infos) {
-            return response()->json(['message' => "student not found"], 404);
+            return response()->json(['message' => "Contact info not found"], 404);
         }
         return new Contact_infosResource($Contact_infos);
     }
@@ -43,9 +44,14 @@ class Contact_infosController extends Controller
      */
     public function update(Request $request, string $id)
     {
-
+        $Contact_infos = Contact_infos::find($id);
+        if (!$Contact_infos) {
+            return response()->json(['message' => 'Contact info not found'], 404);
+        }
         Contact_infos::where('id', $id)
             ->update($request->except('_token'));
+
+        return new Contact_infosResource($Contact_infos);
     }
 
     /**
@@ -53,8 +59,11 @@ class Contact_infosController extends Controller
      */
     public function destroy(string $id)
     {
-
-        Contact_infos::where('id', $id)
-            ->delete();
+        $Contact_infos = Contact_infos::find($id);
+        if (!$Contact_infos) {
+            return response()->json(['message' => 'Contact info not found'], 404);
+        }
+        $Contact_infos->delete();
+        return response()->json(null, 204);
     }
 }

@@ -25,7 +25,8 @@ class ChairsController extends Controller
      */
     public function store(Request $request)
     {
-        return ModelsChairs::create($request->all());
+        $Chairs = ModelsChairs::create($request->all());
+        return new ChairsResource($Chairs);
     }
 
     /**
@@ -35,7 +36,7 @@ class ChairsController extends Controller
     {
         $Chairs = ModelsChairs::find($id);
         if (!$Chairs) {
-            return response()->json(['message' => "student not found"], 404);
+            return response()->json(['message' => "Chair not found"], 404);
         }
         return new ChairsResource($Chairs);
     }
@@ -45,10 +46,14 @@ class ChairsController extends Controller
      */
     public function update(Request $request, string $id)
     {
-
-        $Chair = ModelsChairs::where('id', $id)
+        $Chairs = ModelsChairs::find($id);
+        if (!$Chairs) {
+            return response()->json(['message' => 'Chair not found'], 404);
+        }
+        ModelsChairs::where('id', $id)
             ->update($request->except('_token'));
-        return new ChairsResource($Chair);
+
+        return new ChairsResource($Chairs);
     }
 
     /**
@@ -58,7 +63,6 @@ class ChairsController extends Controller
     {
         $Chairs = ModelsChairs::find($id);
         if (!$Chairs) {
-
             return response()->json(['message' => "Chair not found"], 404);
         }
         $Chair = ModelsChairs::where('id', $id)
