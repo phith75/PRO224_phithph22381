@@ -62,6 +62,6 @@ class TimeController extends Controller
             return response()->json(['message' => 'time not found'], 404);
         }
         $time->delete();
-        return response()->json(null, 204);
+        return response()->json(['message' => "delete success"], 200);
     }
 }

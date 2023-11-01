@@ -59,6 +59,6 @@ class Time_detailController extends Controller
             return response()->json(['message' => 'TimeDetail not found'], 404);
         }
         $TimeDetail->delete();
-        return response()->json(null, 204);
+        return response()->json(['message' => "delete success"], 200);
     }
 }

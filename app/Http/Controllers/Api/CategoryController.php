@@ -33,7 +33,7 @@ class CategoryController extends Controller
     {
         $Categories = Categories::find($id);
         if (!$Categories) {
-            return response()->json(['message' => "student not found"], 404);
+            return response()->json(['message' => "category not found"], 404);
         }
         return new CategoryResource($Categories);
     }
@@ -59,10 +59,9 @@ class CategoryController extends Controller
     {
         $Categories = Categories::find($id);
         if (!$Categories) {
-            return response()->json(['message' => "student not found"], 404);
+            return response()->json(['message' => "category not found"], 404);
         }
-        $Categories = Categories::where('id', $id)
-            ->delete();
-        return new CategoryResource($Categories);
+        $Categories->delete();
+        return response()->json(['message' => "delete success"], 200);
     }
 }

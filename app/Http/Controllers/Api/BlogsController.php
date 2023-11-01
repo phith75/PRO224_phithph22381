@@ -65,6 +65,6 @@ class BlogsController extends Controller
             return response()->json(['message' => 'Blog not found'], 404);
         }
         $Blog->delete();
-        return response()->json(null, 204);
+        return response()->json(['message' => "delete success"], 200);
     }
 }

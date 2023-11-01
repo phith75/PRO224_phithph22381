@@ -204,13 +204,13 @@ class DatabaseSeeder extends Seeder
 
                     $data = [
 
-                        ['name' => 'A1', 'price' => 10, 'type' => 1, 'id_time_detail'  => 1],
+                        ['name' => 'A1', 'price' => 10,'id_time_detail'  => 1],
 
-                        ['name' => 'A2', 'price' => 10, 'type' => 4, 'id_time_detail'  => 1],
+                        ['name' => 'A2', 'price' => 10,'id_time_detail'  => 1],
 
-                        ['name' => 'A3', 'price' => 10, 'type' => 2, 'id_time_detail' => 1],
+                        ['name' => 'A3', 'price' => 10, 'id_time_detail' => 1],
 
-                        ['name' => 'A4', 'price' => 10, 'type' => 3, 'id_time_detail'  => 1]
+                        ['name' => 'A4', 'price' => 10,  'id_time_detail'  => 1]
 
                     ];
 

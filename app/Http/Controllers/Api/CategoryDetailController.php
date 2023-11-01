@@ -59,6 +59,6 @@ class CategoryDetailController extends Controller
             return response()->json(['message' => 'CategoryDetail not found'], 404);
         }
         $CategoryDetail->delete();
-        return response()->json(null, 204);
+        return response()->json(['message' => "delete success"], 200);
     }
 }

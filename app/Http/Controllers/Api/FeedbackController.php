@@ -65,6 +65,6 @@ class FeedbackController extends Controller
             return response()->json(['message' => 'Feedback not found'], 404);
         }
         $Feedback->delete();
-        return response()->json(null, 204);
+        return response()->json(['message' => "delete success"], 200);
     }
 }

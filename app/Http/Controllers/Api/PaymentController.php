@@ -12,21 +12,23 @@ class PaymentController extends Controller
     {
         error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
         date_default_timezone_set('Asia/Ho_Chi_Minh');
+        $startTime = date("YmdHis");
 
+        $expire = date('YmdHis', strtotime('+15 minutes', strtotime($startTime)));
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        $vnp_Returnurl = "https://localhost/vnpay_php/vnpay_return.php";
+        $vnp_Returnurl = "http://localhost:5173/"; // Đường dẫn return sau khi thanh toán
         $vnp_TmnCode = "SMWBPLOI"; //Mã website tại VNPAY 
         $vnp_HashSecret = "YCXCIZUKOICUEMGAZGIFLYLLNULOSTTK"; //Chuỗi bí mật
 
-        $vnp_TxnRef = '12345'; //Mã đơn hàng. Trong thực tế Merchant cần insert đơn hàng vào DB và gửi mã này sang VNPAY
-        $vnp_OrderInfo = 'test thanh toán vnpay';
-        $vnp_OrderType = 'billpayment';
-        $vnp_Amount = 44000 * 100;
+        $vnp_TxnRef = $_POST['order_id']; //Mã đơn hàng. Trong thực tế Merchant cần insert đơn hàng vào DB và gửi mã này sang VNPAY
+        $vnp_OrderInfo = $_POST['order_desc'];
+        $vnp_OrderType = $_POST['order_type'];
+        $vnp_Amount = $_POST['amount'] * 100;
         $vnp_Locale = 'vn';
-        $vnp_BankCode = 'VNPAYQR';
+        $vnp_BankCode = '';
         $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
         //Add Params of 2.0.1 Version
-        // $vnp_ExpireDate = $_POST['txtexpire'];
+        $vnp_ExpireDate = $expire;
         //Billing
         // $vnp_Bill_Mobile = $_POST['txt_billing_mobile'];
         // $vnp_Bill_Email = $_POST['txt_billing_email'];
@@ -61,7 +63,7 @@ class PaymentController extends Controller
             "vnp_OrderType" => $vnp_OrderType,
             "vnp_ReturnUrl" => $vnp_Returnurl,
             "vnp_TxnRef" => $vnp_TxnRef,
-            // "vnp_ExpireDate" => $vnp_ExpireDate,
+            "vnp_ExpireDate" => $vnp_ExpireDate,
             // "vnp_Bill_Mobile" => $vnp_Bill_Mobile,
             // "vnp_Bill_Email" => $vnp_Bill_Email,
             // "vnp_Bill_FirstName" => $vnp_Bill_FirstName,

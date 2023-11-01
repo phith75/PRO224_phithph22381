@@ -64,6 +64,6 @@ class BannerController extends Controller
             return response()->json(['message' => 'Banner not found'], 404);
         }
         $Banner->delete();
-        return response()->json(null, 204);
+        return response()->json(['message' => 'Delete success'], 200);
     }
 }

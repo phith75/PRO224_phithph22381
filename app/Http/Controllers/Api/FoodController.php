@@ -65,6 +65,6 @@ class FoodController extends Controller
             return response()->json(['message' => 'Food not found'], 404);
         }
         $Food->delete();
-        return response()->json(null, 204);
+        return response()->json(['message' => "delete success"], 200);
     }
 }
