@@ -6,9 +6,11 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\HasApiTokens;
 
 class authController extends Controller
 {
+    use HasApiTokens;
     public function sign_up(Request $request)
     {
         $data = $request->validate([
@@ -58,9 +60,16 @@ class authController extends Controller
 
     public function logout(Request $request)
     {
-        auth()->user()->tokens()->delete();
-        return [
-            'message' => 'user logged out'
-        ];
+        try {
+            $user = auth()->user();
+            $user->tokens->each->delete();
+            return response()->json([
+                'message' => 'Logged out'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'User not found'
+            ], 404);
+        }
     }
 }

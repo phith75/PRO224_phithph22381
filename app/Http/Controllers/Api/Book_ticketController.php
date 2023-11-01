@@ -34,7 +34,7 @@ class Book_ticketController extends Controller
     {
         $Book_ticket = Book_ticket::find($id);
         if (!$Book_ticket) {
-            return response()->json(['message' => "student not found"], 404);
+            return response()->json(['message' => "Book ticket not found"], 404);
         }
         return new Book_ticketResource($Book_ticket);
     }

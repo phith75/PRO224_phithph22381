@@ -2,9 +2,9 @@
 
 use Illuminate\Support\Facades\Storage;
 
-function uploadFile($nameFolder,$file)
+function uploadFile($nameFolder, $file)
 {
-    $fileName = time().'_'.$file->getClientOriginalName();
+    $fileName = time() . '_' . $file->getClientOriginalName();
 
-    return $file->storeAs($nameFolder,$fileName,'public');
+    return $file->storeAs($nameFolder, $fileName, 'public');
 }

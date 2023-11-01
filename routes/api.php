@@ -14,7 +14,6 @@ use App\Http\Controllers\Api\FilmController;
 use App\Http\Controllers\Api\FoodController;
 use App\Http\Controllers\Api\MovieRoomController;
 use App\Http\Controllers\Api\TimeController;
-use App\Http\Controllers\Api\PaymentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiCategoriesController;
@@ -27,27 +26,36 @@ use App\Http\Controllers\Api\Time_detailController;
 use App\Http\Controllers\Api\UsersController;
 use App\Http\Controllers\authController;
 use App\Models\FilmMaker;
+use App\Http\Controllers\Api\PaymentController;
 
+/*u
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "api" middleware group. Make something great!
+|
+*/
 
 Route::post('/signup', [authController::class, 'sign_up']);
-Route::post('/login', [authController::class, 'login']);
-Route::post('/logout', [authController::class, 'logout']);
-
+Route::post('/login', [AuthController::class, 'login']);
+//////
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::resource('film', FilmController::class);
+    Route::post('/logout', [AuthController::class, 'logout']); // logout được rồi nha mấy fen
 });
-
+//////
 Route::get('film_cinema/{id}', [QuerryController::class, 'film_cinema']);  // Lấy thông tin phim theo rạp
 Route::get('movie_rooms/{id_cinema}/{date}/{filmId}', [QuerryController::class, 'movie_rooms']); // Lấy thông tin xuất chiếu của phim theo ngày và theo rạp
 Route::get('chair_status/{id}', [QuerryController::class, 'chair_status']); // Lấy thông tin ghế đã đặt
 Route::get('chair_count/{id}', [QuerryController::class, 'chair_count']);   // Lấy số ghế đã đặt (để tính còn bao nhiêu ghế trống)
-Route::get('categorie_detail_name/{id}', [QuerryController::class, 'categorie_detail_name']);
 Route::get('categorie_detail_name/{id}', [QuerryController::class, 'categorie_detail_name']); // Lấy danh mục của phim (ví dụ: Hành động, Kinh điển)
-// Lấy danh mục của phim (ví dụ: Hành động, Kinh điển)
-Route::get('generateRandomString', [QuerryController::class, 'generateRandomString']); // Lấy danh mục của phim (ví dụ: Hành động, Kinh điển)
 
-
-
+///////
+Route::post('generateRandomString', [QuerryController::class, 'generateRandomString']); // Mã để xác định vé (lưu vào bảng book_tiket ở cột id_code) Chú ý: đẩy mã này ra QR.
+Route::post('Payment', [PaymentController::class, 'vnpay_payment']); // thanh toán VNPAY
+///////
 
 Route::apiResource('Chairs', ChairsController::class);
 Route::apiResource('Cinemas', CinemasController::class);
@@ -66,4 +74,4 @@ Route::resource('category_detail', CategoryDetailController::class); // cái nà
 Route::resource('filmMaker', FilmMakerController::class);
 Route::resource('movieRoom', MovieRoomController::class);
 Route::resource('rateStar', FilmMakerController::class);
-Route::post('vnpay_payment', [PaymentController::class, 'vnpay_payment']);
+Route::resource('film', FilmController::class);

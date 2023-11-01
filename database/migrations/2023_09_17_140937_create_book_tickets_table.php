@@ -18,12 +18,12 @@ return new class extends Migration
             $table->tinyInteger('payment');
             $table->integer('amount');
             $table->double('price', 8, 2);
-            $table->tinyInteger('status');
+            $table->tinyInteger('status')->default(0);
+            $table->integer('id_code')->nullable();
             $table->timestamps();
             $table->softDeletes(); // add
         });
     }
-
     /**
      * Reverse the migrations.
      */
