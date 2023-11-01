@@ -65,8 +65,7 @@ class ChairsController extends Controller
         if (!$Chairs) {
             return response()->json(['message' => "Chair not found"], 404);
         }
-        $Chair = ModelsChairs::where('id', $id)
-            ->delete();
+        $Chairs->delete();
         return response()->json(['message' => "Delete success"], 200);
     }
 }

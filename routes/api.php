@@ -27,6 +27,7 @@ use App\Http\Controllers\Api\UsersController;
 use App\Http\Controllers\authController;
 use App\Models\FilmMaker;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\RateStarController;
 
 /*u
 |--------------------------------------------------------------------------
@@ -73,5 +74,6 @@ Route::resource('time_detail', Time_detailController::class); // crud cái này
 Route::resource('category_detail', CategoryDetailController::class); // cái này nx
 Route::resource('filmMaker', FilmMakerController::class);
 Route::resource('movieRoom', MovieRoomController::class);
-Route::resource('rateStar', FilmMakerController::class);
+Route::resource('rateStar', RateStarController::class);
 Route::resource('film', FilmController::class);
+Route::resource('users', UsersController::class);

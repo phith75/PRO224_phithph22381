@@ -66,6 +66,6 @@ class Book_ticketController extends Controller
             return response()->json(['message' => 'Book ticket not found'], 404);
         }
         $Book_ticket->delete();
-        return response()->json(null, 204);
+        return response()->json(['message' => "delete success"], 200);
     }
 }
