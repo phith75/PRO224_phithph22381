@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\BlogsController;
-use App\Http\Controllers\Api\Book_ticket_detailController;
+use App\Http\Controllers\Api\Food_ticket_detailController;
 use App\Http\Controllers\Api\Book_ticketController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CategoryDetailController;
@@ -16,7 +16,6 @@ use App\Http\Controllers\Api\MovieRoomController;
 use App\Http\Controllers\Api\TimeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ApiCategoriesController;
 use App\Models\Banner;
 use App\Models\Blogs;
 use App\Models\Book_ticket_detail;
@@ -65,7 +64,7 @@ Route::apiResource('Cinemas', CinemasController::class);
 Route::apiResource('Category', CategoryController::class);
 Route::apiResource('Banner', BannerController::class);
 Route::apiResource('Blogs', BlogsController::class);
-Route::apiResource('Book_ticket_detail', Book_ticket_detailController::class);
+Route::apiResource('Food_ticket_detail', Food_ticket_detailController::class);
 Route::apiResource('Book_ticket', Book_ticketController::class);
 Route::apiResource('Contact', Contact_infosController::class);
 Route::apiResource('FeedBack', FeedbackController::class);
