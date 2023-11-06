@@ -8,22 +8,23 @@ use Illuminate\Http\Request;
 class PaymentController extends Controller
 {
     //
+
     public function vnpay_payment()
     {
+        $id_code = generateRandomString();
         error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
         date_default_timezone_set('Asia/Ho_Chi_Minh');
         $startTime = date("YmdHis");
-
         $expire = date('YmdHis', strtotime('+15 minutes', strtotime($startTime)));
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        $vnp_Returnurl = "http://localhost:5173/"; // Đường dẫn return sau khi thanh toán
+        $vnp_Returnurl = "http://localhost:5173/book_ticket/" . $_GET['id'] . '/id_code=' . $id_code . '/'; // Đường dẫn return sau khi thanh toán
         $vnp_TmnCode = "SMWBPLOI"; //Mã website tại VNPAY 
         $vnp_HashSecret = "YCXCIZUKOICUEMGAZGIFLYLLNULOSTTK"; //Chuỗi bí mật
 
         $vnp_TxnRef = $startTime; //Mã đơn hàng. Trong thực tế Merchant cần insert đơn hàng vào DB và gửi mã này sang VNPAY
         $vnp_OrderInfo = 'Thanh toán hóa đơn';
         $vnp_OrderType = 'billpayment';
-        $vnp_Amount = $_POST['amount'] * 100;
+        $vnp_Amount = $_GET['amount'] * 100;
         $vnp_Locale = 'vn';
         $vnp_BankCode = '';
         $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
@@ -114,8 +115,7 @@ class PaymentController extends Controller
             header('Location: ' . $vnp_Url);
             die();
         } else {
-            echo $returnData['data'];
-            header('location:' . $returnData['data']);
+            return redirect($returnData['data']);
         }
         // vui lòng tham khảo thêm tại code demo
     }
@@ -160,8 +160,6 @@ class PaymentController extends Controller
         $result = execPostRequest($endpoint, json_encode($data));
         $jsonResult = json_decode($result, true);  // decode json
 
-        //Just a example, please check more in there
-        echo $jsonResult['payUrl'];
-        header('Location: ' . $jsonResult['payUrl']);
+        return redirect($jsonResult['payUrl']);
     }
 }
