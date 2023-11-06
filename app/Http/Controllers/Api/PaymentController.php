@@ -12,6 +12,7 @@ class PaymentController extends Controller
     public function vnpay_payment()
     {
         $id_code = generateRandomString();
+
         error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
         date_default_timezone_set('Asia/Ho_Chi_Minh');
         $startTime = date("YmdHis");
@@ -115,7 +116,7 @@ class PaymentController extends Controller
             header('Location: ' . $vnp_Url);
             die();
         } else {
-            return redirect($returnData['data']);
+            return $returnData;
         }
         // vui lòng tham khảo thêm tại code demo
     }
