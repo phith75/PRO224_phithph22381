@@ -19,8 +19,6 @@ class PaymentController extends Controller
         $expire = date('YmdHis', strtotime('+15 minutes', strtotime($startTime)));
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
         $vnp_Returnurl = "http://localhost:5173/listvnp"; // Đường dẫn return sau khi thanh toán
-
-
         $vnp_TmnCode = "SMWBPLOI"; //Mã website tại VNPAY 
         $vnp_HashSecret = "YCXCIZUKOICUEMGAZGIFLYLLNULOSTTK"; //Chuỗi bí mật
 
@@ -163,6 +161,6 @@ class PaymentController extends Controller
         $result = execPostRequest($endpoint, json_encode($data));
         $jsonResult = json_decode($result, true);  // decode json
 
-        return redirect($jsonResult['payUrl']);
+        return ($jsonResult);
     }
 }

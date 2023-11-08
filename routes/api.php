@@ -53,7 +53,6 @@ Route::get('chair_count/{id}', [QuerryController::class, 'chair_count']);   // L
 Route::get('categorie_detail_name/{id}', [QuerryController::class, 'categorie_detail_name']); // Lấy danh mục của phim (ví dụ: Hành động, Kinh điển)
 
 ///////
-Route::post('generateRandomString', [QuerryController::class, 'generateRandomString']); // Mã để xác định vé (lưu vào bảng book_tiket ở cột id_code) Chú ý: đẩy mã này ra QR.
 Route::get('Payment', [PaymentController::class, 'vnpay_payment']); // thanh toán VNPAY
 Route::post('momo_payment', [PaymentController::class, 'momo_payment']); // thanh toán momo
 
