@@ -9,18 +9,15 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+
+    public function up()
     {
-        Schema::create('book_ticket_details', function (Blueprint $table) {
+        Schema::create('food_ticket_details', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('book_ticket_id');
-            $table->integer('time_id');
+            $table->bigInteger('book_ticket_id')->unsigned();
             $table->integer('food_id');
-            $table->text('chair');
-            $table->integer('quantity');
-            $table->double('price', 8, 2);
             $table->timestamps();
-            $table->softDeletes(); // add
+            $table->softDeletes();
         });
     }
 
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('book_ticket_details');
+        Schema::dropIfExists('food_ticket_details');
     }
 };

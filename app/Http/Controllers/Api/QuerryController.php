@@ -84,16 +84,4 @@ class QuerryController extends Controller
             ->first();
         return $count;
     }
-    public function generateRandomString($length = 50)
-    {
-        $id = $_POST['id_user'];
-        $id_time_detail = $_POST['id_time_detail'];
-        $characters =  '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $charactersLength = strlen($characters);
-        $randomString = '';
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[random_int(0, $charactersLength - 1)];
-        }
-        return $id_time_detail . $randomString . $id;
-    }
 }
