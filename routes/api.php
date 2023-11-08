@@ -27,6 +27,7 @@ use App\Http\Controllers\authController;
 use App\Models\FilmMaker;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\RateStarController;
+use App\Http\Controllers\EmailController;
 
 /*u
 |--------------------------------------------------------------------------
@@ -43,8 +44,12 @@ Route::post('/signup', [authController::class, 'sign_up']);
 Route::post('/login', [AuthController::class, 'login']);
 //////
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::post('/logout', [AuthController::class, 'logout']); // logout được rồi nha mấy fen
-});
+    //nhớ chú ý đến token khi login sai là không chạy được hết nhé 
+    //nếu lỗi không chạy được thì login  lại và nhập lại token
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/send-book-ticket-details-email', [EmailController::class, 'sendBookTicketDetailsEmail']);
+    Route::post('/sendEmail', [EmailController::class, 'sendEmail']);//không cần qtam cái này đừng ai xóa  
+}); 
 //////
 Route::get('film_cinema/{id}', [QuerryController::class, 'film_cinema']);  // Lấy thông tin phim theo rạp
 Route::get('movie_rooms/{id_cinema}/{date}/{filmId}', [QuerryController::class, 'movie_rooms']); // Lấy thông tin xuất chiếu của phim theo ngày và theo rạp
@@ -77,3 +82,5 @@ Route::resource('movieRoom', MovieRoomController::class);
 Route::resource('rateStar', RateStarController::class);
 Route::resource('film', FilmController::class);
 Route::resource('users', UsersController::class);
+
+
