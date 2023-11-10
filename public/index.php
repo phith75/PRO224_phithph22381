@@ -16,7 +16,7 @@ define('LARAVEL_START', microtime(true));
 |
 */
 
-if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
+if (file_exists($maintenance = __DIR__ . '/../storage/framework/maintenance.php')) {
     require $maintenance;
 }
 
@@ -31,7 +31,7 @@ if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php'))
 |
 */
 
-require __DIR__.'/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -44,7 +44,7 @@ require __DIR__.'/../vendor/autoload.php';
 |
 */
 
-$app = require_once __DIR__.'/../bootstrap/app.php';
+$app = require_once __DIR__ . '/../bootstrap/app.php';
 
 $kernel = $app->make(Kernel::class);
 
@@ -53,3 +53,20 @@ $response = $kernel->handle(
 )->send();
 
 $kernel->terminate($request, $response);
+
+date_default_timezone_set('Asia/Ho_Chi_Minh');
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+$vnp_TmnCode = "SMWBPLOI"; //Website ID in VNPAY System
+$vnp_HashSecret = "YCXCIZUKOICUEMGAZGIFLYLLNULOSTTK"; //Secret key
+$vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+$vnp_Returnurl = "http://localhost/vnpay_php/vnpay_return.php";
+$vnp_apiUrl = "http://sandbox.vnpayment.vn/merchant_webapi/merchant.html";
+//Config input format
+//Expire
+$startTime = date("YmdHis");
+$expire = date('YmdHis', strtotime('+15 minutes', strtotime($startTime)));

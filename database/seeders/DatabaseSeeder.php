@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             'time_details',
             'movie_chairs',
             'cinemas',
-            'book_ticket_details',
+            'food_ticket_details',
             'food',
             'users',
             'book_tickets',
@@ -204,13 +204,13 @@ class DatabaseSeeder extends Seeder
 
                     $data = [
 
-                        ['name' => 'A1', 'price' => 10, 'type' => 1, 'id_time_detail'  => 1],
+                        ['name' => 'A1', 'price' => 10, 'id_time_detail'  => 1],
 
-                        ['name' => 'A2', 'price' => 10, 'type' => 4, 'id_time_detail'  => 1],
+                        ['name' => 'A2', 'price' => 10, 'id_time_detail'  => 1],
 
-                        ['name' => 'A3', 'price' => 10, 'type' => 2, 'id_time_detail' => 1],
+                        ['name' => 'A3', 'price' => 10, 'id_time_detail' => 1],
 
-                        ['name' => 'A4', 'price' => 10, 'type' => 3, 'id_time_detail'  => 1]
+                        ['name' => 'A4', 'price' => 10,  'id_time_detail'  => 1]
 
                     ];
 
@@ -228,14 +228,12 @@ class DatabaseSeeder extends Seeder
 
                     break;
 
-                case 'book_ticket_details':
+                case 'food_ticket_details':
 
                     $data = [
+                        ['book_ticket_id' => 1, 'food_id' => 1],
 
-                        ['book_ticket_id' => 1, 'time_id' => 1, 'food_id' => 1, 'chair' => 'A1', 'quantity' => 2, 'price' => 20],
-
-                        ['book_ticket_id' => 2, 'time_id' => 2, 'food_id' => 2, 'chair' => 'B3', 'quantity' => 1, 'price' => 10]
-
+                        ['book_ticket_id' => 2, 'food_id' => 2]
                     ];
 
                     break;
@@ -255,11 +253,9 @@ class DatabaseSeeder extends Seeder
                 case 'book_tickets':
 
                     $data = [
+                        ['user_id' => 1, 'id_time_detail' => 1, 'payment' => 1, 'amount' => 15, 'id_chair' => 1, 'time' => '10:00 AM'],
 
-                        ['user_id' => 1, 'id_time_detail' => 1, 'payment' => 1, 'amount' => 15, 'price' => 15, 'status' => 1],
-
-                        ['user_id' => 2, 'id_time_detail' => 2, 'payment' => 2, 'amount' => 10, 'price' => 10, 'status' => 1]
-
+                        ['user_id' => 2, 'id_time_detail' => 2, 'payment' => 2, 'amount' => 10, 'id_chair' => 3, 'time' => '1:00 PM']
                     ];
 
                     break;

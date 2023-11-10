@@ -3,20 +3,20 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Book_ticket_detail as ResourcesBook_ticket_detail;
-use App\Http\Resources\Book_ticket_detailResource;
-use App\Models\Book_ticket_detail;
+use App\Http\Resources\Food_ticket_detail as ResourcesBook_ticket_detail;
+use App\Http\Resources\Food_ticket_detailResource;
+use App\Models\Food_ticket_detail;
 use Illuminate\Http\Request;
 
-class Book_ticket_detailController extends Controller
+class Food_ticket_detailController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $data = Book_ticket_detail::all();
-        return Book_ticket_detailResource::collection($data);
+        $data = Food_ticket_detail::all();
+        return Food_ticket_detailResource::collection($data);
     }
 
     /**
@@ -24,8 +24,8 @@ class Book_ticket_detailController extends Controller
      */
     public function store(Request $request)
     {
-        $Book_ticket_detail = Book_ticket_detail::create($request->all());
-        return new Book_ticket_detailResource($Book_ticket_detail);
+        $Book_ticket_detail = Food_ticket_detail::create($request->all());
+        return new Food_ticket_detailResource($Book_ticket_detail);
     }
 
     /**
@@ -33,11 +33,11 @@ class Book_ticket_detailController extends Controller
      */
     public function show(string $id)
     {
-        $Book_ticket_detail = Book_ticket_detail::find($id);
+        $Book_ticket_detail = Food_ticket_detail::find($id);
         if (!$Book_ticket_detail) {
             return response()->json(['message' => "Book ticket detail not found"], 404);
         }
-        return new Book_ticket_detailResource($Book_ticket_detail);
+        return new Food_ticket_detailResource($Book_ticket_detail);
     }
 
     /**
@@ -46,14 +46,14 @@ class Book_ticket_detailController extends Controller
     public function update(Request $request, string $id)
     {
 
-        $Book_ticket_detail = Book_ticket_detail::find($id);
+        $Book_ticket_detail = Food_ticket_detail::find($id);
         if (!$Book_ticket_detail) {
             return response()->json(['message' => 'Book ticket detail not found'], 404);
         }
-        Book_ticket_detail::where('id', $id)
+        Food_ticket_detail::where('id', $id)
             ->update($request->except('_token'));
 
-        return new Book_ticket_detailResource($Book_ticket_detail);
+        return new Food_ticket_detailResource($Book_ticket_detail);
     }
 
     /**
@@ -62,11 +62,11 @@ class Book_ticket_detailController extends Controller
     public function destroy(string $id)
     {
 
-        $Book_ticket_detail = Book_ticket_detail::find($id);
+        $Book_ticket_detail = Food_ticket_detail::find($id);
         if (!$Book_ticket_detail) {
             return response()->json(['message' => 'Book ticket detail not found'], 404);
         }
         $Book_ticket_detail->delete();
-        return response()->json(null, 204);
+        return response()->json(['message' => "delete success"], 200);
     }
 }

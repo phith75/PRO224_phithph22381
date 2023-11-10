@@ -64,6 +64,7 @@ class Contact_infosController extends Controller
             return response()->json(['message' => 'Contact info not found'], 404);
         }
         $Contact_infos->delete();
-        return response()->json(null, 204);
+
+        return response()->json(['message' => "delete success"], 200);
     }
 }

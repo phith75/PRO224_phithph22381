@@ -6,61 +6,80 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\HasApiTokens;
 
 class authController extends Controller
 {
+    use HasApiTokens;
     public function sign_up(Request $request)
-    {
-        $data = $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|string|unique:users,email',
-            'password' => 'required|string'
-        ]);
+{
+    $data = $request->validate([
+        'name' => 'required|string',
+        'email' => 'required|string|unique:users,email',
+        'password' => 'required|string'
+    ], [
+        'name.required' => 'Nhập name.',
+        'email.required' => 'Nhập eamil.',
+        'email.unique' => 'Email đã tồn tại.',
+        'password.required' => 'Nhập mất khẩu.'
+    ]);
 
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password'])
-        ]);
+    $user = User::create([
+        'name' => $data['name'],
+        'email' => $data['email'],
+        'password' => bcrypt($data['password'])
+    ]);
 
-        $token = $user->createToken('apiToken')->plainTextToken;
+    $token = $user->createToken('apiToken')->plainTextToken;
 
-        $res = [
-            'user' => $user,
-            'token' => $token
-        ];
-        return response($res, 201);
+    $res = [
+        'user' => $user,
+        'token' => $token
+    ];
+    return response($res, 201);
+}
+
+public function login(Request $request)
+{
+    $data = $request->validate([
+        'email' => 'required|string',
+        'password' => 'required|string'
+    ], [
+        'email.required' => 'Nhập email.',
+        'password.required' => 'Nhập password.'
+    ]);
+
+    $user = User::where('email', $data['email'])->first();
+
+    if (!$user || !Hash::check($data['password'], $user->password)) {
+        return response([
+            'msg' => 'email hoặc mật khẩu không chính xác'
+        ], 401);
     }
-    public function login(Request $request)
-    {
-        $data = $request->validate([
-            'email' => 'required|string',
-            'password' => 'required|string'
-        ]);
 
-        $user = User::where('email', $data['email'])->first();
+    $token = $user->createToken('apiToken')->plainTextToken;
 
-        if (!$user || !Hash::check($data['password'], $user->password)) {
-            return response([
-                'msg' => 'incorrect username or password'
-            ], 401);
-        }
+    $res = [
+        'user' => $user,
+        'token' => $token
+    ];
 
-        $token = $user->createToken('apiToken')->plainTextToken;
+    return response($res, 201);
+}
 
-        $res = [
-            'user' => $user,
-            'token' => $token
-        ];
-
-        return response($res, 201);
-    }
 
     public function logout(Request $request)
     {
-        auth()->user()->tokens()->delete();
-        return [
-            'message' => 'user logged out'
-        ];
+        try {
+            $user = auth()->user();
+            $user->tokens->each->delete();
+            return response()->json([
+                'message' => 'Logged out'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'User not found'
+            ], 404);
+        }
     }
 }

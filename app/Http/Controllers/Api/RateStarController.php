@@ -62,6 +62,6 @@ class RateStarController extends Controller
             return response()->json(['message' => 'RateStar not found'], 404);
         }
         $RateStar->delete();
-        return response()->json(null, 200);
+        return response()->json(['message' => "delete success"], 200);
     }
 }
