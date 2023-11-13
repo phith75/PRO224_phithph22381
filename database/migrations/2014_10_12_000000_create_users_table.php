@@ -22,7 +22,10 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
-            $table->softDeletes(); // add
+            $table->softDeletes(); // delete
+            //quên password
+            $table->string('reset_password_token')->nullable();
+        $table->timestamp('reset_password_token_expiry')->nullable();
         });
     }
 
