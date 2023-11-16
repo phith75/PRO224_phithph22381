@@ -103,6 +103,7 @@ class DatabaseSeeder extends Seeder
                             'trailer' => "https://youtube.com/spidermantrailer",
                             'time' => "150 minutes",
                             'release_date' => "2021-12-17",
+                            'end_date' => "2023-12-17",
                             'description' => "Peter Parker is unmasked...",
                             'status' => 1
                         ],
@@ -113,6 +114,7 @@ class DatabaseSeeder extends Seeder
                             'trailer' => "https://youtube.com/batmantrailer",
                             'time' => "175 minutes",
                             'release_date' => "2022-03-04",
+                            'end_date' => "2023-12-17",
                             'description' => "Batman ventures into Gotham's underworld...",
                             'status' => 1
                         ]

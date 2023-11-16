@@ -62,8 +62,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     //nếu lỗi không chạy được thì login  lại và nhập lại token
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/send-book-ticket-details-email', [EmailController::class, 'sendBookTicketDetailsEmail']);
-    Route::post('/sendEmail', [EmailController::class, 'sendEmail']);//không cần qtam cái này đừng ai xóa  
-}); 
+    Route::post('/sendEmail', [EmailController::class, 'sendEmail']); //không cần qtam cái này đừng ai xóa  
+});
 //////
 Route::get('film_cinema/{id}', [QuerryController::class, 'film_cinema']);  // Lấy thông tin phim theo rạp
 Route::get('movie_rooms/{id_cinema}/{date}/{filmId}', [QuerryController::class, 'movie_rooms']); // Lấy thông tin xuất chiếu của phim theo ngày và theo rạp
@@ -72,7 +72,6 @@ Route::get('chair_count/{id}', [QuerryController::class, 'chair_count']);   // L
 Route::get('categorie_detail_name/{id}', [QuerryController::class, 'categorie_detail_name']); // Lấy danh mục của phim (ví dụ: Hành động, Kinh điển)
 
 ///////
-Route::post('generateRandomString', [QuerryController::class, 'generateRandomString']); // Mã để xác định vé (lưu vào bảng book_tiket ở cột id_code) Chú ý: đẩy mã này ra QR.
 Route::get('Payment', [PaymentController::class, 'vnpay_payment']); // thanh toán VNPAY
 Route::post('momo_payment', [PaymentController::class, 'momo_payment']); // thanh toán momo
 
@@ -97,5 +96,3 @@ Route::resource('movieRoom', MovieRoomController::class);
 Route::resource('rateStar', RateStarController::class);
 Route::resource('film', FilmController::class);
 Route::resource('users', UsersController::class);
-
-

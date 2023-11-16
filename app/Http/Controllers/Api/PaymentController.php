@@ -19,8 +19,6 @@ class PaymentController extends Controller
         $expire = date('YmdHis', strtotime('+15 minutes', strtotime($startTime)));
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
         $vnp_Returnurl = "http://localhost:5173/listvnp"; // Đường dẫn return sau khi thanh toán
-
-
         $vnp_TmnCode = "SMWBPLOI"; //Mã website tại VNPAY 
         $vnp_HashSecret = "YCXCIZUKOICUEMGAZGIFLYLLNULOSTTK"; //Chuỗi bí mật
 
@@ -123,16 +121,15 @@ class PaymentController extends Controller
         // vui lòng tham khảo thêm tại code demo
     }
 
-    public function momo_payment()
+    public function momo_payment(Request $request)
     {
 
         $endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
-
         $partnerCode = 'MOMOBKUN20180529';
         $accessKey = 'klm05TvNBzhg7h7j';
         $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa';
         $orderInfo = "Thanh toán qua momo";
-        $amount = $_POST['price'];
+        $amount = $request['amount'];
         $orderId = time() . "";
         $redirectUrl = "http://localhost:5173/";
         $ipnUrl = "http://localhost:5173/";
@@ -163,6 +160,6 @@ class PaymentController extends Controller
         $result = execPostRequest($endpoint, json_encode($data));
         $jsonResult = json_decode($result, true);  // decode json
 
-        return redirect($jsonResult['payUrl']);
+        return ($jsonResult);
     }
 }
