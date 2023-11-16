@@ -77,11 +77,15 @@ class QuerryController extends Controller
     }
     public function chair_count($id)
     {
-        $count = DB::table('book_ticket_details as btd')
-            ->selectRaw('COUNT(distinct btd.chair) as total_chairs')
-            ->join('time_details as td', 'td.id', '=', 'btd.time_id')
-            ->where('td.id', $id)
-            ->first();
-        return $count;
+
+        $result = DB::table('movie_chairs')
+            ->selectRaw('GROUP_CONCAT(name) as number')
+            ->get();
+        $num = '';
+        foreach ($result as $row) {
+            $num =  $row->number;
+        }
+        $num;
+        echo $check_lenght = strlen($num) - strlen(str_replace(",", "", $num)) + 1;
     }
 }
