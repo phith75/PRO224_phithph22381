@@ -50,9 +50,8 @@ Route::post('/login', [AuthController::class, 'login']);
 
 //đăng nhập bằng tk gg
 // Route cho việc chuyển hướng đến Google để đăng nhập
-Route::get('/login/google', [AuthController::class, 'redirectToGoogle']);
-// Route xử lý callback từ Google
-Route::get('/login/google/callback', [AuthController::class, 'handleGoogleCallback']);
+Route::get('/login/google', [LoginController::class, 'redirectToGoogle'])->name('login.google');
+Route::get('/login/google/callback', [LoginController::class, 'handleGoogleCallback']);
 //để ở view đăng nhập của gg
 // <a href="{{ url('/login/google') }}">Đăng nhập bằng Google</a> dành cho mấy ông fe
 
