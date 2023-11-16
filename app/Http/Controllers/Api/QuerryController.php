@@ -77,7 +77,6 @@ class QuerryController extends Controller
     }
     public function chair_count($id)
     {
-
         $result = DB::table('movie_chairs')
             ->selectRaw('GROUP_CONCAT(name) as number')
             ->get();
@@ -85,7 +84,6 @@ class QuerryController extends Controller
         foreach ($result as $row) {
             $num =  $row->number;
         }
-        $num;
-        echo $check_lenght = strlen($num) - strlen(str_replace(",", "", $num)) + 1;
+        return $check_lenght = strlen($num) - strlen(str_replace(",", "", $num)) + 1;
     }
 }
