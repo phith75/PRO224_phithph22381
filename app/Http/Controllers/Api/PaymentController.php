@@ -121,7 +121,7 @@ class PaymentController extends Controller
         // vui lòng tham khảo thêm tại code demo
     }
 
-    public function momo_payment()
+    public function momo_payment(Request $request)
     {
         $type_payment = 'payment';
         $endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
@@ -135,7 +135,7 @@ class PaymentController extends Controller
             $redirectUrl = "http://127.0.0.1:8000/api/getdata"; // duong dan
         }
         $orderInfo = "Thanh toán qua momo";
-        $amount = $_POST['price'];
+        $amount = $request['amount'];
         $orderId = time() . "";
         // $redirectUrl = "http://localhost:5173/type_payment=" . $type_payment;
         $ipnUrl = "http://localhost:5173/";

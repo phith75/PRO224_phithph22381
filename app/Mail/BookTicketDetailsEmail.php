@@ -14,17 +14,28 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 
 class BookTicketDetailsEmail extends Mailable
 {
+    protected $latestTicket;
+
+    public function __construct($latestTicket)
+        {
+            $this->latestTicket = $latestTicket;
+        }
     use Queueable, SerializesModels;
     public function build()
     {
         $currentUser = Auth::user();
-        $bookTicketDetails = Book_ticket::where('user_id', $currentUser->id)->get();
-        $idCodes = [];
-        foreach ($bookTicketDetails as $ticket) {
-            $idCodes[] = $ticket->id_code;
+        $latestTicket = Book_ticket::where('user_id', $currentUser->id)
+            ->latest('created_at')
+            ->first();
+    
+        if (!$latestTicket) {
+            return $this->subject('Thông tin đặt vé xem film - mã thanh toán: Chưa có vé')
+                ->markdown('emails.book_ticket_details', ['bookTicketDetails' => null]);
         }
-        $idCodeString = implode(', ', $idCodes);
-        return $this->subject('Thông tin đặt vé xem film - mã thanh toán: ' . $idCodeString)
-            ->markdown('emails.book_ticket_details', ['bookTicketDetails' => $bookTicketDetails]);
+    
+        return $this->subject('Thông tin đặt vé xem film - mã thanh toán: ' . $latestTicket->id_code)
+            ->markdown('emails.book_ticket_details', ['bookTicketDetails' => [$latestTicket]]);
     }
+    
+    
 }

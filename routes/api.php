@@ -28,6 +28,7 @@ use App\Models\FilmMaker;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\RateStarController;
 use App\Http\Controllers\EmailController;
+use App\Http\Controllers\Api\ForgotPasswordController;
 
 /*u
 |--------------------------------------------------------------------------
@@ -39,9 +40,21 @@ use App\Http\Controllers\EmailController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
+//quên mật khẩu
+Route::post('forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail']);
+//nhớ nhập lại mật khẩu password_confirmation
+Route::post('reset-password', [ForgotPasswordController::class, 'resetPassword']);
+//đăng kí
 Route::post('/signup', [authController::class, 'sign_up']);
 Route::post('/login', [AuthController::class, 'login']);
+
+//đăng nhập bằng tk gg
+// Route cho việc chuyển hướng đến Google để đăng nhập
+Route::get('/login/google', [LoginController::class, 'redirectToGoogle'])->name('login.google');
+Route::get('/login/google/callback', [LoginController::class, 'handleGoogleCallback']);
+//để ở view đăng nhập của gg
+// <a href="{{ url('/login/google') }}">Đăng nhập bằng Google</a> dành cho mấy ông fe
+
 //////
 Route::group(['middleware' => ['auth:sanctum']], function () {
     //nhớ chú ý đến token khi login sai là không chạy được hết nhé 
@@ -54,7 +67,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 Route::get('film_cinema/{id}', [QuerryController::class, 'film_cinema']);  // Lấy thông tin phim theo rạp
 Route::get('movie_rooms/{id_cinema}/{date}/{filmId}', [QuerryController::class, 'movie_rooms']); // Lấy thông tin xuất chiếu của phim theo ngày và theo rạp
 Route::get('chair_status/{id}', [QuerryController::class, 'chair_status']); // Lấy thông tin ghế đã đặt
-Route::get('chair_count/{id}', [QuerryController::class, 'chair_count']);   // Lấy số ghế đã đặt (để tính còn bao nhiêu ghế trống)
+Route::get('chair_count/{id}', [QuerryController::class, 'chair_count']);   // Lấy số ghế đã đặt (để tính còn bao nhiêu ghế trống)  
 Route::get('categorie_detail_name/{id}', [QuerryController::class, 'categorie_detail_name']); // Lấy danh mục của phim (ví dụ: Hành động, Kinh điển)
 Route::get('purchase_history_ad', [QuerryController::class, 'purchase_history_ad']); //
 Route::get('purchase_history_user/{id}', [QuerryController::class, 'purchase_history_user']); //

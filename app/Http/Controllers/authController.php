@@ -7,69 +7,66 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Socialite\Facades\Socialite;
 
-class authController extends Controller
-{
+class authController extends Controller{
     use HasApiTokens;
-    public function sign_up(Request $request)
-{
-    $data = $request->validate([
-        'name' => 'required|string',
-        'email' => 'required|string|unique:users,email',
-        'password' => 'required|string'
-    ], [
-        'name.required' => 'Nhập name.',
-        'email.required' => 'Nhập eamil.',
-        'email.unique' => 'Email đã tồn tại.',
-        'password.required' => 'Nhập mất khẩu.'
-    ]);
+    public function sign_up(Request $request){
+        $data = $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|string|unique:users,email',
+            'password' => 'required|string'
+        ], [
+            'name.required' => 'Nhập name.',
+            'email.required' => 'Nhập eamil.',
+            'email.unique' => 'Email đã tồn tại.',
+            'password.required' => 'Nhập mất khẩu.'
+        ]);
 
-    $user = User::create([
-        'name' => $data['name'],
-        'email' => $data['email'],
-        'password' => bcrypt($data['password'])
-    ]);
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => bcrypt($data['password'])
+        ]);
 
-    $token = $user->createToken('apiToken')->plainTextToken;
+        $token = $user->createToken('apiToken')->plainTextToken;
 
-    $res = [
-        'user' => $user,
-        'token' => $token
-    ];
-    return response($res, 201);
-}
-
-public function login(Request $request)
-{
-    $data = $request->validate([
-        'email' => 'required|string',
-        'password' => 'required|string'
-    ], [
-        'email.required' => 'Nhập email.',
-        'password.required' => 'Nhập password.'
-    ]);
-
-    $user = User::where('email', $data['email'])->first();
-
-    if (!$user || !Hash::check($data['password'], $user->password)) {
-        return response([
-            'msg' => 'email hoặc mật khẩu không chính xác'
-        ], 401);
+        $res = [
+            'user' => $user,
+            'token' => $token
+        ];
+        return response($res, 201);
     }
 
-    $token = $user->createToken('apiToken')->plainTextToken;
+    public function login(Request $request){
+        $data = $request->validate([
+            'email' => 'required|string',
+            'password' => 'required|string'
+        ], [
+            'email.required' => 'Nhập email.',
+            'password.required' => 'Nhập password.'
+        ]);
 
-    $res = [
-        'user' => $user,
-        'token' => $token
-    ];
+        $user = User::where('email', $data['email'])->first();
 
-    return response($res, 201);
-}
+        if (!$user || !Hash::check($data['password'], $user->password)) {
+            return response([
+                'msg' => 'email hoặc mật khẩu không chính xác'
+            ], 401);
+        }
+
+        $token = $user->createToken('apiToken')->plainTextToken;
+
+        $res = [
+            'user' => $user,
+            'token' => $token
+        ];
+
+        return response($res, 201);
+    }
 
 
-    public function logout(Request $request)
-    {
+    public function logout(Request $request){
         try {
             $user = auth()->user();
             $user->tokens->each->delete();
@@ -80,6 +77,38 @@ public function login(Request $request)
             return response()->json([
                 'message' => 'User not found'
             ], 404);
+        }
+    }
+    //đăng nhập bằng tk gg 
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    public function handleGoogleCallback()
+    {
+        try {
+            $user = Socialite::driver('google')->user();
+
+            $existingUser = User::where('email', $user->email)->first();
+
+            if ($existingUser) {
+                Auth::login($existingUser);
+            } else {
+                $newUser = User::create([
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'password' => bcrypt('randompassword')
+                ]);
+
+                Auth::login($newUser);
+            }
+
+            return redirect('/home');
+        } catch (\Exception $e) {
+            return response([
+                'error' => 'Đã xảy ra lỗi khi đăng nhập bằng Google'
+            ], 500);
         }
     }
 }
