@@ -110,7 +110,7 @@ class QuerryController extends Controller
             $seat_reservation[$request->id_time_detail][$request->id_user]['time'][$request->selected_seats] = $currentTime->addMinutes(1);
         }
         // Đặt lại dữ liệu vào Cache
-        Cache::put('seat_reservation', $seat_reservation);
+        Cache::put('seat_reservation', $seat_reservation, $currentTime->addMinutes(1));
 
         // Trả về dữ liệu ghế và thời gian đã đặt
         return $seat_reservation[$request->id_time_detail][$request->id_user];
