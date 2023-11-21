@@ -104,6 +104,26 @@
         </main>
         <footer> <span>Địa chỉ: số 71 NCT, Hà Nội</span> </footer>
     </div>
+
+    @component('mail::message')
+    @if ($bookTicketDetails)
+        # Thông tin đặt vé xem film - mã thanh toán: {{ $bookTicketDetails[0]->id_code }}
+    
+        Dưới đây là chi tiết đặt vé của bạn:
+        - Tên phim: {{ $bookTicketDetails[0]->movie_name }}
+        - Ngày đặt vé: {{ $bookTicketDetails[0]->created_at }}
+        - ...
+    @else
+        # Thông tin đặt vé xem film - mã thanh toán: Chưa có vé
+    
+        Xin lỗi, bạn chưa có vé đặt nào.
+    @endif
+    
+    Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!
+    
+    @endcomponent
+
+
 </body>
 
 </html>
