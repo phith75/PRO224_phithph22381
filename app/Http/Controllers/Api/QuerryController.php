@@ -85,11 +85,17 @@ class QuerryController extends Controller
             ->selectRaw('GROUP_CONCAT(name) as number')
             ->where('id_time_detail', $id)
             ->get();
+
         $num = '';
         foreach ($result as $row) {
             $num =  $row->number;
         }
-        return $check_lenght = 70 - (strlen($num) - strlen(str_replace(",", "", $num)) + 1);
+        $check_lenght = 70 - (strlen($num) - strlen(str_replace(",", "", $num)) + 1);
+
+        if ($num == null) {
+            $check_lenght = 70;
+        }
+        return $check_lenght;
     }
 
     public function cache_seat(Request $request)
