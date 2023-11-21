@@ -61,11 +61,11 @@ Route::get('movie_rooms/{id_cinema}/{date}/{filmId}', [QuerryController::class, 
 Route::get('chair_status/{id}', [QuerryController::class, 'chair_status']); // Lấy thông tin ghế đã đặt
 Route::get('chair_count/{id}', [QuerryController::class, 'chair_count']);   // Lấy số ghế đã đặt (để tính còn bao nhiêu ghế trống)  
 Route::get('categorie_detail_name/{id}', [QuerryController::class, 'categorie_detail_name']); // Lấy danh mục của phim (ví dụ: Hành động, Kinh điển)
-
+Route::post('cache_seat', [QuerryController::class, 'cache_seat']);
+Route::get('getReservedSeatsByTimeDetail/{id_time_detail}', [QuerryController::class, 'getReservedSeatsByTimeDetail']);
 ///////
 Route::get('Payment', [PaymentController::class, 'vnpay_payment']); // thanh toán VNPAY
 Route::post('momo_payment', [PaymentController::class, 'momo_payment']); // thanh toán momo
-
 ///////
 
 Route::apiResource('Chairs', ChairsController::class);
