@@ -20,9 +20,14 @@ return new class extends Migration
             $table->string('email');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->date('date_of_birth')->nullable();
+
             $table->rememberToken();
             $table->timestamps();
-            $table->softDeletes(); // add
+            $table->softDeletes(); // delete
+            //quên password
+            $table->string('reset_password_token')->nullable();
+            $table->timestamp('reset_password_token_expiry')->nullable();
         });
     }
 
