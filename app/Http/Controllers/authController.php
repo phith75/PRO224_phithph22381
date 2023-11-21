@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Socialite\Facades\Socialite;
 
 class authController extends Controller{
     use HasApiTokens;
@@ -76,6 +77,38 @@ class authController extends Controller{
             return response()->json([
                 'message' => 'User not found'
             ], 404);
+        }
+    }
+    //đăng nhập bằng tk gg 
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    public function handleGoogleCallback()
+    {
+        try {
+            $user = Socialite::driver('google')->user();
+
+            $existingUser = User::where('email', $user->email)->first();
+
+            if ($existingUser) {
+                Auth::login($existingUser);
+            } else {
+                $newUser = User::create([
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'password' => bcrypt('randompassword')
+                ]);
+
+                Auth::login($newUser);
+            }
+
+            return redirect('/home');
+        } catch (\Exception $e) {
+            return response([
+                'error' => 'Đã xảy ra lỗi khi đăng nhập bằng Google'
+            ], 500);
         }
     }
 }
