@@ -10,5 +10,5 @@ class Book_ticket extends Model
 {
     use HasFactory, SoftDeletes;
     protected $table = "book_tickets"; // phải điền đúng tên bảng mà mình cần trỏ tới trong csdl
-    protected $fillable = ['id', 'user_id', 'payment', 'amount', 'price', 'status', 'id_code'];
+    protected $fillable = ['id', 'user_id', 'payment', 'amount', 'id_chair', 'time', 'id_code'];
 }
