@@ -121,23 +121,7 @@
         <footer> <span>{{$bookTicketDetails->address }}</span> </footer>
     </div>
 
-    @component('mail::message')
-    @if ($bookTicketDetails)
-        # Thông tin đặt vé xem film - mã thanh toán: {{ $bookTicketDetails->id_code }}
-    
-        Dưới đây là chi tiết đặt vé của bạn:
-        - Tên phim: {{ $bookTicketDetails->name }}
-        - Ngày đặt vé: {{ $bookTicketDetails->time }}
-        - ...
-    @else
-        # Thông tin đặt vé xem film - mã thanh toán: Chưa có vé
-    
-        Xin lỗi, bạn chưa có vé đặt nào.
-    @endif
-    
-    Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!
-    
-    @endcomponent
+   
 
 
 </body>
