@@ -103,7 +103,6 @@ class QuerryController extends Controller
                 'time' => [],
             ];
         }
-
         // Kiểm tra xem ghế đã được đặt chưa
         if (!in_array($request->selected_seats, $seat_reservation[$request->id_time_detail][$request->id_user]['seat'])) {
             $seat_reservation[$request->id_time_detail][$request->id_user]['seat'][] = $request->selected_seats;
