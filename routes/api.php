@@ -18,7 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\Banner;
 use App\Models\Blogs;
-use App\Models\Book_ticket_detail;
+use App\Models\Fook_ticket_detail;
 use App\Http\Controllers\Api\PassportAuthController;
 use App\Http\Controllers\Api\QuerryController;
 use App\Http\Controllers\Api\Time_detailController;
