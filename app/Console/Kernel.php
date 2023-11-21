@@ -52,6 +52,6 @@ class Kernel extends ConsoleKernel
         }
 
         // Cập nhật dữ liệu vào Cache
-        Cache::put('seat_reservation', $seat_reservation, $currentTime->addMinutes(1));
+        Cache::put('seat_reservation', $seat_reservation);
     }
 }

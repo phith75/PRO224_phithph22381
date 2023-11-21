@@ -104,17 +104,27 @@ class QuerryController extends Controller
                 'time' => [],
             ];
         }
+
         // Kiểm tra xem ghế đã được đặt chưa
         if (!in_array($request->selected_seats, $seat_reservation[$request->id_time_detail][$request->id_user]['seat'])) {
             $seat_reservation[$request->id_time_detail][$request->id_user]['seat'][] = $request->selected_seats;
             $seat_reservation[$request->id_time_detail][$request->id_user]['time'][$request->selected_seats] = $currentTime->addMinutes(1);
+        } else {
+            // If the seat is already reserved, remove it
+            $index = array_search($request->selected_seats, $seat_reservation[$request->id_time_detail][$request->id_user]['seat']);
+            if ($index !== false) {
+                unset($seat_reservation[$request->id_time_detail][$request->id_user]['seat'][$index]);
+                unset($seat_reservation[$request->id_time_detail][$request->id_user]['time'][$request->selected_seats]);
+            }
         }
+
         // Đặt lại dữ liệu vào Cache
         Cache::put('seat_reservation', $seat_reservation, $currentTime->addMinutes(1));
 
         // Trả về dữ liệu ghế và thời gian đã đặt
         return $seat_reservation[$request->id_time_detail][$request->id_user];
     }
+
     public function getReservedSeatsByTimeDetail($id_time_detail)
     {
         $seat_reservation = Cache::get('seat_reservation', []);
