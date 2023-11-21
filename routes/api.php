@@ -48,18 +48,24 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     //nếu lỗi không chạy được thì login  lại và nhập lại token
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/send-book-ticket-details-email', [EmailController::class, 'sendBookTicketDetailsEmail']);
-    Route::post('/sendEmail', [EmailController::class, 'sendEmail']);//không cần qtam cái này đừng ai xóa  
-}); 
+    Route::post('/sendEmail', [EmailController::class, 'sendEmail']); //không cần qtam cái này đừng ai xóa  
+});
 //////
 Route::get('film_cinema/{id}', [QuerryController::class, 'film_cinema']);  // Lấy thông tin phim theo rạp
 Route::get('movie_rooms/{id_cinema}/{date}/{filmId}', [QuerryController::class, 'movie_rooms']); // Lấy thông tin xuất chiếu của phim theo ngày và theo rạp
 Route::get('chair_status/{id}', [QuerryController::class, 'chair_status']); // Lấy thông tin ghế đã đặt
 Route::get('chair_count/{id}', [QuerryController::class, 'chair_count']);   // Lấy số ghế đã đặt (để tính còn bao nhiêu ghế trống)
 Route::get('categorie_detail_name/{id}', [QuerryController::class, 'categorie_detail_name']); // Lấy danh mục của phim (ví dụ: Hành động, Kinh điển)
+Route::get('purchase_history_ad', [QuerryController::class, 'purchase_history_ad']); //
+Route::get('purchase_history_user/{id}', [QuerryController::class, 'purchase_history_user']); //
+Route::get('QR_book/{id}', [QuerryController::class, 'QR_book_tiket']);
+Route::get('Revenue', [QuerryController::class, 'Revenue_month']);
+
 
 ///////
 Route::get('Payment', [PaymentController::class, 'vnpay_payment']); // thanh toán VNPAY
 Route::post('momo_payment', [PaymentController::class, 'momo_payment']); // thanh toán momo
+Route::get('getdata', [PaymentController::class, 'getdata']); // thanh toán momo
 
 ///////
 
@@ -82,5 +88,3 @@ Route::resource('movieRoom', MovieRoomController::class);
 Route::resource('rateStar', RateStarController::class);
 Route::resource('film', FilmController::class);
 Route::resource('users', UsersController::class);
-
-

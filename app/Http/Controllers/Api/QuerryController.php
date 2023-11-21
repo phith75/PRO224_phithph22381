@@ -77,11 +77,113 @@ class QuerryController extends Controller
     }
     public function chair_count($id)
     {
-        $count = DB::table('book_ticket_details as btd')
-            ->selectRaw('COUNT(distinct btd.chair) as total_chairs')
-            ->join('time_details as td', 'td.id', '=', 'btd.time_id')
-            ->where('td.id', $id)
+        $sql = "SELECT 'movie_chairs.name', 
+        LENGTH(name) - LENGTH(REPLACE(name, ' ', '')) + 1
+        FROM movie_chairs";
+        $count = DB::table('book_tickets as bt')
+            ->query($sql)
+            // ->join('movie_chairs as mc', 'mc.id = bt.id_chair')
+            // ->join('time_details as td', 'td.id', '=', 'bt.time_id')
+            // ->selectRaw('COUNT(distinct mc.name) as total_chairs')
+            // ->where('td.id', $id)
             ->first();
         return $count;
     }
+    public function purchase_history_ad()
+    {
+        $detail_purchase = DB::table('book_tickets as bt')
+            ->join('time_details as td', 'td.id', '=', 'bt.id_time_detail')
+            ->join('times', 'times.id', '=', 'td.time_id')
+            ->join('food_ticket_details as ftd', 'ftd.book_ticket_id', '=', 'bt.id')
+            ->join('food', 'food.id', '=', 'ftd.food_id')
+            ->join('movie_chairs as mc', 'mc.id', '=', 'bt.id_chair')
+            ->join('users', 'users.id', '=', 'bt.user_id')
+
+            ->select(
+                'bt.time',
+                'bt.amount as total_price',
+                'food.name as food_name',
+                'food.image as food_image',
+                'food.price as food_price',
+                'mc.name as chair_name',
+                'mc.price as chair_price',
+                'users.name as users_name',
+                'users.image as users_image',
+                'users.email as users_email'
+            )
+            ->get();
+        return $detail_purchase;
+    }
+    public function purchase_history_user($id)
+    {
+        $detail_purchase = DB::table('book_tickets as bt')
+            ->join('time_details as td', 'td.id', '=', 'bt.id_time_detail')
+            ->join('times', 'times.id', '=', 'td.time_id')
+            ->join('food_ticket_details as ftd', 'ftd.book_ticket_id', '=', 'bt.id')
+            ->join('food', 'food.id', '=', 'ftd.food_id')
+            ->join('movie_chairs as mc', 'mc.id', '=', 'bt.id_chair')
+            ->join('users', 'users.id', '=', 'bt.user_id')
+
+            ->select(
+                'bt.time',
+                'bt.amount as total_price',
+                'food.name as food_name',
+                'food.image as food_image',
+                'food.price as food_price',
+                'mc.name as chair_name',
+                'mc.price as chair_price',
+                'users.name as users_name',
+                'users.image as users_image',
+                'users.email as users_email'
+            )
+            ->where('users.id', $id)
+            ->get();
+        return $detail_purchase;
+    }
+    public function QR_book_tiket($id)
+    {
+        $QR_book = DB::table('book_tickets as bt')
+            ->join('time_details as td', 'td.id', '=', 'bt.id_time_detail')
+            ->join('times', 'times.id', '=', 'td.time_id')
+            ->join('food_ticket_details as ftd', 'ftd.book_ticket_id', '=', 'bt.id')
+            ->join('food', 'food.id', '=', 'ftd.food_id')
+            ->join('movie_chairs as mc', 'mc.id', '=', 'bt.id_chair')
+            ->join('users', 'users.id', '=', 'bt.user_id')
+
+            ->select(
+                'bt.time',
+                'bt.amount as total_price',
+                'food.name as food_name',
+                'food.price as food_price',
+                'mc.name as chair_name',
+                'mc.price as chair_price',
+                'users.name as users_name',
+                'users.email as users_email'
+            )
+            ->where('id_code', '=', $id)
+            ->get();
+        return $QR_book;
+    }
+    // public function Revenue_month() tối sửa 
+    // {
+    //     $date = getdate();
+    //     $statistics = DB::table('book_tickets as bt')
+    //         ->whereMonth('bt.time', $date['mon'])
+    //         ->select(
+    //             DB::raw('SUM(bt.amount) as total_price_mon'),
+    //             DB::raw('count(bt.id) as total_book_mon'),
+    //         )
+    //         ->get();
+    //     $statistics_user = DB::table('users as u')
+
+    //         ->select(
+    //             DB::raw('count(u.id) as total_user_mon'),
+    //         )
+    //         ->whereMonth('u.email_verified_at', $date['mon'])
+    //         ->get();
+    //     return [
+    //         $statistics,
+    //         $statistics_user
+    //     ];
+    // }
 }
