@@ -138,7 +138,10 @@ class PaymentController extends Controller
             $redirectUrl = "http://127.0.0.1:8000/api/getdata"; // duong dan
         }
         $orderInfo = "Thanh toán qua momo";
-        $amount = $request['amount'];
+        $_GET['amount'] = (int)$_GET['amount'];
+
+        $amount = $_GET['amount'];
+
         $orderId = time() . "";
         // $redirectUrl = "http://localhost:5173/type_payment=" . $type_payment;
         $ipnUrl = "http://localhost:5173/";
