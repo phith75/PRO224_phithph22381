@@ -204,17 +204,17 @@ class QuerryController extends Controller
     {
         $book_ticket_detail = DB::table('book_tickets as bt')
             ->join('time_details as td', 'td.id', '=', 'bt.id_time_detail')
+            ->join('movie_chairs as mc', 'mc.id', '=', 'bt.id_chair')
             ->join('times', 'times.id', '=', 'td.time_id')
             ->join('food_ticket_details as ftd', 'ftd.book_ticket_id', '=', 'bt.id')
             ->join('food', 'food.id', '=', 'ftd.food_id')
-            ->join('movie_chairs as mc', 'mc.id', '=', 'bt.id_chair')
             ->join('users', 'users.id', '=', 'bt.user_id')
             ->join('films as fl', 'fl.id', '=', 'td.film_id')
             ->join('times as tm', 'tm.id', '=', 'td.time_id')
             ->join('movie_rooms as mv', 'mv.id', '=', 'td.room_id')
             ->join('cinemas as cms', 'cms.id', '=', 'mv.id_cinema')
             ->select(
-                'bt.time',
+                'bt.created_at as time',
                 'fl.name',
                 'bt.id_code',
                 'mv.name as movie_room_name',
