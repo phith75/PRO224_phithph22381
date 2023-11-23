@@ -265,23 +265,20 @@ class QuerryController extends Controller
         }
 
         $revenue_month_y = DB::table('book_tickets')
-            ->select(DB::raw('DATE_FORMAT(time, "%Y-%m") as Month'), DB::raw('SUM(amount) as TotalAmount'))
-            ->whereYear('time', $year)
+            ->select(DB::raw('DATE_FORMAT(created_at, "%Y-%m") as Month'), DB::raw('SUM(amount) as TotalAmount'))
+            ->whereYear('created_at', $year)
             ->groupBy('Month')
             ->get();
         //-------------------------------------------
-
-
-}
 
 
         //lấy theo tháng
         $years = date('Y');
         $month = date('m');
         $revenue_mon = DB::table('book_tickets')
-            ->select(DB::raw('DATE_FORMAT(time, "%Y-%m") as Month'), DB::raw('SUM(amount) as TotalAmount'))
-            ->whereYear('time', $years)
-            ->whereMonth('time', $month)
+            ->select(DB::raw('DATE_FORMAT(created_at, "%Y-%m") as Month'), DB::raw('SUM(amount) as TotalAmount'))
+            ->whereYear('created_at', $years)
+            ->whereMonth('created_at', $month)
             ->groupBy('Month')
             ->get();
         //----------------------------------------------------
@@ -300,8 +297,8 @@ class QuerryController extends Controller
             ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
             ->join('films', 'time_details.film_id', '=', 'films.id')
             ->select('films.name', DB::raw('SUM(book_tickets.amount) as TotalAmount'))
-            ->whereYear('book_tickets.time', $now->year)
-            ->whereMonth('book_tickets.time', $now->month)
+            ->whereYear('book_tickets.created_at', $now->year)
+            ->whereMonth('book_tickets.created_at', $now->month)
             ->groupBy('films.name')
             ->orderBy('TotalAmount', 'desc')
             ->take(5)
@@ -329,4 +326,3 @@ class QuerryController extends Controller
         return $data;
     }
 }
->>>>>>> a33d033ec69b168bc070484b9b85b3cc602c2785
