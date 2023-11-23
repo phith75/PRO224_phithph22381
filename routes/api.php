@@ -72,13 +72,13 @@ Route::get('categorie_detail_name/{id}', [QuerryController::class, 'categorie_de
 Route::get('purchase_history_ad', [QuerryController::class, 'purchase_history_ad']); //
 Route::get('purchase_history_user/{id}', [QuerryController::class, 'purchase_history_user']); //
 Route::get('QR_book/{id}', [QuerryController::class, 'QR_book_tiket']);
-Route::get('Revenue', [QuerryController::class, 'Revenue_month']);
+Route::post('Revenue', [QuerryController::class, 'Revenue_month']);
 
 
 ///////
 Route::get('Payment', [PaymentController::class, 'vnpay_payment']); // thanh toán VNPAY
 Route::post('momo_payment', [PaymentController::class, 'momo_payment']); // thanh toán momo
-Route::get('getdata', [PaymentController::class, 'getdata']); // thanh toán momo
+Route::get('getdata/{id}/{coin}', [PaymentController::class, 'getdata']); // thanh toán momo
 
 ///////
 

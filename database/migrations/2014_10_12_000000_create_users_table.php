@@ -21,7 +21,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->date('date_of_birth')->nullable();
-
+            $table->string('coin', 255)->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes(); // delete
