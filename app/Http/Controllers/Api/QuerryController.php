@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Carbon;
@@ -251,27 +253,76 @@ class QuerryController extends Controller
             ->get()->first();
         return view('book_ticket_QR', ['bookTicketDetails' => [$book_ticket_detail]]);
     }
-    // public function Revenue_month() tối sửa 
-    // {
-    //     $date = getdate();
-    //     $statistics = DB::table('book_tickets as bt')
-    //         ->whereMonth('bt.time', $date['mon'])
-    //         ->select(
-    //             DB::raw('SUM(bt.amount) as total_price_mon'),
-    //             DB::raw('count(bt.id) as total_book_mon'),
-    //         )
-    //         ->get();
-    //     $statistics_user = DB::table('users as u')
+    public function Revenue_month(Request $request)
+    {
+        //thống kê từ lúc bắt đầu đến hiện tại và lọc theo tháng
+        $n = date("Y");
+        $year = '';
+        if ($request->date != $n) {
+            $year = $request->date;
+        } else {
+            $year =  date("Y");
+        }
 
-    //         ->select(
-    //             DB::raw('count(u.id) as total_user_mon'),
-    //         )
-    //         ->whereMonth('u.email_verified_at', $date['mon'])
-    //         ->get();
-    //     return [
-    //         $statistics,
-    //         $statistics_user
-    //     ];
-    // }
+        $revenue_month_y = DB::table('book_tickets')
+            ->select(DB::raw('DATE_FORMAT(time, "%Y-%m") as Month'), DB::raw('SUM(amount) as TotalAmount'))
+            ->whereYear('time', $year)
+            ->groupBy('Month')
+            ->get();
+        //-------------------------------------------
 
+
+        //lấy theo tháng
+        $years = date('Y');
+        $month = date('m');
+        $revenue_mon = DB::table('book_tickets')
+            ->select(DB::raw('DATE_FORMAT(time, "%Y-%m") as Month'), DB::raw('SUM(amount) as TotalAmount'))
+            ->whereYear('time', $years)
+            ->whereMonth('time', $month)
+            ->groupBy('Month')
+            ->get();
+        //----------------------------------------------------
+        //thống kê tổng số khách hàng mới của của tháng này
+
+
+        $now = Carbon::now();
+        $newUsers = User::whereYear('created_at', $now->year)
+            ->whereMonth('created_at', $now->month)
+            ->count();
+
+        //-------------------------------------
+        //lấy ra film có doanh thu cao nhất tháng
+
+        $revenue_film = DB::table('book_tickets')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->join('films', 'time_details.film_id', '=', 'films.id')
+            ->select('films.name', DB::raw('SUM(book_tickets.amount) as TotalAmount'))
+            ->whereYear('book_tickets.time', $now->year)
+            ->whereMonth('book_tickets.time', $now->month)
+            ->groupBy('films.name')
+            ->orderBy('TotalAmount', 'desc')
+            ->take(5)
+            ->get();
+
+        //----------------------------------------------------------------
+        //lấy ra 5 khách hàng thân thiết
+        $user_friendly = DB::table('book_tickets')
+            ->join('users', 'book_tickets.user_id', '=', 'users.id')
+            ->select('users.name', DB::raw('SUM(book_tickets.amount) as TotalAmount'))
+            ->groupBy('users.name')
+            ->orderBy('TotalAmount', 'desc')
+            ->take(5)
+            ->get();
+
+
+
+        $data = [
+            'revenue_month_y' => $revenue_month_y,
+            'revenue_mon' => $revenue_mon,
+            'newUsers' => $newUsers,
+            'revenue_film' => $revenue_film,
+            'user_friendly' => $user_friendly,
+        ];
+        return $data;
+    }
 }

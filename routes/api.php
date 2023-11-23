@@ -75,13 +75,16 @@ Route::get('getReservedSeatsByTimeDetail/{id_time_detail}', [QuerryController::c
 
 Route::get('purchase_history_ad', [QuerryController::class, 'purchase_history_ad']); //
 Route::get('purchase_history_user/{id}', [QuerryController::class, 'purchase_history_user']); //
-Route::get('QR_book/{id}', [QuerryController::class, 'QR_book_tiket']); // Route cho vào QR
-Route::get('Revenue', [QuerryController::class, 'Revenue_month']);
+
+Route::get('QR_book/{id}', [QuerryController::class, 'QR_book_tiket']);
+Route::post('Revenue', [QuerryController::class, 'Revenue_month']);
+
 
 ///////
 Route::get('Payment', [PaymentController::class, 'vnpay_payment']); // thanh toán VNPAY
-Route::get('momo_payment', [PaymentController::class, 'momo_payment']); // thanh toán momo
-Route::get('getdata', [PaymentController::class, 'getdata']); // thanh toán momo
+
+Route::post('momo_payment', [PaymentController::class, 'momo_payment']); // thanh toán momo
+Route::get('getdata/{id}/{coin}', [PaymentController::class, 'getdata']); // thanh toán momo
 
 
 ///////
