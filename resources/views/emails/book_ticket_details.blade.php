@@ -96,15 +96,14 @@
                     <p>Phòng chiếu: {{$bookTicketDetails->movie_room_name }}</p>
                 </div>
                 <div>
-                    <p>Ghế:{{$bookTicketDetails->chair_name }}</p>
+                    <p>Ghế: {{$bookTicketDetails->chair_name }}</p>
                 </div>
                 <div>
-                    <p>Ngày chiếu:{{$bookTicketDetails->date }}</p>
+                    <p>Ngày chiếu: {{$bookTicketDetails->date }}</p>
                 </div>
                 <div>
-                    <p>Thời gian chiếu:{{$bookTicketDetails->time_suatchieu }}</p>
+                    <p>Thời gian chiếu: {{$bookTicketDetails->time_suatchieu }}</p>
                 </div>
-
                 <div>
                     <p>Đồ ăn: {{$bookTicketDetails->food_name }}</p>
                 </div>
@@ -112,7 +111,6 @@
                     <p>Thời gian thanh toán:{{$bookTicketDetails->time }}</p>
                 </div>
                 <div>
-                    
                     <p>Tổng tiền: {{$bookTicketDetails->total_price }} VNĐ</p>
                 </div>
             </div>

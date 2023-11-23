@@ -112,24 +112,40 @@ class QuerryController extends Controller
         }
 
         // Kiểm tra xem ghế đã được đặt chưa
-        if (!in_array($request->selected_seats, $seat_reservation[$request->id_time_detail][$request->id_user]['seat'])) {
-            $seat_reservation[$request->id_time_detail][$request->id_user]['seat'][] = $request->selected_seats;
-            $seat_reservation[$request->id_time_detail][$request->id_user]['time'][$request->selected_seats] = $currentTime->addMinutes(1);
-        } else {
-            // If the seat is already reserved, remove it
-            $index = array_search($request->selected_seats, $seat_reservation[$request->id_time_detail][$request->id_user]['seat']);
-            if ($index !== false) {
-                unset($seat_reservation[$request->id_time_detail][$request->id_user]['seat'][$index]);
-                unset($seat_reservation[$request->id_time_detail][$request->id_user]['time'][$request->selected_seats]);
+        $selected_seats = explode(',', $request->selected_seats);
+
+        // Kiểm tra xem có sự trùng lặp về id_user và số ghế không
+        if (
+            in_array($request->id_user, array_keys($seat_reservation[$request->id_time_detail])) &&
+            count(array_intersect($selected_seats, $seat_reservation[$request->id_time_detail][$request->id_user]['seat'])) > 0
+        ) {
+            // Hủy giữ ghế
+            foreach ($selected_seats as $seat) {
+                $index = array_search($seat, $seat_reservation[$request->id_time_detail][$request->id_user]['seat']);
+                if ($index !== false) {
+                    unset($seat_reservation[$request->id_time_detail][$request->id_user]['seat'][$index]);
+                    unset($seat_reservation[$request->id_time_detail][$request->id_user]['time'][$seat]);
+                }
             }
+        } elseif (count(array_intersect($selected_seats, Arr::flatten($seat_reservation[$request->id_time_detail]))) === 0) {
+            // Đặt ghế mới chỉ nếu ghế chưa được đặt bởi bất kỳ ai khác
+            foreach ($selected_seats as $seat) {
+                $seat_reservation[$request->id_time_detail][$request->id_user]['seat'][] = $seat;
+                $seat_reservation[$request->id_time_detail][$request->id_user]['time'][$seat] = $currentTime->addMinutes(1);
+            }
+        } else {
+            // Trả về thông báo rằng ghế đã được đặt
+            return response()->json(['message' => 'Ghế đã được đặt bởi người dùng khác.'], 403);
         }
 
         // Đặt lại dữ liệu vào Cache
         Cache::put('seat_reservation', $seat_reservation, $currentTime->addMinutes(1));
 
         // Trả về dữ liệu ghế và thời gian đã đặt
-        return $seat_reservation[$request->id_time_detail][$request->id_user];
+        return $seat_reservation[$request->id_time_detail];
     }
+
+
 
     public function getReservedSeatsByTimeDetail($id_time_detail)
     {

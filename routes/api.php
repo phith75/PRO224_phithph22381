@@ -60,7 +60,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     //nhớ chú ý đến token khi login sai là không chạy được hết nhé 
     //nếu lỗi không chạy được thì login  lại và nhập lại token
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/send-book-ticket-details-email', [EmailController::class, 'sendBookTicketDetailsEmail']);
+    Route::post('/send-book-ticket-details-email', [EmailController::class, 'sendBookTicketDetailsEmail']); // router cho vào sau khi thanh toán
     Route::post('/sendEmail', [EmailController::class, 'sendEmail']); //không cần qtam cái này đừng ai xóa  
 });
 //////
@@ -70,12 +70,12 @@ Route::get('chair_status/{id}', [QuerryController::class, 'chair_status']); // L
 Route::get('chair_count/{id}', [QuerryController::class, 'chair_count']);   // Lấy số ghế đã đặt (để tính còn bao nhiêu ghế trống)  
 Route::get('categorie_detail_name/{id}', [QuerryController::class, 'categorie_detail_name']); // Lấy danh mục của phim (ví dụ: Hành động, Kinh điển)
 
-Route::post('cache_seat', [QuerryController::class, 'cache_seat']); // Thêm, xóa ghế giữ
+Route::post('cache_seat', [QuerryController::class, 'cache_seat']); // Thêm, xóa giữ ghế
 Route::get('getReservedSeatsByTimeDetail/{id_time_detail}', [QuerryController::class, 'getReservedSeatsByTimeDetail']); // check xem có bao nhiêu ghế đang được giữ
 
 Route::get('purchase_history_ad', [QuerryController::class, 'purchase_history_ad']); //
 Route::get('purchase_history_user/{id}', [QuerryController::class, 'purchase_history_user']); //
-Route::get('QR_book/{id}', [QuerryController::class, 'QR_book_tiket']);
+Route::get('QR_book/{id}', [QuerryController::class, 'QR_book_tiket']); // Route cho vào QR
 Route::get('Revenue', [QuerryController::class, 'Revenue_month']);
 
 ///////
