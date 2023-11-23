@@ -18,7 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\Banner;
 use App\Models\Blogs;
-use App\Models\Book_ticket_detail;
+use App\Models\Fook_ticket_detail;
 use App\Http\Controllers\Api\PassportAuthController;
 use App\Http\Controllers\Api\QuerryController;
 use App\Http\Controllers\Api\Time_detailController;
@@ -71,9 +71,19 @@ Route::get('chair_status/{id}', [QuerryController::class, 'chair_status']); // L
 Route::get('chair_count/{id}', [QuerryController::class, 'chair_count']);   // Lấy số ghế đã đặt (để tính còn bao nhiêu ghế trống)  
 Route::get('categorie_detail_name/{id}', [QuerryController::class, 'categorie_detail_name']); // Lấy danh mục của phim (ví dụ: Hành động, Kinh điển)
 
+Route::post('cache_seat', [QuerryController::class, 'cache_seat']); // Thêm, xóa ghế giữ
+Route::get('getReservedSeatsByTimeDetail/{id_time_detail}', [QuerryController::class, 'getReservedSeatsByTimeDetail']); // check xem có bao nhiêu ghế đang được giữ
+
+Route::get('purchase_history_ad', [QuerryController::class, 'purchase_history_ad']); //
+Route::get('purchase_history_user/{id}', [QuerryController::class, 'purchase_history_user']); //
+Route::get('QR_book/{id}', [QuerryController::class, 'QR_book_tiket']);
+Route::get('Revenue', [QuerryController::class, 'Revenue_month']);
+
 ///////
 Route::get('Payment', [PaymentController::class, 'vnpay_payment']); // thanh toán VNPAY
-Route::post('momo_payment', [PaymentController::class, 'momo_payment']); // thanh toán momo
+Route::get('momo_payment', [PaymentController::class, 'momo_payment']); // thanh toán momo
+Route::get('getdata', [PaymentController::class, 'getdata']); // thanh toán momo
+
 
 ///////
 
