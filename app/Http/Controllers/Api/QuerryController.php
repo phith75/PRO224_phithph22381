@@ -325,4 +325,184 @@
             ];
             return $data;
         }
+
+
+
+
+        public function getReservedSeatsByTimeDetail($id_time_detail)
+        {
+            $seat_reservation = Cache::get('seat_reservation', []);
+            $reservedSeats = [];
+
+            if (isset($seat_reservation[$id_time_detail])) {
+                foreach ($seat_reservation[$id_time_detail] as $userData) {
+                    // Lấy danh sách ghế được giữ cho mỗi người dùng
+                    $userSeats = $userData['seat'];
+                    // Thêm ghế vào danh sách ghế đã được giữ
+                    $reservedSeats = array_merge($reservedSeats, $userSeats);
+                }
+            }
+
+            // Lọc và loại bỏ các giá trị trùng lặp (nếu có)
+            $reservedSeats = array_unique($reservedSeats);
+
+            return $reservedSeats;
+        }
+
+        public function purchase_history_ad()
+        {
+            $detail_purchase = DB::table('book_tickets as bt')
+                ->join('time_details as td', 'td.id', '=', 'bt.id_time_detail')
+                ->join('times', 'times.id', '=', 'td.time_id')
+                ->join('food_ticket_details as ftd', 'ftd.book_ticket_id', '=', 'bt.id')
+                ->join('food', 'food.id', '=', 'ftd.food_id')
+                ->join('movie_chairs as mc', 'mc.id', '=', 'bt.id_chair')
+                ->join('users', 'users.id', '=', 'bt.user_id')
+                ->select(
+                    'bt.time',
+                    'bt.amount as total_price',
+                    'food.name as food_name',
+                    'food.image as food_image',
+                    'food.price as food_price',
+                    'mc.name as chair_name',
+                    'mc.price as chair_price',
+                    'users.name as users_name',
+                    'users.image as users_image',
+                    'users.email as users_email'
+                )
+                ->get();
+            return $detail_purchase;
+        }
+        public function purchase_history_user($id)
+        {
+            $detail_purchase = DB::table('book_tickets as bt')
+                ->join('time_details as td', 'td.id', '=', 'bt.id_time_detail')
+                ->join('times', 'times.id', '=', 'td.time_id')
+                ->join('food_ticket_details as ftd', 'ftd.book_ticket_id', '=', 'bt.id')
+                ->join('food', 'food.id', '=', 'ftd.food_id')
+                ->join('movie_chairs as mc', 'mc.id', '=', 'bt.id_chair')
+                ->join('users', 'users.id', '=', 'bt.user_id')
+                ->select(
+                    'bt.time',
+                    'bt.amount as total_price',
+                    'food.name as food_name',
+                    'food.image as food_image',
+                    'food.price as food_price',
+                    'mc.name as chair_name',
+                    'mc.price as chair_price',
+                    'users.name as users_name',
+                    'users.image as users_image',
+                    'users.email as users_email'
+                )
+                ->where('users.id', $id)
+                ->get();
+            return $detail_purchase;
+        }
+        public function QR_book_tiket($id)
+        {
+            $book_ticket_detail = DB::table('book_tickets as bt')
+                ->join('time_details as td', 'td.id', '=', 'bt.id_time_detail')
+                ->join('movie_chairs as mc', 'mc.id', '=', 'bt.id_chair')
+                ->join('times', 'times.id', '=', 'td.time_id')
+                ->join('food_ticket_details as ftd', 'ftd.book_ticket_id', '=', 'bt.id')
+                ->join('food', 'food.id', '=', 'ftd.food_id')
+                ->join('users', 'users.id', '=', 'bt.user_id')
+                ->join('films as fl', 'fl.id', '=', 'td.film_id')
+                ->join('times as tm', 'tm.id', '=', 'td.time_id')
+                ->join('movie_rooms as mv', 'mv.id', '=', 'td.room_id')
+                ->join('cinemas as cms', 'cms.id', '=', 'mv.id_cinema')
+                ->select(
+                    'bt.created_at as time',
+                    'fl.name',
+                    'bt.id_code',
+                    'mv.name as movie_room_name',
+                    'fl.image',
+                    'cms.name as name_cinema',
+                    'cms.address',
+                    'td.date',
+                    'tm.time as time_suatchieu',
+                    'bt.amount as total_price',
+                    'food.name as food_name',
+                    'food.price as food_price',
+                    'mc.name as chair_name',
+                    'mc.price as chair_price',
+                    'users.name as users_name',
+                    'users.email as users_email'
+                )
+                ->where('id_code', '=', $id)
+                ->get()->first();
+            return view('book_ticket_QR', ['bookTicketDetails' => [$book_ticket_detail]]);
+        }
+        public function Revenue_month(Request $request)
+        {
+            //thống kê từ lúc bắt đầu đến hiện tại và lọc theo tháng
+            $n = date("Y");
+            $year = '';
+            if ($request->date != $n) {
+                $year = $request->date;
+            } else {
+                $year =  date("Y");
+            }
+
+            $revenue_month_y = DB::table('book_tickets')
+                ->select(DB::raw('DATE_FORMAT(created_at, "%Y-%m") as Month'), DB::raw('SUM(amount) as TotalAmount'))
+                ->whereYear('created_at', $year)
+                ->groupBy('Month')
+                ->get();
+            //-------------------------------------------
+
+
+            //lấy theo tháng
+            $years = date('Y');
+            $month = date('m');
+            $revenue_mon = DB::table('book_tickets')
+                ->select(DB::raw('DATE_FORMAT(created_at, "%Y-%m") as Month'), DB::raw('SUM(amount) as TotalAmount'))
+                ->whereYear('created_at', $years)
+                ->whereMonth('created_at', $month)
+                ->groupBy('Month')
+                ->get();
+            //----------------------------------------------------
+            //thống kê tổng số khách hàng mới của của tháng này
+
+
+            $now = Carbon::now();
+            $newUsers = User::whereYear('created_at', $now->year)
+                ->whereMonth('created_at', $now->month)
+                ->count();
+
+            //-------------------------------------
+            //lấy ra film có doanh thu cao nhất tháng
+
+            $revenue_film = DB::table('book_tickets')
+                ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+                ->join('films', 'time_details.film_id', '=', 'films.id')
+                ->select('films.name', DB::raw('SUM(book_tickets.amount) as TotalAmount'))
+                ->whereYear('book_tickets.created_at', $now->year)
+                ->whereMonth('book_tickets.created_at', $now->month)
+                ->groupBy('films.name')
+                ->orderBy('TotalAmount', 'desc')
+                ->take(5)
+                ->get();
+
+            //----------------------------------------------------------------
+            //lấy ra 5 khách hàng thân thiết
+            $user_friendly = DB::table('book_tickets')
+                ->join('users', 'book_tickets.user_id', '=', 'users.id')
+                ->select('users.name', DB::raw('SUM(book_tickets.amount) as TotalAmount'))
+                ->groupBy('users.name')
+                ->orderBy('TotalAmount', 'desc')
+                ->take(5)
+                ->get();
+
+
+
+            $data = [
+                'revenue_month_y' => $revenue_month_y,
+                'revenue_mon' => $revenue_mon,
+                'newUsers' => $newUsers,
+                'revenue_film' => $revenue_film,
+                'user_friendly' => $user_friendly,
+            ];
+            return $data;
+        }
     }
