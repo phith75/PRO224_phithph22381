@@ -46,17 +46,18 @@ Route::post('forgot-password', [ForgotPasswordController::class, 'sendResetLinkE
 Route::post('reset-password', [ForgotPasswordController::class, 'resetPassword']);
 //đăng kí
 Route::post('/signup', [authController::class, 'sign_up']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->middleware('auth.basic');
 
 //đăng nhập bằng tk gg
 // Route cho việc chuyển hướng đến Google để đăng nhập
-Route::get('/login/google', [LoginController::class, 'redirectToGoogle'])->name('login.google');
-Route::get('/login/google/callback', [LoginController::class, 'handleGoogleCallback']);
+Route::get('/login/google', [AuthController::class, 'redirectToGoogle'])->middleware('auth.basic');
+Route::get('/login/google/callback', [AuthController::class, 'handleGoogleCallback'])->middleware('auth.basic');
 //để ở view đăng nhập của gg
 // <a href="{{ url('/login/google') }}">Đăng nhập bằng Google</a> dành cho mấy ông fe
 
 //////
 Route::group(['middleware' => ['auth:sanctum']], function () {
+    
     //nhớ chú ý đến token khi login sai là không chạy được hết nhé 
     //nếu lỗi không chạy được thì login  lại và nhập lại token
     Route::post('/logout', [AuthController::class, 'logout']);

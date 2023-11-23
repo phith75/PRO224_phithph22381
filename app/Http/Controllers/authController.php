@@ -86,29 +86,35 @@ class authController extends Controller{
     }
 
     public function handleGoogleCallback()
-    {
-        try {
-            $user = Socialite::driver('google')->user();
+{
+    try {
+        $user = Socialite::driver('google')->user();
 
-            $existingUser = User::where('email', $user->email)->first();
+        $existingUser = User::where('email', $user->email)->first();
 
-            if ($existingUser) {
-                Auth::login($existingUser);
-            } else {
-                $newUser = User::create([
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'password' => bcrypt('randompassword')
-                ]);
+        if ($existingUser) {
+            Auth::login($existingUser);
+        } else {
+            $newUser = User::create([
+                'name' => $user->name,
+                'email' => $user->email,
+                'password' => bcrypt('randompassword')
+            ]);
 
-                Auth::login($newUser);
-            }
-
-            return redirect('/home');
-        } catch (\Exception $e) {
-            return response([
-                'error' => 'Đã xảy ra lỗi khi đăng nhập bằng Google'
-            ], 500);
+            Auth::login($newUser);
         }
+
+        $token = $newUser->createToken('apiToken')->plainTextToken;
+
+        return response()->json([
+            'user' => $newUser,
+            'token' => $token,
+        ]);
+    } catch (\Exception $e) {
+        return response([
+            'error' => 'Đã xảy ra lỗi khi đăng nhập bằng Google'
+        ], 500);
     }
+}
+
 }
