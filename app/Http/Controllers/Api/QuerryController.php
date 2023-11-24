@@ -228,7 +228,17 @@ class QuerryController extends Controller
             ->take(5)
             ->get();
 
-
+        //----------------------------------------------------------------
+        //lấy ra tổng số vé bán ra trong tháng theo từng phim
+        $total_book = DB::table('book_tickets')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->join('films', 'time_details.film_id', '=', 'films.id')
+            ->select('films.name', DB::raw('COUNT(book_tickets.id) as TotalTickets'))
+            ->whereYear('time_details.date', $now->year)
+            ->whereMonth('time_details.date', $now->month)
+            ->groupBy('films.name')
+            ->get();
+        //----------------------------------------------------------------
 
         $data = [
             'revenue_month_y' => $revenue_month_y,
@@ -236,6 +246,61 @@ class QuerryController extends Controller
             'newUsers' => $newUsers,
             'revenue_film' => $revenue_film,
             'user_friendly' => $user_friendly,
+            'total_book' => $total_book
+        ];
+        return $data;
+    }
+
+    public function Revenue_day(Request $request)
+    {
+        $now = Carbon::now();
+        //lấy ra doanh thu của ngày hiện tại
+
+
+
+        $revenueToday = DB::table('book_tickets')
+
+            ->whereDate('time', $now)
+            ->sum('amount');
+
+
+        //-------------------------------
+        //lấy ra khách hàng mới trong ngày
+        $newUsers = User::whereYear('created_at', $now->year)
+            ->whereDate('created_at', $now)
+            ->count();
+        //------------------------------------
+        //lấy ra film có doanh thu cao nhất trong ngày
+
+        $revenue_film = DB::table('book_tickets')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->join('films', 'time_details.film_id', '=', 'films.id')
+            ->select('films.name', DB::raw('SUM(book_tickets.amount) as TotalAmount'))
+            ->whereDate('book_tickets.time', $now)
+            ->groupBy('films.name')
+            ->orderBy('TotalAmount', 'desc')
+            ->take(5)
+            ->get();
+
+        //----------------------------------------------------------------
+        //lấy ra tổng số vé bán ra trong ngày theo từng phim 
+
+        $book_total = DB::table('book_tickets')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->join('films', 'time_details.film_id', '=', 'films.id')
+            ->select('films.name', DB::raw('COUNT(book_tickets.id) as TotalTickets'))
+            ->whereDate('time_details.date', $now)
+            ->groupBy('films.name')
+            ->get();
+
+
+
+
+        $data = [
+            "revenueToday" => $revenueToday,
+            'revenue_film' => $revenue_film,
+            'newUsers' => $newUsers,
+            'book_total' => $book_total
         ];
         return $data;
     }

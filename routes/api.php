@@ -72,7 +72,9 @@ Route::get('categorie_detail_name/{id}', [QuerryController::class, 'categorie_de
 Route::get('purchase_history_ad', [QuerryController::class, 'purchase_history_ad']); //
 Route::get('purchase_history_user/{id}', [QuerryController::class, 'purchase_history_user']); //
 Route::get('QR_book/{id}', [QuerryController::class, 'QR_book_tiket']);
-Route::post('Revenue', [QuerryController::class, 'Revenue_month']);
+Route::post('Revenue_mon', [QuerryController::class, 'Revenue_month']);
+Route::post('Revenue_day', [QuerryController::class, 'Revenue_day']);
+
 
 
 ///////
