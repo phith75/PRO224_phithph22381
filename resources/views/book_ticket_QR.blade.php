@@ -285,9 +285,9 @@
 
                     </div>
                 </div>
-                <div class="adL">
+                <div>
 
-
+                    <p>Tổng tiền: {{$bookTicketDetails->total_price }} VNĐ</p>
                 </div>
             </div>
         </div>

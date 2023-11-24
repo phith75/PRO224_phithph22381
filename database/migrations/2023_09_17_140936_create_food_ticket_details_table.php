@@ -17,7 +17,6 @@ return new class extends Migration
             $table->bigInteger('book_ticket_id')->unsigned();
             $table->integer('food_id');
             $table->integer('quantity');
-
             $table->timestamps();
             $table->softDeletes();
         });
