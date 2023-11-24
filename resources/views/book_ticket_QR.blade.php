@@ -113,7 +113,9 @@
                 </div>
                 <div>
                     
-                    <p>Tổng tiền: {{$bookTicketDetails->total_price }} VNĐ</p>
+                    <p>Tổng tiền: {{
+                        
+                        $bookTicketDetails->total_price }} VNĐ</p>
                 </div>
             </div>
             @endforeach
