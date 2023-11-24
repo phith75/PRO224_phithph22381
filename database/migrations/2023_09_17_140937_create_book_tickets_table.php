@@ -18,8 +18,7 @@ return new class extends Migration
             $table->tinyInteger('payment')->nullable();
             $table->integer('amount')->nullable();
             $table->string('id_chair', 255);
-            $table->string('time', 50);
-            $table->integer('id_code')->nullable();
+            $table->string('id_code')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
