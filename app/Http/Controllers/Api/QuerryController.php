@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\TimeDetail;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -43,33 +44,25 @@ class QuerryController extends Controller
             ->names;
         return $names;
     }
-    public function movie_rooms($id_cinema, $date, $filmId)
+    public function movie_rooms($timeDetailId)
     {
-        $movieRooms = DB::table('time_details')
-            ->select([
-                'movie_rooms.id AS movie_rooms',
-                'cinemas.id AS id_cinema',
-                'cinemas.name AS cinema_name',
-                'time_details.id AS time_detail_id',
-                DB::raw("CONCAT(DATE_FORMAT(time_details.date, '%d/%m'), ' - ', DATE_FORMAT(time_details.date, '%W')) AS formatted_date"),
-                'times.time',
-                'film_id',
 
-            ])
-
-            ->join('movie_rooms', 'movie_rooms.id', '=', 'time_details.room_id')
-
-            ->join('cinemas', 'movie_rooms.id_cinema', '=', 'cinemas.id')
-
+        $data = DB::table('time_details')
+            ->join('films', 'time_details.film_id', '=', 'films.id')
             ->join('times', 'time_details.time_id', '=', 'times.id')
+            ->join('rooms', 'time_details.room_id', '=', 'rooms.id')
+            ->join('cinemas', 'rooms.cinema_id', '=', 'cinemas.id')
+            ->where('time_details.id', $timeDetailId)
+            ->select([
+                'time_details.*',
+                'films.*',
+                'times.*',
+                'rooms.*',
+                'cinemas.*',
+            ])
+            ->first();
 
-            ->where('cinemas.id', $id_cinema)
-
-            ->whereDate('time_details.date', $date)
-            ->where('film_id', $filmId)
-            ->get();
-
-        return $movieRooms;
+        return $data;
     }
     public function chair_status($id)
     {
@@ -342,7 +335,7 @@ class QuerryController extends Controller
 
         $revenueToday = DB::table('book_tickets')
 
-            ->whereDate('time', $now)
+            ->whereDate('created_at', $now)
             ->sum('amount');
 
 
@@ -358,7 +351,7 @@ class QuerryController extends Controller
             ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
             ->join('films', 'time_details.film_id', '=', 'films.id')
             ->select('films.name', DB::raw('SUM(book_tickets.amount) as TotalAmount'))
-            ->whereDate('book_tickets.time', $now)
+            ->whereDate('book_tickets.created_at', $now)
             ->groupBy('films.name')
             ->orderBy('TotalAmount', 'desc')
             ->take(5)
@@ -374,10 +367,6 @@ class QuerryController extends Controller
             ->whereDate('time_details.date', $now)
             ->groupBy('films.name')
             ->get();
-
-
-
-
         $data = [
             "revenueToday" => $revenueToday,
             'revenue_film' => $revenue_film,
@@ -385,5 +374,58 @@ class QuerryController extends Controller
             'book_total' => $book_total
         ];
         return $data;
+    }
+    //     const { id } = useParams();
+    //   const selectedCinema = useSelector((state: any) => state.selectedCinema);
+    //   const { data: TimeDetails } = useFetchShowTimeQuery();
+    //   const { data: TimeDetailbyId } = useGetShowTimeByIdQuery(id as string);
+    //   const { data: CinemaDetailbyId } = useGetCinemaByIdQuery(
+    //     selectedCinema as string
+    //   );
+    //   const filterShow = (TimeDetails as any)?.data.filter(
+    //     (show: any) => `${show.id}` === id
+    //   );
+    //   const idTime = filterShow?.map((time: any) => time.time_id).join(" ");
+    //   const idFilm = filterShow?.map((film: any) => film.film_id).join(" ");
+    //   const idRoom = filterShow?.map((film: any) => film.room_id).join(" ");
+    //   const { data: FilmById } = useGetProductByIdQuery(idFilm);
+    //   const { data: TimeById } = useGetTimeByIdQuery(idTime);
+    //   const { data: RoombyId } = useGetMovieRoomByIdQuery(idRoom as string);
+    //   const { data: foods } = useFetchFoodQuery();
+    //   const { data: DataSeatBooked, isLoading } = useFetchChairsQuery();
+
+    //   const idUser = localStorage.getItem("user_id");
+    //   const { data: userId } = useGetUserByIdQuery(`${idUser}`);
+    //   const isVIPSeat = (row: number, column: number): boolean => {
+    //     return row >= 1 && row <= 5 && column >= 2 && column <= 7;
+    //   };
+    public function time_detail_get_by_id($id)
+    {
+        $CinemaDetailbyId = DB::table('cinemas')
+            ->join('movie_rooms', 'cinemas.id', '=', 'movie_rooms.id_cinema')
+            ->join('time_details', 'movie_rooms.id', '=', 'time_details.room_id')
+            ->join('films', 'films.id', '=', 'time_details.film_id')
+            ->join('times', 'times.id', '=', 'time_details.time_id')
+            ->select(
+                'cinemas.id as id_cinema',
+                'cinemas.address as adrress_cinema',
+                'cinemas.name as name_cinema',
+                'cinemas.status as status_cinema',
+                'time_details.film_id',
+                'films.name as name_film',
+                'films.image as image_film',
+                'films.trailer as id_trailer',
+                'films.release_date',
+                'films.end_date',
+                'films.description',
+                'films.status as status_film',
+                'time_details.time_id',
+                'times.time',
+                'time_details.room_id',
+                'movie_rooms.name as room_name',
+
+            )->where('time_details.id', $id)
+            ->first();
+        return $CinemaDetailbyId;
     }
 }
