@@ -83,7 +83,7 @@ Route::post('Revenue', [QuerryController::class, 'Revenue_month']);
 ///////
 Route::get('Payment', [PaymentController::class, 'vnpay_payment']); // thanh toán VNPAY
 
-Route::post('momo_payment', [PaymentController::class, 'momo_payment']); // thanh toán momo
+Route::get('momo_payment', [PaymentController::class, 'momo_payment']); // thanh toán momo
 Route::get('getdata/{id}/{coin}', [PaymentController::class, 'getdata']); // thanh toán momo
 
 

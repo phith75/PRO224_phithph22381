@@ -128,8 +128,9 @@ class PaymentController extends Controller
 
     public function momo_payment(Request $request)
     {
+        $id_code = generateRandomString();
         $endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
-        $redirectUrl = "http://localhost:5173";
+        $redirectUrl = "http://localhost:5173/PayMentMoMo/id_code=" . $id_code . '/';;
         $partnerCode = 'MOMOBKUN20180529';
         $accessKey = 'klm05TvNBzhg7h7j';
         $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa';

@@ -59,6 +59,7 @@ class BookTicketDetailsEmail extends Mailable
             )
             ->where('bt.id_code', '=', $latestTicket->id_code)
             ->get()->first();
+
         $book_ticket_detail_arr = [];
         // dd($book_ticket_detail);
         // foreach ($book_ticket_detail as $bt => $value) {
