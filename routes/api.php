@@ -29,6 +29,8 @@ use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\RateStarController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\Api\ForgotPasswordController;
+use App\Http\Controllers\Api\UservoucherController;
+use App\Http\Controllers\Api\VocherController;
 
 /*u
 |--------------------------------------------------------------------------
@@ -46,12 +48,12 @@ Route::post('forgot-password', [ForgotPasswordController::class, 'sendResetLinkE
 Route::post('reset-password', [ForgotPasswordController::class, 'resetPassword']);
 //đăng kí
 Route::post('/signup', [authController::class, 'sign_up']);
-Route::post('/login', [AuthController::class, 'login'])->middleware('auth.basic');
+Route::post('/login', [AuthController::class, 'login']);
 
 //đăng nhập bằng tk gg
 // Route cho việc chuyển hướng đến Google để đăng nhập
-Route::get('/login/google', [AuthController::class, 'redirectToGoogle'])->middleware('auth.basic');
-Route::get('/login/google/callback', [AuthController::class, 'handleGoogleCallback'])->middleware('auth.basic');
+// Route::get('/login/google', [AuthController::class, 'redirectToGoogle'])->middleware('auth.basic');
+// Route::get('/login/google/callback', [AuthController::class, 'handleGoogleCallback'])->middleware('auth.basic');
 //để ở view đăng nhập của gg
 // <a href="{{ url('/login/google') }}">Đăng nhập bằng Google</a> dành cho mấy ông fe
 
@@ -63,6 +65,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/send-book-ticket-details-email', [EmailController::class, 'sendBookTicketDetailsEmail']);
     Route::post('/sendEmail', [EmailController::class, 'sendEmail']); //không cần qtam cái này đừng ai xóa  
+    //check khi nhập vocher
+    Route::post('/usevoucher', [UservoucherController::class, 'useVoucher']);
 });
 //////
 Route::get('film_cinema/{id}', [QuerryController::class, 'film_cinema']);  // Lấy thông tin phim theo rạp
@@ -106,3 +110,6 @@ Route::resource('movieRoom', MovieRoomController::class);
 Route::resource('rateStar', RateStarController::class);
 Route::resource('film', FilmController::class);
 Route::resource('users', UsersController::class);
+
+//api add vocher
+Route::resource('vocher', VocherController::class);
