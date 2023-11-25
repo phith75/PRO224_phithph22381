@@ -27,20 +27,13 @@ class QuerryController extends Controller
             ->get();
         return $films;
     }
-    public function categorie_detail_name($id)
+    public function categorie_detail_name()
     {
-        $names = DB::table('categories')
-            ->selectRaw('GROUP_CONCAT(categories.name ORDER BY categories.name SEPARATOR ",") as names')
-
-            ->join('category_details', 'categories.id', '=', 'category_details.category_id')
-
-            ->join('films', 'category_details.film_id', '=', 'films.id')
-
-            ->where('films.id', $id)
-
-            ->get()
-            ->first()
-            ->names;
+        $names = DB::table('category_details')
+            ->select('film_id as id', DB::raw('GROUP_CONCAT(categories.name ORDER BY categories.name SEPARATOR ",") as category_names'))
+            ->join('categories', 'category_details.category_id', '=', 'categories.id')
+            ->groupBy('film_id')  // Thêm mệnh đề GROUP BY
+            ->get();
         return $names;
     }
     public function movie_rooms($id_cinema, $date, $filmId)
@@ -103,7 +96,9 @@ class QuerryController extends Controller
             if ($num == null) {
                 $check_lenght = 70;
             }
-            $arr_list_chair_count[] = $check_lenght;
+            $arr_list_chair_count['id'] = $value;
+
+            $arr_list_chair_count['empty_chair'] = $check_lenght;
         }
         return $arr_list_chair_count;
     }
