@@ -239,6 +239,36 @@ class QuerryController extends Controller
             ->groupBy('films.name')
             ->get();
         //----------------------------------------------------------------
+        // lấy ra so sánh doanh thu tháng này với tháng trước
+
+        $month2 = $now->month;
+        $year2 = $now->year;
+
+        // Lấy tháng và năm trước
+        $lastMonth = $now->copy()->subMonth();
+        $lastMonthNumber = $lastMonth->month;
+        $lastYear = $lastMonth->year;
+
+        // Tính toán doanh thu tháng hiện tại
+        $currentMonthRevenue = DB::table('book_tickets')
+            ->whereMonth('time', $month2)
+            ->whereYear('time', $year2)
+            ->sum('amount');
+
+        // Tính toán doanh thu tháng trước
+        $lastMonthRevenue = DB::table('book_tickets')
+            ->whereMonth('time', $lastMonthNumber)
+            ->whereYear('time', $lastYear)
+            ->sum('amount');
+
+        // So sánh doanh thu
+        $comparison = $currentMonthRevenue - $lastMonthRevenue;
+
+
+
+
+
+
 
         $data = [
             'revenue_month_y' => $revenue_month_y,
@@ -246,7 +276,8 @@ class QuerryController extends Controller
             'newUsers' => $newUsers,
             'revenue_film' => $revenue_film,
             'user_friendly' => $user_friendly,
-            'total_book' => $total_book
+            'total_book' => $total_book,
+            'comparison' => $comparison
         ];
         return $data;
     }
@@ -302,6 +333,8 @@ class QuerryController extends Controller
             'newUsers' => $newUsers,
             'book_total' => $book_total
         ];
+
+
         return $data;
     }
 }
