@@ -104,15 +104,18 @@ class QuerryController extends Controller
     {
         $currentTime = Carbon::now();
         $seat_reservation = Cache::get('seat_reservation', []);
-
+        preg_match('/([A-Za-z]+)([0-9]+)/', $request->selected_seats, $matches);
+        $string_seat = $matches[1];
+        $number_seat = intval($matches[2]);
         // Kiểm tra xem đã có thông tin cho id_user và id_time_detail chưa
         if (!isset($seat_reservation[$request->id_time_detail][$request->id_user])) {
             $seat_reservation[$request->id_time_detail][$request->id_user] = [
                 'seat' => [],
                 'time' => [],
+                'price' => [],
+
             ];
         }
-
         // Kiểm tra xem ghế đã được đặt chưa
         $selected_seats = explode(',', $request->selected_seats);
 
@@ -127,13 +130,27 @@ class QuerryController extends Controller
                 if ($index !== false) {
                     unset($seat_reservation[$request->id_time_detail][$request->id_user]['seat'][$index]);
                     unset($seat_reservation[$request->id_time_detail][$request->id_user]['time'][$seat]);
+                    unset($seat_reservation[$request->id_time_detail][$request->id_user]['price'][$seat]);
                 }
             }
         } elseif (count(array_intersect($selected_seats, Arr::flatten($seat_reservation[$request->id_time_detail]))) === 0) {
             // Đặt ghế mới chỉ nếu ghế chưa được đặt bởi bất kỳ ai khác
+            $checked_seat = 0;
+
+            if (($number_seat == 2 && !in_array($string_seat . "1", $seat_reservation[$request->id_time_detail][$request->id_user]['seat'])) || ($number_seat == 11 && !in_array($string_seat . "12", $seat_reservation[$request->id_time_detail][$request->id_user]['seat']))) {
+                if ($number_seat == 2) {
+                    $checked_seat = "1";
+                } else {
+                    $checked_seat = "12";
+                }
+                return $message = "Không được bỏ trống ghế " . $string_seat . $checked_seat;
+            }
+
+
             foreach ($selected_seats as $seat) {
                 $seat_reservation[$request->id_time_detail][$request->id_user]['seat'][] = $seat;
-                $seat_reservation[$request->id_time_detail][$request->id_user]['time'][$seat] = $currentTime->addMinutes(1);
+                $seat_reservation[$request->id_time_detail][$request->id_user]['time'][$seat] = $currentTime->addMinutes(2);
+                $seat_reservation[$request->id_time_detail][$request->id_user]['price'][$seat] = intval($request->price);
             }
         } else {
             // Trả về thông báo rằng ghế đã được đặt
@@ -141,13 +158,12 @@ class QuerryController extends Controller
         }
 
         // Đặt lại dữ liệu vào Cache
-        Cache::put('seat_reservation', $seat_reservation, $currentTime->addMinutes(1));
+        Cache::put('seat_reservation', $seat_reservation, $currentTime->addMinutes(2));
 
         // Trả về dữ liệu ghế và thời gian đã đặt
+
         return $seat_reservation[$request->id_time_detail];
     }
-
-
     public function getReservedSeatsByTimeDetail($id_time_detail)
     {
         $seat_reservation = Cache::get('seat_reservation', []);
@@ -167,7 +183,6 @@ class QuerryController extends Controller
 
         return $reservedSeats;
     }
-
     public function purchase_history_ad()
     {
         $detail_purchase = DB::table('book_tickets as bt')
@@ -333,5 +348,35 @@ class QuerryController extends Controller
             'user_friendly' => $user_friendly,
         ];
         return $data;
+    }
+    public function time_detail_get_by_id($id)
+    {
+        $CinemaDetailbyId = DB::table('cinemas')
+            ->join('movie_rooms', 'cinemas.id', '=', 'movie_rooms.id_cinema')
+            ->join('time_details', 'movie_rooms.id', '=', 'time_details.room_id')
+            ->join('films', 'films.id', '=', 'time_details.film_id')
+            ->join('times', 'times.id', '=', 'time_details.time_id')
+            ->select(
+                'cinemas.id as id_cinema',
+                'cinemas.address as adrress_cinema',
+                'cinemas.name as name_cinema',
+                'cinemas.status as status_cinema',
+                'time_details.film_id',
+                'films.name as name_film',
+                'films.image as image_film',
+                'films.trailer as id_trailer',
+                'films.release_date',
+                'films.end_date',
+                'films.description',
+                'films.status as status_film',
+                'time_details.time_id',
+                'times.time',
+                'time_details.room_id',
+                'time_details.date',
+                'movie_rooms.name as room_name',
+
+            )->where('time_details.id', $id)
+            ->first();
+        return $CinemaDetailbyId;
     }
 }
