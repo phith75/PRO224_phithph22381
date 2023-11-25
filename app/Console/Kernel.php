@@ -41,11 +41,11 @@ class Kernel extends ConsoleKernel
                 foreach ($data['time'] as $seat => $timestamp) {
                     // Kiểm tra số giây giữa thời điểm hiện tại và thời điểm ghế được đặt
                     $secondsDifference = $currentTime->diffInSeconds($timestamp);
-
                     // Nếu số giây vượt quá 1 phút, xóa thông tin ghế hết hạn
                     if ($secondsDifference >= 60) {
                         unset($data['seat'][$seat]);
                         unset($data['time'][$seat]);
+                        unset($data['price'][$seat]);
                     }
                 }
             }
