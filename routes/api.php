@@ -31,6 +31,7 @@ use App\Http\Controllers\EmailController;
 use App\Http\Controllers\Api\ForgotPasswordController;
 use App\Http\Controllers\Api\UservoucherController;
 use App\Http\Controllers\Api\VocherController;
+use App\Http\Controllers\TicketController;
 
 /*u
 |--------------------------------------------------------------------------
@@ -57,6 +58,8 @@ Route::post('/login', [AuthController::class, 'login']);
 //để ở view đăng nhập của gg
 // <a href="{{ url('/login/google') }}">Đăng nhập bằng Google</a> dành cho mấy ông fe
 
+Route::get('print-ticket/{ticketId}', [TicketController::class, 'printTicket']);
+
 //////
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
@@ -70,7 +73,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 });
 //////
 Route::get('film_cinema/{id}', [QuerryController::class, 'film_cinema']);  // Lấy thông tin phim theo rạp
-Route::get('time_detail_get_by_id/{id}', [QuerryController::class, 'time_detail_get_by_id']); // Lấy thông tin xuất chiếu của phim theo ngày và theo rạp
+Route::get('time_detail_get_by_id/{id}', [QuerryController::class, 'time_detail_get_by_id']);
+Route::get('check_time_detail_by_film_id/{id_cinema}/{id_film}', [QuerryController::class, 'check_time_detail_by_film_id']); /////
 Route::get('chair_status/{id}', [QuerryController::class, 'chair_status']); // Lấy thông tin ghế đã đặt
 Route::get('chair_count', [QuerryController::class, 'chair_count']);   // Lấy số ghế đã đặt (để tính còn bao nhiêu ghế trống)  
 Route::get('categorie_detail_name', [QuerryController::class, 'categorie_detail_name']); // Lấy danh mục của phim (ví dụ: Hành động, Kinh điển)
