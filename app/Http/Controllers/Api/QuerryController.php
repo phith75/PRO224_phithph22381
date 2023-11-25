@@ -78,28 +78,30 @@ class QuerryController extends Controller
         $sql = DB::table('time_details')
             ->select('id')->get();
         $arr_list_chair_count = [];
-        $arr_id = [];
+
         foreach ($sql as $row) {
-            $arr_id[] =  $row->id;
-        }
-        foreach ($arr_id as $key => $value) {
             $result = DB::table('movie_chairs')
                 ->selectRaw('GROUP_CONCAT(name) as number')
-                ->where('id_time_detail', $value)
+                ->where('id_time_detail', $row->id)
                 ->get();
+
             $num = '';
-            foreach ($result as $row) {
-                $num =  $row->number;
+            foreach ($result as $rowResult) {
+                $num = $rowResult->number;
             }
-            $check_lenght = 70 - (strlen($num) - strlen(str_replace(",", "", $num)) + 1);
+
+            $check_length = 70 - (strlen($num) - strlen(str_replace(",", "", $num)) + 1);
 
             if ($num == null) {
-                $check_lenght = 70;
+                $check_length = 70;
             }
-            $arr_list_chair_count['id'] = $value;
 
-            $arr_list_chair_count['empty_chair'] = $check_lenght;
+            $arr_list_chair_count[] = [
+                'id' => $row->id,
+                'empty_chair' => $check_length,
+            ];
         }
+
         return $arr_list_chair_count;
     }
 
