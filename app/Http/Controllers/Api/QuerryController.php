@@ -80,24 +80,32 @@ class QuerryController extends Controller
         $chair_array = $chairs->pluck('name')->toArray();
         return $chair_array;
     }
-    public function chair_count($id)
+    public function chair_count()
     {
-
-        $result = DB::table('movie_chairs')
-            ->selectRaw('GROUP_CONCAT(name) as number')
-            ->where('id_time_detail', $id)
-            ->get();
-
-        $num = '';
-        foreach ($result as $row) {
-            $num =  $row->number;
+        $sql = DB::table('time_details')
+            ->select('id')->get();
+        $arr_list_chair_count = [];
+        $arr_id = [];
+        foreach ($sql as $row) {
+            $arr_id[] =  $row->id;
         }
-        $check_lenght = 70 - (strlen($num) - strlen(str_replace(",", "", $num)) + 1);
+        foreach ($arr_id as $key => $value) {
+            $result = DB::table('movie_chairs')
+                ->selectRaw('GROUP_CONCAT(name) as number')
+                ->where('id_time_detail', $value)
+                ->get();
+            $num = '';
+            foreach ($result as $row) {
+                $num =  $row->number;
+            }
+            $check_lenght = 70 - (strlen($num) - strlen(str_replace(",", "", $num)) + 1);
 
-        if ($num == null) {
-            $check_lenght = 70;
+            if ($num == null) {
+                $check_lenght = 70;
+            }
+            $arr_list_chair_count[] = $check_lenght;
         }
-        return $check_lenght;
+        return $arr_list_chair_count;
     }
 
     public function cache_seat(Request $request)
@@ -285,7 +293,7 @@ class QuerryController extends Controller
             ->get()->first();
         return view('book_ticket_QR', ['bookTicketDetails' => [$book_ticket_detail]]);
     }
-    public function Revenue_month(Request $request)
+    public function Revenue(Request $request)
     {
         //thống kê từ lúc bắt đầu đến hiện tại và lọc theo tháng
         $n = date("Y");
@@ -357,14 +365,89 @@ class QuerryController extends Controller
             ->groupBy('films.name')
             ->get();
         //----------------------------------------------------------------
+        // lấy ra so sánh doanh thu tháng này với tháng trước
+
+        $month2 = $now->month;
+        $year2 = $now->year;
+
+        // Lấy tháng và năm trước
+        $lastMonth = $now->copy()->subMonth();
+        $lastMonthNumber = $lastMonth->month;
+        $lastYear = $lastMonth->year;
+
+        // Tính toán doanh thu tháng hiện tại
+        $currentMonthRevenue = DB::table('book_tickets')
+            ->whereMonth('time', $month2)
+            ->whereYear('time', $year2)
+            ->sum('amount');
+
+        // Tính toán doanh thu tháng trước
+        $lastMonthRevenue = DB::table('book_tickets')
+            ->whereMonth('time', $lastMonthNumber)
+            ->whereYear('time', $lastYear)
+            ->sum('amount');
+
+        // So sánh doanh thu
+        $comparison = $currentMonthRevenue - $lastMonthRevenue;
+        $revenueToday = DB::table('book_tickets')
+
+            ->whereDate('time', $now)
+            ->sum('amount');
+
+
+        //-------------------------------
+        //lấy ra khách hàng mới trong ngày
+        $newUsers = User::whereYear('created_at', $now->year)
+            ->whereDate('created_at', $now)
+            ->count();
+        //------------------------------------
+        //lấy ra film có doanh thu cao nhất trong ngày
+
+        $revenue_film = DB::table('book_tickets')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->join('films', 'time_details.film_id', '=', 'films.id')
+            ->select('films.name', DB::raw('SUM(book_tickets.amount) as TotalAmount'))
+            ->whereDate('book_tickets.time', $now)
+            ->groupBy('films.name')
+            ->orderBy('TotalAmount', 'desc')
+            ->take(5)
+            ->get();
+
+        //----------------------------------------------------------------
+        //lấy ra tổng số vé bán ra trong ngày theo từng phim 
+
+        $book_total = DB::table('book_tickets')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->join('films', 'time_details.film_id', '=', 'films.id')
+            ->select('films.name', DB::raw('COUNT(book_tickets.id) as TotalTickets'))
+            ->whereDate('time_details.date', $now)
+            ->groupBy('films.name')
+            ->get();
+
+
+
 
         $data = [
-            'revenue_month_y' => $revenue_month_y,
-            'revenue_mon' => $revenue_mon,
-            'newUsers' => $newUsers,
-            'revenue_film' => $revenue_film,
-            'user_friendly' => $user_friendly,
+            "revenue_day" => [
+                "revenueToday" => $revenueToday,
+                'revenue_film_day' => $revenue_film,
+                'newUsers' => $newUsers,
+                'book_total' => $book_total,
+            ],
+            "revenue_month" => [
+                'revenue_month_y' => $revenue_month_y,
+                'revenue_mon' => $revenue_mon,
+                'newUsers' => $newUsers,
+                'revenue_film' => $revenue_film,
+                'user_friendly' => $user_friendly,
+                'total_book' => $total_book,
+                'comparison' => $comparison
+            ]
+
+
         ];
+
+
         return $data;
     }
     public function time_detail_get_by_id($id)
@@ -392,7 +475,6 @@ class QuerryController extends Controller
                 'time_details.room_id',
                 'time_details.date',
                 'movie_rooms.name as room_name',
-
             )->where('time_details.id', $id)
             ->first();
         return $CinemaDetailbyId;

@@ -59,7 +59,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 //////
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    
+
     //nhớ chú ý đến token khi login sai là không chạy được hết nhé 
     //nếu lỗi không chạy được thì login  lại và nhập lại token
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -72,7 +72,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 Route::get('film_cinema/{id}', [QuerryController::class, 'film_cinema']);  // Lấy thông tin phim theo rạp
 Route::get('time_detail_get_by_id/{id}', [QuerryController::class, 'time_detail_get_by_id']); // Lấy thông tin xuất chiếu của phim theo ngày và theo rạp
 Route::get('chair_status/{id}', [QuerryController::class, 'chair_status']); // Lấy thông tin ghế đã đặt
-Route::get('chair_count/{id}', [QuerryController::class, 'chair_count']);   // Lấy số ghế đã đặt (để tính còn bao nhiêu ghế trống)  
+Route::get('chair_count', [QuerryController::class, 'chair_count']);   // Lấy số ghế đã đặt (để tính còn bao nhiêu ghế trống)  
 Route::get('categorie_detail_name/{id}', [QuerryController::class, 'categorie_detail_name']); // Lấy danh mục của phim (ví dụ: Hành động, Kinh điển)
 
 Route::post('cache_seat', [QuerryController::class, 'cache_seat']); // Thêm, xóa giữ ghế
@@ -82,7 +82,7 @@ Route::get('purchase_history_ad', [QuerryController::class, 'purchase_history_ad
 Route::get('purchase_history_user/{id}', [QuerryController::class, 'purchase_history_user']); //
 
 Route::get('QR_book/{id}', [QuerryController::class, 'QR_book_tiket']);
-Route::post('Revenue_mon', [QuerryController::class, 'Revenue_month']);
+Route::post('Revenue', [QuerryController::class, 'Revenue']);
 Route::post('Revenue_day', [QuerryController::class, 'Revenue_day']);
 
 
