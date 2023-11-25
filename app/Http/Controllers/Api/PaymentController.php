@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
 {
@@ -126,16 +128,16 @@ class PaymentController extends Controller
 
     public function momo_payment(Request $request)
     {
-        $type_payment = 'payment';
+        $id_code = generateRandomString();
         $endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
-        $redirectUrl = "http://localhost:5173";
+        $redirectUrl = "http://localhost:5173/PayMentMoMo/id_code=" . $id_code . '/';;
         $partnerCode = 'MOMOBKUN20180529';
         $accessKey = 'klm05TvNBzhg7h7j';
         $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa';
 
         if (isset($_POST['coin'])) {
-            $type_payment = 'coin';
-            $redirectUrl = "http://127.0.0.1:8000/api/getdata"; // duong dan
+
+            $redirectUrl = "http://127.0.0.1:8000/api/getdata/" . $request->id . '/' . $_GET['amount']; // duong dan
         }
         $orderInfo = "Thanh toán qua momo";
         $_GET['amount'] = (int)$_GET['amount'];
@@ -177,10 +179,19 @@ class PaymentController extends Controller
         return ($jsonResult);
     }
 
-    public function getdata()
-    {
+    public function getdata(Request $request, string $id, $coin){
+
+
         //cap nhat coin nap vao
-        return $_GET['amount'];
+        if (isset($coin)) {
+
+            $coin_total = User::find($id);
+            if (!$coin) {
+                return response()->json(['message' => 'giao dịch chưa hoàn thành do lỗi trong lúc nạp coin'], 404);
+            }
+            $coin_total->update(['coin' => $coin]);
+            return $coin;
+        }
         //     ['message' => "success",
         //       'url'=>'',
         //       'coin'=>$_GET['amount']]

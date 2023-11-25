@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('password');
             $table->date('date_of_birth')->nullable();
             $table->integer('coin')->default(0);
+
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes(); // delete
