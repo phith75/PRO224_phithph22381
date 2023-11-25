@@ -476,4 +476,29 @@ class QuerryController extends Controller
             ->first();
         return $CinemaDetailbyId;
     }
+    public function check_time_detail_by_film_id($id_cinema, $id_film)
+    {
+        $now = now();
+        $forDayLater = now()->addDays(4);
+        $time_detail_by_film_id = DB::table('time_details as td')
+            ->join('movie_rooms as mv', 'mv.id', '=', 'td.room_id')
+            ->join('cinemas as cms', 'cms.id', '=', 'mv.id_cinema')
+            ->join('times as tms', 'tms.id', '=', 'td.time_id')
+            ->where('cms.id', $id_cinema)
+            ->where('td.film_id', $id_film)
+            ->where(function ($query) use ($now, $forDayLater) {
+                $query->where('td.date', '>', $now->format('Y-m-d'))
+                    ->orWhere(function ($subQuery) use ($now) {
+                        $subQuery->where('td.date', '=', $now->format('Y-m-d'))
+                            ->whereTime('tms.time', '>=', $now->format('H:i'));
+                    });
+            })
+            ->select(
+                'td.film_id',
+                'td.id as show',
+            )
+            ->get();
+
+        return $time_detail_by_film_id;
+    }
 }
