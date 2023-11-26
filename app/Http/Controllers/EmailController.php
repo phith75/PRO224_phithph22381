@@ -35,18 +35,26 @@ class EmailController extends Controller
 
     public function sendBookTicketDetailsEmail()
     {
+        // Lấy thông tin người dùng hiện tại đã đăng nhập
         $currentUser = Auth::user();
+    
+        // Kiểm tra xem người dùng có đăng nhập hay không
+        if (!$currentUser) {
+            return response()->json(['message' => 'Người dùng chưa đăng nhập.']);
+        }
+    
+        // Lấy thông tin vé mới nhất của người dùng hiện tại
         $latestTicket = Book_ticket::where('user_id', $currentUser->id)
-            ->orderBy('created_at', 'desc') // Sắp xếp theo created_at theo thứ tự giảm dần
+            ->orderBy('created_at', 'desc')
             ->first();
+    
+        // Kiểm tra xem người dùng có đặt vé hay chưa
         if (!$latestTicket) {
             return response()->json(['message' => 'Chưa đặt vé.']);
         }
-        $email = User::find($currentUser->id)->pluck('email')->toArray();
-
-
-        Mail::to($email)->send(new BookTicketDetailsEmail($latestTicket));
-
+            $email = $currentUser->email;
+            Mail::to($email)->send(new BookTicketDetailsEmail($latestTicket));
         return response()->json(['message' => 'Email đã được gửi thành công']);
     }
+    
 }
