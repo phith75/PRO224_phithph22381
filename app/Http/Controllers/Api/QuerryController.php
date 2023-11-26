@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Food_ticket_detail;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -372,6 +373,15 @@ class QuerryController extends Controller
             ->whereMonth('book_tickets.time', $now->month)
             ->groupBy('films.name')
             ->get();
+
+
+        //----------------------------------------------------------------
+        //lấy ra tống doanh thu từ đồ ăn theo tháng
+        $totalPricefoodmon = DB::table('food_ticket_details')
+            ->join('food', 'food_ticket_details.food_id', '=', 'food.id')
+            ->whereMonth('food_ticket_details.created_at', '=', $now->month)
+            ->whereYear('food_ticket_details.created_at', '=', $now->year)
+            ->sum(DB::raw('food.price'));
         //----------------------------------------------------------------
         // lấy ra so sánh doanh thu tháng này với tháng trước
 
@@ -433,6 +443,11 @@ class QuerryController extends Controller
             ->get();
 
 
+        $totalPricefoodday = DB::table('food_ticket_details')
+            ->join('food', 'food_ticket_details.food_id', '=', 'food.id')
+            ->whereDate('food_ticket_details.created_at', '=', $now)
+            ->sum(DB::raw('food.price'));
+
 
 
         $data = [
@@ -441,6 +456,7 @@ class QuerryController extends Controller
                 'revenue_film_day' => $revenue_film,
                 'newUsers' => $newUsers,
                 'book_total_day' => $book_total_day,
+                'totalPricefoodday' => $totalPricefoodday,
             ],
             "revenue_month" => [
                 'revenue_month_y' => $revenue_month_y,
@@ -449,7 +465,8 @@ class QuerryController extends Controller
                 'revenue_film' => $revenue_film,
                 'user_friendly' => $user_friendly,
                 'book_total_mon' => $book_total_mon,
-                'comparison' => $comparison
+                'comparison' => $comparison,
+                'totalPricefoodmon' => $totalPricefoodmon
             ]
 
 
