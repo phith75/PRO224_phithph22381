@@ -364,12 +364,12 @@ class QuerryController extends Controller
 
         //----------------------------------------------------------------
         //lấy ra tổng số vé bán ra trong tháng theo từng phim
-        $total_book = DB::table('book_tickets')
+        $book_total_mon = DB::table('book_tickets')
             ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
             ->join('films', 'time_details.film_id', '=', 'films.id')
             ->select('films.name', DB::raw('COUNT(book_tickets.id) as TotalTickets'))
-            ->whereYear('time_details.date', $now->year)
-            ->whereMonth('time_details.date', $now->month)
+            ->whereYear('book_tickets.time', $now->year)
+            ->whereMonth('book_tickets.time', $now->month)
             ->groupBy('films.name')
             ->get();
         //----------------------------------------------------------------
@@ -424,11 +424,11 @@ class QuerryController extends Controller
         //----------------------------------------------------------------
         //lấy ra tổng số vé bán ra trong ngày theo từng phim 
 
-        $book_total = DB::table('book_tickets')
+        $book_total_day = DB::table('book_tickets')
             ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
             ->join('films', 'time_details.film_id', '=', 'films.id')
             ->select('films.name', DB::raw('COUNT(book_tickets.id) as TotalTickets'))
-            ->whereDate('time_details.date', $now)
+            ->whereDate('book_tickets.time', $now)
             ->groupBy('films.name')
             ->get();
 
@@ -440,7 +440,7 @@ class QuerryController extends Controller
                 "revenueToday" => $revenueToday,
                 'revenue_film_day' => $revenue_film,
                 'newUsers' => $newUsers,
-                'book_total' => $book_total,
+                'book_total_day' => $book_total_day,
             ],
             "revenue_month" => [
                 'revenue_month_y' => $revenue_month_y,
@@ -448,7 +448,7 @@ class QuerryController extends Controller
                 'newUsers' => $newUsers,
                 'revenue_film' => $revenue_film,
                 'user_friendly' => $user_friendly,
-                'total_book' => $total_book,
+                'book_total_mon' => $book_total_mon,
                 'comparison' => $comparison
             ]
 
