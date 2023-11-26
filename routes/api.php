@@ -118,5 +118,6 @@ Route::resource('filmMaker', FilmMakerController::class);
 Route::resource('movieRoom', MovieRoomController::class);
 Route::resource('rateStar', RateStarController::class);
 Route::resource('film', FilmController::class);
+Route::resource('user', UsersController::class);
 //api add vocher
 Route::resource('vocher', VocherController::class);

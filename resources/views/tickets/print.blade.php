@@ -13,10 +13,12 @@
     <?php
     ?>
     @foreach($array_chair as $key => $chair)
-    <h1>Ticket Details</h1>
-    <p><strong>Time:</strong> {{ $book_ticket_detail->time }}</p>
+    <h1>Ticket</h1>
+    <h1>Chair Details: {{$chair}}</h1>
+    
+    <p><strong>Booking time:</strong> {{ $book_ticket_detail->time }}</p>
     <p><strong>Film Name:</strong> {{ $book_ticket_detail->name }}</p>
-    <p><strong>Ticket Code:</strong> {{ $book_ticket_detail->id_code }}</p>
+    <p><strong>Ticket Code:</strong>...{{  substr($book_ticket_detail->id_code, -7) }}</p>
     <p><strong>Movie Room Name:</strong> {{ $book_ticket_detail->movie_room_name }}</p>
     <p><strong>Cinema Name:</strong> {{ $book_ticket_detail->name_cinema }}</p>
     <p><strong>Cinema Address:</strong> {{ $book_ticket_detail->address }}</p>
@@ -28,12 +30,12 @@
             <li>{{ $book_ticket_detail->food_name }} - {{ $book_ticket_detail->food_price}}</li>
     </ul>
 
-    <h2>Chair Details:</h2>
-    <ul>
-            <li>{{ $chair }}</li>
-    </ul>
-    <hr>
     
+    <hr> 
+    {{-- Tách trang mỗi khi end 1 vé --}}
+    @if (!$loop->last) 
+    <div style="page-break-after: always;"></div>
+@endif
     @endforeach
 </body>
 </html>

@@ -68,12 +68,22 @@ class QuerryController extends Controller
     public function chair_status($id)
     {
         $chairs = DB::table('movie_chairs as mc')
-            ->select('mc.name')
+            ->selectRaw('GROUP_CONCAT(name) as name')
             ->where('mc.id_time_detail', $id)
-            ->get();
-        $chair_array = $chairs->pluck('name')->toArray();
-        return $chair_array;
+            ->first(); // Use first() instead of get()
+
+        // Check if $chairs is not null
+        if ($chairs) {
+            // Split the concatenated string into an array
+            $chair_array = explode(',', $chairs->name);
+            // If you want to return it as a JSON response
+            return $chair_array;
+        }
+        return [];
+        // Handle the case where $chairs is null, e.g., no data found
+
     }
+
     public function chair_count()
     {
         $sql = DB::table('time_details')
@@ -106,69 +116,77 @@ class QuerryController extends Controller
         return $arr_list_chair_count;
     }
 
+
     public function cache_seat(Request $request)
     {
+        $id_time_detail = $request->id_time_detail;
+        $chairs_ard_book = $this->chair_status($id_time_detail);
+
         $currentTime = Carbon::now();
         $seat_reservation = Cache::get('seat_reservation', []);
-        preg_match('/([A-Za-z]+)([0-9]+)/', $request->selected_seats, $matches);
-        $string_seat = $matches[1];
-        $number_seat = intval($matches[2]);
-        // Kiểm tra xem đã có thông tin cho id_user và id_time_detail chưa
-        if (!isset($seat_reservation[$request->id_time_detail][$request->id_user])) {
-            $seat_reservation[$request->id_time_detail][$request->id_user] = [
-                'seat' => [],
-                'time' => [],
-                'price' => [],
 
-            ];
-        }
-        // Kiểm tra xem ghế đã được đặt chưa
+        preg_match('/([A-Za-z]+)([0-9]+)/', $request->selected_seats, $matches);
+        [$string_seat, $number_seat] = [$matches[1], intval($matches[2])];
+
+        // Kiểm tra xem đã có thông tin cho id_user và id_time_detail chưa
+        $seat_reservation[$id_time_detail][$request->id_user] ??= [
+            'seat' => [],
+            'time' => [],
+            'price' => [],
+        ];
+
         $selected_seats = explode(',', $request->selected_seats);
+        $checked_seat = ($number_seat == 2) ? "1" : "12";
+        $check = true;
+
+        // Kiểm tra ghế đã được đặt
+        foreach ($seat_reservation as $key) {
+            foreach ($key as $seat1 => $key2) {
+                if (in_array($string_seat . $checked_seat, $key2['seat'])) {
+                    $check = false;
+                    break;
+                }
+            }
+        }
+
+        if (in_array($string_seat . $checked_seat, $chairs_ard_book)) {
+            $check = false;
+        }
 
         // Kiểm tra xem có sự trùng lặp về id_user và số ghế không
         if (
-            in_array($request->id_user, array_keys($seat_reservation[$request->id_time_detail])) &&
-            count(array_intersect($selected_seats, $seat_reservation[$request->id_time_detail][$request->id_user]['seat'])) > 0
+            in_array($request->id_user, array_keys($seat_reservation[$id_time_detail])) &&
+            count(array_intersect($selected_seats, $seat_reservation[$id_time_detail][$request->id_user]['seat'])) > 0
         ) {
-            // Hủy giữ ghế
             foreach ($selected_seats as $seat) {
                 $index = array_search($seat, $seat_reservation[$request->id_time_detail][$request->id_user]['seat']);
 
-                if (($number_seat == 1 && in_array($string_seat . "2", $seat_reservation[$request->id_time_detail][$request->id_user]['seat'])) || ($number_seat == 12 && in_array($string_seat . "11", $seat_reservation[$request->id_time_detail][$request->id_user]['seat']))) {
+                if (($number_seat == 1 && in_array(
+                    $string_seat . "2",
+                    $seat_reservation[$request->id_time_detail][$request->id_user]['seat']
+                )) || ($number_seat == 12 && in_array($string_seat . "11", $seat_reservation[$request->id_time_detail][$request->id_user]['seat']))) {
                     if ($number_seat == 1) {
                         $checked_seat = "2";
-
                         $key = array_search($string_seat . $checked_seat, $seat_reservation[$request->id_time_detail][$request->id_user]['seat']);
                         unset($seat_reservation[$request->id_time_detail][$request->id_user]['seat'][$key]);
                         unset($seat_reservation[$request->id_time_detail][$request->id_user]['time'][$string_seat . $checked_seat]);
                         unset($seat_reservation[$request->id_time_detail][$request->id_user]['price'][$string_seat . $checked_seat]);
                     } else {
-
                         $checked_seat = "11";
                         $key = array_search($string_seat . $checked_seat, $seat_reservation[$request->id_time_detail][$request->id_user]['seat']);
-
                         unset($seat_reservation[$request->id_time_detail][$request->id_user]['seat'][$key]);
                         unset($seat_reservation[$request->id_time_detail][$request->id_user]['time'][$string_seat . $checked_seat]);
                         unset($seat_reservation[$request->id_time_detail][$request->id_user]['price'][$string_seat . $checked_seat]);
                     }
                 }
                 if ($index !== false) {
-
                     unset($seat_reservation[$request->id_time_detail][$request->id_user]['seat'][$index]);
                     unset($seat_reservation[$request->id_time_detail][$request->id_user]['time'][$seat]);
                     unset($seat_reservation[$request->id_time_detail][$request->id_user]['price'][$seat]);
                 }
             }
-        } elseif (count(array_intersect($selected_seats, Arr::flatten($seat_reservation[$request->id_time_detail]))) === 0) {
-            // Đặt ghế mới chỉ nếu ghế chưa được đặt bởi bất kỳ ai khác
-            $checked_seat = 0;
-
-            if (($number_seat == 2 && !in_array($string_seat . "1", $seat_reservation[$request->id_time_detail][$request->id_user]['seat'])) || ($number_seat == 11 && !in_array($string_seat . "12", $seat_reservation[$request->id_time_detail][$request->id_user]['seat']))) {
-                if ($number_seat == 2) {
-                    $checked_seat = "1";
-                } else {
-                    $checked_seat = "12";
-                }
+        } elseif (count(array_intersect($selected_seats, Arr::flatten($seat_reservation[$id_time_detail]))) === 0) {
+            if ((($number_seat == 2 && !in_array($string_seat . "1", $seat_reservation[$request->id_time_detail][$request->id_user]['seat'])) || ($number_seat == 11 && !in_array($string_seat . "12", $seat_reservation[$request->id_time_detail][$request->id_user]['seat']))) && $check == true) {
                 $message = "khong duoc bo trong ghe " . $string_seat . $checked_seat;
                 return json_encode(['alert' => $message]);
             }
@@ -178,7 +196,6 @@ class QuerryController extends Controller
                 $seat_reservation[$request->id_time_detail][$request->id_user]['price'][$seat] = intval($request->price);
             }
         } else {
-            // Trả về thông báo rằng ghế đã được đặt
             return response()->json(['message' => 'Ghế đã được đặt bởi người dùng khác.'], 403);
         }
 
@@ -186,9 +203,9 @@ class QuerryController extends Controller
         Cache::put('seat_reservation', $seat_reservation, $currentTime->addMinutes(2));
 
         // Trả về dữ liệu ghế và thời gian đã đặt
-
-        return $seat_reservation[$request->id_time_detail];
+        return $seat_reservation[$id_time_detail];
     }
+
     public function getReservedSeatsByTimeDetail($id_time_detail)
     {
         $seat_reservation = Cache::get('seat_reservation', []);
