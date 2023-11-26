@@ -192,13 +192,48 @@
                                                                 đ</strong>
                                                         </td>
                                                     </tr>
-                                                    <tr style="display:none">
+                                                    <tr style="">
                                                         <td align="left" colspan="2" style="padding-bottom:10px">
-                                                            <strong>Tiền combo bỏng nước</strong>
+                                                            <strong>Đồ ăn</strong>
                                                         </td>
                                                         <td style="padding-bottom:10px">:</td>
-                                                        <td align="right" style="padding-bottom:10px"><strong>0
-                                                                đ</strong></td>
+                                                        <td align="right" style="padding-bottom:10px">
+                                                            <strong>
+                                                                @foreach ($food_ticket_detail as $key => $food_detail)
+                                                                    {{$food_detail->quantity}} *  {{$food_detail->name}}
+                                                                    @if ($loop->last)
+                                                                        <hr>
+                                                                    @else
+                                                                        <br>+
+                                                                        <br>
+                                                                    @endif
+                                                                @endforeach
+                                                            </strong>
+                                                        </td>
+                                                        
+                                                    </tr>
+                                                    
+                                                    <tr style="">
+                                                        <td align="left" colspan="2" style="padding-bottom:10px">
+                                                            <strong>Tổng tiền đồ ăn</strong>
+                                                        </td>
+                                                        <td style="padding-bottom:10px">:</td>
+                                                        <td align="right" style="padding-bottom:10px">
+                                                            <strong>
+                                                                @php
+                                                                        $total_price = 0;   
+                                                                @endphp
+                                                                @foreach ($food_ticket_detail as $key => $food_detail)
+                                                                @php
+                                                                $total_price +=   intval($food_detail->price);
+                                                                @endphp
+                                                                    
+                                                                @endforeach
+                                                                {{number_format($total_price, 0, ',', '.') }}
+                                                            đ</strong>
+                                                        </td>
+                                                        
+                                                    </tr>
                                                     </tr>
                                                     <tr>
                                                         <td align="left" colspan="2" style="padding-bottom:10px">
@@ -285,9 +320,9 @@
 
                     </div>
                 </div>
-                <div class="adL">
+                <div>
 
-
+                    <p>Tổng tiền: {{$bookTicketDetails->total_price }} VNĐ</p>
                 </div>
             </div>
         </div>

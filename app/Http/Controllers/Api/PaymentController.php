@@ -140,9 +140,8 @@ class PaymentController extends Controller
             $redirectUrl = "http://127.0.0.1:8000/api/getdata/" . $request->id . '/' . $_GET['amount']; // duong dan
         }
         $orderInfo = "Thanh toán qua momo";
-        $_GET['amount'] = (int)$_GET['amount'];
+        $amount = (int)$request->amount;
 
-        $amount = $_GET['amount'];
 
         $orderId = time() . "";
         // $redirectUrl = "http://localhost:5173/type_payment=" . $type_payment;
@@ -179,7 +178,8 @@ class PaymentController extends Controller
         return ($jsonResult);
     }
 
-    public function getdata(Request $request, string $id, $coin){
+    public function getdata(Request $request, string $id, $coin)
+    {
 
 
         //cap nhat coin nap vao

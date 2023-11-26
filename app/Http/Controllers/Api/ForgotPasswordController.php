@@ -13,24 +13,24 @@ use Illuminate\Support\Facades\Password;
 class ForgotPasswordController extends Controller
 {
     public function sendResetLinkEmail(Request $request)
-{
-    $request->validate(['email' => 'required|email']);
+    {
+        $request->validate(['email' => 'required|email']);
 
-    $user = User::where('email', $request->email)->first();
-    if ($user) {
-        $token = Str::random(8);
-        $user->reset_password_token = $token;
-        $user->reset_password_token_expiry = now()->addHour(); // Thời gian hết hạn token
-        $user->save();
+        $user = User::where('email', $request->email)->first();
+        if ($user) {
+            $token = Str::random(8);
+            $user->reset_password_token = $token;
+            $user->reset_password_token_expiry = now()->addHour(); // Thời gian hết hạn token
+            $user->save();
 
-        // Gửi email chứa token tới người dùng
-        Mail::to($user->email)->send(new ResetPasswordMail($token));
+            // Gửi email chứa token tới người dùng
+            Mail::to($user->email)->send(new ResetPasswordMail($token));
 
-        return response()->json(['message' => 'Token đặt lại mật khẩu đã được gửi đến email của bạn!']);
+            return response()->json(['message' => 'Token đặt lại mật khẩu đã được gửi đến email của bạn!']);
+        }
+
+        return response()->json(['message' => 'Không tìm thấy người dùng với địa chỉ email này.'], 404);
     }
-
-    return response()->json(['message' => 'Không tìm thấy người dùng với địa chỉ email này.'], 404);
-}
 
 
     public function resetPassword(Request $request)
@@ -55,7 +55,7 @@ class ForgotPasswordController extends Controller
             ])->save();
 
             return response()->json(['message' => 'Mật khẩu của bạn đã được đặt lại!']);
-        }   
+        }
 
         return response()->json(['message' => 'Đặt lại mật khẩu thất bại. Token không hợp lệ hoặc đã hết hạn.'], 401);
     }
