@@ -43,8 +43,6 @@ class EmailController extends Controller
             return response()->json(['message' => 'Chưa đặt vé.']);
         }
         $email = User::find($currentUser->id)->pluck('email')->toArray();
-
-
         Mail::to($email)->send(new BookTicketDetailsEmail($latestTicket));
 
         return response()->json(['message' => 'Email đã được gửi thành công']);

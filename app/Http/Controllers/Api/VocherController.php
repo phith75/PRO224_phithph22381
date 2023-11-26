@@ -7,6 +7,7 @@ use App\Models\vocher;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\VocherResource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class VocherController extends Controller
 {
@@ -24,23 +25,28 @@ class VocherController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $validator = Validator::make($request->all(), [
             'code' => [
                 'required',
                 Rule::unique('vochers'),
             ],
-            'start_time' => 'required|date|after:now',
+            'start_time' => 'required|date|after_or_equal:now',
             'end_time' => 'required|date|after:start_time',
             'usage_limit' => 'required|integer|min:0',
             'price_vocher' => 'required|integer|min:0',
             'limit' => 'required|integer|in:1,2',
-
         ]);
-    
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $data = $validator->validated();
+
         $voucher = Vocher::create($data);
-    
         return new VocherResource($voucher);
     }
+
 
     /**
      * Display the specified resource.
@@ -60,11 +66,11 @@ class VocherController extends Controller
     public function update(Request $request, string $id)
     {
         $voucher = Vocher::find($id);
-    
+
         if (!$voucher) {
             return response()->json(['message' => 'Voucher not found'], 404);
         }
-    
+
         $data = $request->validate([
             'code' => [
                 'required',
@@ -73,16 +79,16 @@ class VocherController extends Controller
             'start_time' => 'required|date|after:now',
             'end_time' => 'required|date|after:start_time',
             'usage_limit' => 'required|integer|min:0',
-            'price_vocher' => 'required|integer|min:0', 
+            'price_vocher' => 'required|integer|min:0',
             'limit' => 'required|integer|in:1,2',
 
         ]);
-    
+
         $voucher->update($data);
-    
+
         return new VocherResource($voucher);
     }
-    
+
 
     /**
      * Remove the specified resource from storage.
