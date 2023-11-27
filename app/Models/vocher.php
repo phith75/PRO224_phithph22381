@@ -11,9 +11,9 @@ class Vocher extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = "vochers";
-    protected $fillable = ['code', 'start_time', 'end_time', 'usage_limit', 'price_vocher', 'limit','remaining_limit'];
+    protected $fillable = ['code', 'start_time', 'end_time', 'usage_limit', 'price_vocher', 'limit', 'remaining_limit', 'percent'];
 
-    
+
     protected static function boot()
     {
         parent::boot();

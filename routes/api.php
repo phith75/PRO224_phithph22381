@@ -30,7 +30,7 @@ use App\Http\Controllers\Api\RateStarController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\Api\ForgotPasswordController;
 use App\Http\Controllers\Api\UservoucherController;
-use App\Http\Controllers\Api\VocherController;
+use App\Http\Controllers\Api\VoucherController;
 use App\Http\Controllers\TicketController;
 
 /*u
@@ -119,5 +119,4 @@ Route::resource('filmMaker', FilmMakerController::class);
 Route::resource('movieRoom', MovieRoomController::class);
 Route::resource('rateStar', RateStarController::class);
 Route::resource('film', FilmController::class);
-//api add vocher
-Route::resource('vocher', VocherController::class);
+Route::resource('voucher', VoucherController::class); 
