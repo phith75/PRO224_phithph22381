@@ -87,7 +87,6 @@ Route::get('purchase_history_user/{id}', [QuerryController::class, 'purchase_his
 
 Route::get('QR_book/{id}', [QuerryController::class, 'QR_book_tiket']);
 Route::post('Revenue', [QuerryController::class, 'Revenue']);
-Route::post('Revenue_day', [QuerryController::class, 'Revenue_day']);
 
 
 
@@ -119,4 +118,6 @@ Route::resource('filmMaker', FilmMakerController::class);
 Route::resource('movieRoom', MovieRoomController::class);
 Route::resource('rateStar', RateStarController::class);
 Route::resource('film', FilmController::class);
-Route::resource('voucher', VoucherController::class); 
+Route::resource('voucher', VoucherController::class);
+Route::resource('user', UsersController::class);
+//api add vocher

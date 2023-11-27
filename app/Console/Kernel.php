@@ -45,7 +45,6 @@ class Kernel extends ConsoleKernel
                     if ($secondsDifference >= 60) {
                         unset($data['seat'][$seat]);
                         unset($data['time'][$seat]);
-                        unset($data['price'][$seat]);
                     }
                 }
             }

@@ -49,6 +49,7 @@ class VoucherController extends Controller
         return new VocherResource($voucher);
     }
 
+
     /**
      * Display the specified resource.
      */
