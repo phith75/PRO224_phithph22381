@@ -11,7 +11,7 @@ class PaymentController extends Controller
 {
     //
 
-    public function vnpay_payment()
+    public function vnpay_payment(Request $request)
     {
         $id_code = generateRandomString();
 
@@ -20,8 +20,10 @@ class PaymentController extends Controller
         $startTime = date("YmdHis");
         $expire = date('YmdHis', strtotime('+50 minutes', strtotime($startTime)));
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+        if (isset($_POST['coin'])) {
 
-        $vnp_Returnurl = "http://localhost:5173/payment/id_code=" . $id_code . '/'; // Đường dẫn return sau khi thanh toán
+            $vnp_Returnurl = "http://127.0.0.1:8000/api/getdata_vnpay/" . $request->id . '/' . $_GET['amount']; // Đường dẫn return sau khi thanh toán
+        }
 
         $vnp_TmnCode = "SMWBPLOI"; //Mã website tại VNPAY 
         $vnp_HashSecret = "YCXCIZUKOICUEMGAZGIFLYLLNULOSTTK"; //Chuỗi bí mật
@@ -137,7 +139,7 @@ class PaymentController extends Controller
 
         if (isset($_POST['coin'])) {
 
-            $redirectUrl = "http://127.0.0.1:8000/api/getdata/" . $request->id . '/' . $_GET['amount']; // duong dan
+            $redirectUrl = "http://127.0.0.1:8000/api/getdata_vnpay/" . $request->id . '/' . $_GET['amount']; // duong dan
         }
         $orderInfo = "Thanh toán qua momo";
         $amount = (int)$request->amount;
@@ -178,7 +180,7 @@ class PaymentController extends Controller
         return ($jsonResult);
     }
 
-    public function getdata(Request $request, string $id, $coin)
+    public function getdata(Request $request, string $id)
     {
 
 
@@ -186,11 +188,31 @@ class PaymentController extends Controller
         if (isset($coin)) {
 
             $coin_total = User::find($id);
+            $money = $coin_total->coin + $coin;
             if (!$coin) {
                 return response()->json(['message' => 'giao dịch chưa hoàn thành do lỗi trong lúc nạp coin'], 404);
             }
-            $coin_total->update(['coin' => $coin]);
-            return $coin;
+            $coin_total->update(['coin' => $money]);
+            return $money;
+        }
+        //     ['message' => "success",
+        //       'url'=>'',
+        //       'coin'=>$_GET['amount']]
+    }
+    public function getdata_vnpay(Request $request, string $id, $coin)
+    {
+
+
+        //cap nhat coin nap vao
+        if (isset($coin)) {
+
+            $coin_total = User::find($id);
+            $money = $coin_total->coin + $coin;
+            if (!$coin) {
+                return response()->json(['message' => 'giao dịch chưa hoàn thành do lỗi trong lúc nạp coin'], 404);
+            }
+            $coin_total->update(['coin' => $money]);
+            return $money;
         }
         //     ['message' => "success",
         //       'url'=>'',
