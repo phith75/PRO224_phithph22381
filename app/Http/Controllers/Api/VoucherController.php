@@ -9,7 +9,7 @@ use App\Http\Resources\VocherResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class VocherController extends Controller
+class VoucherController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -35,6 +35,8 @@ class VocherController extends Controller
             'usage_limit' => 'required|integer|min:0',
             'price_vocher' => 'required|integer|min:0',
             'limit' => 'required|integer|in:1,2',
+            'minimum_amount' => 'required|integer|min:0',
+            'percent' => 'required|integer|min:0|max:100',
         ]);
 
         if ($validator->fails()) {
