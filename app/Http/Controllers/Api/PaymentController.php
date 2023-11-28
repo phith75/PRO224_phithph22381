@@ -11,7 +11,7 @@ class PaymentController extends Controller
 {
     //
 
-    public function vnpay_payment()
+    public function vnpay_payment(Request $request)
     {
         $id_code = generateRandomString();
 
@@ -22,15 +22,13 @@ class PaymentController extends Controller
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
 
         $vnp_Returnurl = "http://localhost:5173/payment/id_code=" . $id_code . '/'; // Đường dẫn return sau khi thanh toán
-
         $vnp_TmnCode = "SMWBPLOI"; //Mã website tại VNPAY 
         $vnp_HashSecret = "YCXCIZUKOICUEMGAZGIFLYLLNULOSTTK"; //Chuỗi bí mật
-
         $vnp_TxnRef = $startTime; //Mã đơn hàng. Trong thực tế Merchant cần insert đơn hàng vào DB và gửi mã này sang VNPAY
         $vnp_OrderInfo = 'Thanh toán hóa đơn';
         $vnp_OrderType = 'billpayment';
-        $_GET['amount'] = (int)$_GET['amount'];
-        $vnp_Amount = $_GET['amount'] * 100;
+        $amount = (int)$request->amount;
+        $vnp_Amount = $amount * 100;
         $vnp_Locale = 'vn';
         $vnp_BankCode = '';
         $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
@@ -137,7 +135,7 @@ class PaymentController extends Controller
 
         if (isset($_POST['coin'])) {
 
-            $redirectUrl = "http://127.0.0.1:8000/api/getdata/" . $request->id . '/' . $_GET['amount']; // duong dan
+            $redirectUrl = "http://127.0.0.1:8000/api/getdata/" . $request->id . '/' . $request->amount; // duong dan
         }
         $orderInfo = "Thanh toán qua momo";
         $amount = (int)$request->amount;

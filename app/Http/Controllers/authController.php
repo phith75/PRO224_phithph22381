@@ -9,31 +9,39 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Validator;
 
 class authController extends Controller
 {
     use HasApiTokens;
+
     public function sign_up(Request $request)
     {
-        $data = $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'email' => 'required|string|unique:users,email',
             'password' => 'required|string',
-            'date_of_birth' => 'required',
-            'phone' => 'required',
-            'coin' => 'required|integer',
+            'phone' => 'nullable|string',
+            'image' => 'nullable|string',
+            'date_of_birth' => 'nullable|date',
+            'coin' => 'nullable',
+
         ], [
             'name.required' => 'Nhập name.',
-            'email.required' => 'Nhập eamil.',
+            'email.required' => 'Nhập email.',
             'email.unique' => 'Email đã tồn tại.',
-            'password.required' => 'Nhập mật khẩu.'
+            'password.required' => 'Nhập mật khẩu.',
         ]);
 
-        // Tạo User
+
+
         $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password'])
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'password' => bcrypt($request->input('password')),
+            'phone' => $request->input('phone'),
+            'image' => $request->input('image'),
+            'date_of_birth' => $request->input('date_of_birth'),
         ]);
 
         // Tạo Member
@@ -55,27 +63,31 @@ class authController extends Controller
 
         $res = [
             'user' => $user,
-            'token' => $token
+            'token' => $token,
         ];
+
         return response($res, 201);
     }
 
-
     public function login(Request $request)
     {
-        $data = $request->validate([
+        $validator = Validator::make($request->all(), [
             'email' => 'required|string',
-            'password' => 'required|string'
+            'password' => 'required|string',
         ], [
             'email.required' => 'Nhập email.',
-            'password.required' => 'Nhập password.'
+            'password.required' => 'Nhập mật khẩu.',
         ]);
 
-        $user = User::where('email', $data['email'])->first();
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
+        }
 
-        if (!$user || !Hash::check($data['password'], $user->password)) {
+        $user = User::where('email', $request->input('email'))->first();
+
+        if (!$user || !Hash::check($request->input('password'), $user->password)) {
             return response([
-                'msg' => 'email hoặc mật khẩu không chính xác'
+                'msg' => 'Email hoặc mật khẩu không chính xác',
             ], 401);
         }
 
@@ -83,7 +95,7 @@ class authController extends Controller
 
         $res = [
             'user' => $user,
-            'token' => $token
+            'token' => $token,
         ];
 
         return response($res, 201);

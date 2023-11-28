@@ -120,6 +120,12 @@ Route::resource('filmMaker', FilmMakerController::class);
 Route::resource('movieRoom', MovieRoomController::class);
 Route::resource('rateStar', RateStarController::class);
 Route::resource('film', FilmController::class);
+// <<<<<<< HEAD
+// Route::resource('user', UsersController::class);
+// //api add vocher
+// Route::resource('vocher', VocherController::class);
+// =======
 Route::resource('voucher', VoucherController::class);
 Route::resource('user', UsersController::class);
-//api add voucher
+//api add vocher
+// >>>>>>> 9385ed69e93ec51d51c16b419db8ae70f4207ae1
