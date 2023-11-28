@@ -142,6 +142,7 @@ class QuerryController extends Controller
                     unset($seat_reservation[$request->id_time_detail][$request->id_user]['time'][$seat]);
                 }
             }
+            //   Thêm ghế vào cache
         } elseif (count(array_intersect($selected_seats, Arr::flatten($seat_reservation[$id_time_detail]))) === 0) {
             foreach ($selected_seats as $seat) {
                 $seat_reservation[$request->id_time_detail][$request->id_user]['seat'][] = $seat;
