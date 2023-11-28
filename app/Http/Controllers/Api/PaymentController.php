@@ -70,7 +70,7 @@ class PaymentController extends Controller
             "vnp_OrderType" => $vnp_OrderType,
             "vnp_ReturnUrl" => $vnp_Returnurl,
             "vnp_TxnRef" => $vnp_TxnRef,
-            "vnp_ExpireDate" => $vnp_ExpireDate,
+"vnp_ExpireDate" => $vnp_ExpireDate,
             // "vnp_Bill_Mobile" => $vnp_Bill_Mobile,
             // "vnp_Bill_Email" => $vnp_Bill_Email,
             // "vnp_Bill_FirstName" => $vnp_Bill_FirstName,
@@ -140,16 +140,15 @@ class PaymentController extends Controller
             $redirectUrl = "http://127.0.0.1:8000/api/getdata/" . $request->id . '/' . $_GET['amount']; // duong dan
         }
         $orderInfo = "Thanh toán qua momo";
-        $_GET['amount'] = (int)$_GET['amount'];
+        $amount = (int)$request->amount;
 
-        $amount = $_GET['amount'];
 
         $orderId = time() . "";
         // $redirectUrl = "http://localhost:5173/type_payment=" . $type_payment;
         $ipnUrl = "http://localhost:5173/";
         $extraData = "";
         $requestId = time() . "";
-        $requestType = "captureWallet";
+$requestType = "captureWallet";
         // $extraData = ($_POST["extraData"] ? $_POST["extraData"] : "");
         //before sign HMAC SHA256 signature
         $rawHash = "accessKey=" . $accessKey  . "&amount=" . $amount . "&extraData=" . $extraData . "&ipnUrl=" . $ipnUrl . "&orderId=" . $orderId . "&orderInfo=" . $orderInfo . "&partnerCode=" . $partnerCode . "&redirectUrl=" . $redirectUrl . "&requestId=" . $requestId . "&requestType=" . $requestType;
@@ -179,7 +178,8 @@ class PaymentController extends Controller
         return ($jsonResult);
     }
 
-    public function getdata(Request $request, string $id, $coin){
+    public function getdata(Request $request, string $id, $coin)
+    {
 
 
         //cap nhat coin nap vao

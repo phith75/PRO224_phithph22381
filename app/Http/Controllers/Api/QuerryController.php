@@ -132,9 +132,11 @@ class QuerryController extends Controller
             // Hủy giữ ghế
             foreach ($selected_seats as $seat) {
                 $index = array_search($seat, $seat_reservation[$request->id_time_detail][$request->id_user]['seat']);
+
                 if (($number_seat == 1 && in_array($string_seat . "2", $seat_reservation[$request->id_time_detail][$request->id_user]['seat'])) || ($number_seat == 12 && in_array($string_seat . "11", $seat_reservation[$request->id_time_detail][$request->id_user]['seat']))) {
                     if ($number_seat == 1) {
                         $checked_seat = "2";
+
                         $key = array_search($string_seat . $checked_seat, $seat_reservation[$request->id_time_detail][$request->id_user]['seat']);
                         unset($seat_reservation[$request->id_time_detail][$request->id_user]['seat'][$key]);
                         unset($seat_reservation[$request->id_time_detail][$request->id_user]['time'][$string_seat . $checked_seat]);
@@ -148,11 +150,12 @@ class QuerryController extends Controller
                         unset($seat_reservation[$request->id_time_detail][$request->id_user]['time'][$string_seat . $checked_seat]);
                         unset($seat_reservation[$request->id_time_detail][$request->id_user]['price'][$string_seat . $checked_seat]);
                     }
-                    if ($index !== false) {
-                        unset($seat_reservation[$request->id_time_detail][$request->id_user]['seat'][$index]);
-                        unset($seat_reservation[$request->id_time_detail][$request->id_user]['time'][$seat]);
-                        unset($seat_reservation[$request->id_time_detail][$request->id_user]['price'][$seat]);
-                    }
+                }
+                if ($index !== false) {
+
+                    unset($seat_reservation[$request->id_time_detail][$request->id_user]['seat'][$index]);
+                    unset($seat_reservation[$request->id_time_detail][$request->id_user]['time'][$seat]);
+                    unset($seat_reservation[$request->id_time_detail][$request->id_user]['price'][$seat]);
                 }
             }
         } elseif (count(array_intersect($selected_seats, Arr::flatten($seat_reservation[$request->id_time_detail]))) === 0) {
