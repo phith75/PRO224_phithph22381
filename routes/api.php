@@ -88,6 +88,7 @@ Route::get('purchase_history_user/{id}', [QuerryController::class, 'purchase_his
 
 Route::get('QR_book/{id}', [QuerryController::class, 'QR_book_tiket']);
 Route::post('Revenue', [QuerryController::class, 'Revenue']);
+Route::get('getShiftRevenue/{id}', [QuerryController::class, 'getShiftRevenue']);
 
 
 
@@ -96,7 +97,8 @@ Route::post('Payment', [PaymentController::class, 'vnpay_payment']); // thanh to
 
 Route::post('momo_payment', [PaymentController::class, 'momo_payment']); // thanh toán momo
 
-Route::post('getdata/{id}/{coin}', [PaymentController::class, 'getdata']); // thanh toán momo
+Route::post('getdata/{id}/{coin}', [PaymentController::class, 'getdata']); //napj tien qua momo
+Route::post('getdata_vnpay/{id}/{coin}', [PaymentController::class, 'getdata_vnpay']); // nap tien qua vnpay
 
 
 ///////

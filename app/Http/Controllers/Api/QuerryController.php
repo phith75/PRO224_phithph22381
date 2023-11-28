@@ -203,24 +203,26 @@ class QuerryController extends Controller
         $detail_purchase = DB::table('book_tickets as bt')
             ->join('time_details as td', 'td.id', '=', 'bt.id_time_detail')
             ->join('times', 'times.id', '=', 'td.time_id')
-            ->join('food_ticket_details as ftd', 'ftd.book_ticket_id', '=', 'bt.id')
-            ->join('food', 'food.id', '=', 'ftd.food_id')
+            ->leftJoin(DB::raw('(SELECT book_ticket_id, GROUP_CONCAT(name) as food_names FROM food_ticket_details JOIN food ON food.id = food_ticket_details.food_id GROUP BY book_ticket_id) as food_ticket_details'), function ($join) {
+                $join->on('food_ticket_details.book_ticket_id', '=', 'bt.id');
+            })
             ->join('movie_chairs as mc', 'mc.id', '=', 'bt.id_chair')
             ->join('users', 'users.id', '=', 'bt.user_id')
             ->select(
                 'bt.time',
                 'bt.amount as total_price',
-                'food.name as food_name',
-                'food.image as food_image',
-                'food.price as food_price',
+                'food_ticket_details.food_names',
                 'mc.name as chair_name',
                 'mc.price as chair_price',
                 'users.name as users_name',
-                'users.image as users_image',
                 'users.email as users_email'
             )
             ->where('users.id', $id)
             ->get();
+
+
+
+
         return $detail_purchase;
     }
     public function QR_book_tiket($id)
@@ -270,20 +272,42 @@ class QuerryController extends Controller
     }
     public function Revenue(Request $request)
     {
+        $now = Carbon::now();
         //thống kê từ lúc bắt đầu đến hiện tại và lọc theo tháng
-        $n = date("Y");
-        $year = '';
-        if ($request->date != $n) {
-            $year = $request->date;
+        $y = '';
+        $m  = '';
+
+
+        if ($request->month === null) {
+            $m = date('m');
         } else {
-            $year =  date("Y");
+            $m = $request->month;
+        };
+
+
+        if ($request->year === null) {
+            $y = date('Y');
+        } else {
+            $y = $request->year;
         }
 
+
+
+
+
         $revenue_month_y = DB::table('book_tickets')
-            ->select(DB::raw('DATE_FORMAT(created_at, "%m") as Month'), DB::raw('SUM(amount) as TotalAmount'))
-            ->whereYear('created_at', $year)
-            ->groupBy('Month')
-            ->get();
+            ->when($m, function ($query, $m) {
+                return $query->whereMonth('time', $m);
+            }, function ($query) {
+                return $query->whereMonth('time', date('m'));
+            })
+            ->when($y, function ($query, $y) {
+                return $query->whereYear('time', $y);
+            }, function ($query) {
+                return $query->whereYear('time', date('Y'));
+            })
+            ->sum('amount');
+
         //-------------------------------------------
 
 
@@ -300,7 +324,7 @@ class QuerryController extends Controller
         //thống kê tổng số khách hàng mới của của tháng này
 
 
-        $now = Carbon::now();
+
         $newUsers = User::whereYear('created_at', $now->year)
             ->whereMonth('created_at', $now->month)
             ->count();
@@ -441,6 +465,31 @@ class QuerryController extends Controller
 
         return $data;
     }
+    public function getShiftRevenue($id) //tạm thời
+    {
+        $now = Carbon::now();
+        $shifts = [
+            'Ca 1' => ['06:00:00', '11:59:59'],
+            'Ca 2' => ['12:00:00', '17:59:59'],
+            'Ca 3' => ['18:00:00', '23:59:59'],
+        ];
+
+        $revenues = [];
+
+        foreach ($shifts as $shift => $times) {
+            $revenue = DB::table('book_tickets')
+                ->whereTime('time', '>=', $times[0])
+                ->whereTime('time', '<=', $times[1])
+                ->whereDate('time', $now)
+                ->where('id_cinema_details', $id)
+                ->sum('amount');
+            $revenues[$shift] = $revenue;
+        }
+
+        return $revenues;
+    }
+
+
     public function time_detail_get_by_id($id)
     {
         $CinemaDetailbyId = DB::table('cinemas')
