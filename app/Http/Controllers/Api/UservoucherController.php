@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\UsedVoucher;
-use App\Models\Vocher;
+use App\Models\voucher;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -24,7 +24,7 @@ class UservoucherController extends Controller
         } 
 
         // Kiểm tra xem voucher có tồn tại hay không
-        $voucher = Vocher::where('code', $voucherCode)->first();
+        $voucher = voucher::where('code', $voucherCode)->first();
         if (!$voucher) {
             return response()->json(['message' => 'Voucher không tồn tại.'], 404);
         }
@@ -60,6 +60,6 @@ class UservoucherController extends Controller
 
     public function getUsageCount($voucherCode)
     {
-        return Vocher::where('code', $voucherCode)->count();
+        return voucher::where('code', $voucherCode)->count();
     }
 }

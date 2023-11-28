@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('vochers', function (Blueprint $table) {
+        Schema::create('vouchers', function (Blueprint $table) {
             $table->id();
             $table->string('code');
             $table->timestamp('start_time');
             $table->timestamp('end_time');
             $table->integer('usage_limit');
-            $table->integer('price_vocher');
-
+            $table->integer('price_voucher');
+            $table->string('description');
             $table->integer('remaining_limit')->nullable();
             $table->integer('limit')->comment('1: Value1, 2: Value2');
             $table->integer('percent')->comment('0%->100%');
