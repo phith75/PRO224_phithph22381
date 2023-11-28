@@ -97,7 +97,6 @@ Route::post('Payment', [PaymentController::class, 'vnpay_payment']); // thanh to
 Route::post('momo_payment', [PaymentController::class, 'momo_payment']); // thanh toán momo
 
 Route::get('getdata/{id}/{coin}', [PaymentController::class, 'getdata']); //napj tien qua momo
-Route::get('getdata_vnpay/{id}/{coin}', [PaymentController::class, 'getdata_vnpay']); // nap tien qua vnpay
 
 
 ///////

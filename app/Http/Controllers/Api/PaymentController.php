@@ -20,9 +20,9 @@ class PaymentController extends Controller
         $startTime = date("YmdHis");
         $expire = date('YmdHis', strtotime('+50 minutes', strtotime($startTime)));
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        if (isset($_POST['coin'])) {
+        if (isset($request->coin)) {
 
-            $vnp_Returnurl = "http://127.0.0.1:8000/api/getdata_vnpay/" . $request->id . '/' . $_GET['amount']; // Đường dẫn return sau khi thanh toán
+            $vnp_Returnurl = "http://127.0.0.1:8000/api/getdata/" . $request->id . '/' . $_GET['amount']; // Đường dẫn return sau khi thanh toán
         }
 
         $vnp_TmnCode = "SMWBPLOI"; //Mã website tại VNPAY 
@@ -193,29 +193,7 @@ class PaymentController extends Controller
                 return response()->json(['message' => 'giao dịch chưa hoàn thành do lỗi trong lúc nạp coin'], 404);
             }
             $coin_total->update(['coin' => $money]);
-            return $money;
+            return 'http://127.0.0.1:8000/';
         }
-        //     ['message' => "success",
-        //       'url'=>'',
-        //       'coin'=>$_GET['amount']]
-    }
-    public function getdata_vnpay(Request $request, string $id, $coin)
-    {
-
-
-        //cap nhat coin nap vao
-        if (isset($coin)) {
-
-            $coin_total = User::find($id);
-            $money = $coin_total->coin + $coin;
-            if (!$coin) {
-                return response()->json(['message' => 'giao dịch chưa hoàn thành do lỗi trong lúc nạp coin'], 404);
-            }
-            $coin_total->update(['coin' => $money]);
-            return $money;
-        }
-        //     ['message' => "success",
-        //       'url'=>'',
-        //       'coin'=>$_GET['amount']]
     }
 }
