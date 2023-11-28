@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Validation\Rule;
-use App\Models\vocher;
+use App\Models\voucher;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\VocherResource;
+use App\Http\Resources\voucherResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -16,8 +16,8 @@ class VoucherController extends Controller
      */
     public function index()
     {
-        $vocher = vocher::all();
-        return VocherResource::collection($vocher);
+        $voucher = voucher::all();
+        return voucherResource::collection($voucher);
     }
 
     /**
@@ -28,15 +28,16 @@ class VoucherController extends Controller
         $validator = Validator::make($request->all(), [
             'code' => [
                 'required',
-                Rule::unique('vochers'),
+                Rule::unique('vouchers'),
             ],
             'start_time' => 'required|date|after_or_equal:now',
             'end_time' => 'required|date|after:start_time',
             'usage_limit' => 'required|integer|min:0',
-            'price_vocher' => 'required|integer|min:0',
+            'price_voucher' => 'required|integer|min:0',
             'limit' => 'required|integer|in:1,2',
             'minimum_amount' => 'required|integer|min:0',
             'percent' => 'required|integer|min:0|max:100',
+            'description'=>'required'
         ]);
 
         if ($validator->fails()) {
@@ -45,8 +46,8 @@ class VoucherController extends Controller
 
         $data = $validator->validated();
 
-        $voucher = Vocher::create($data);
-        return new VocherResource($voucher);
+        $voucher = voucher::create($data);
+        return new voucherResource($voucher);
     }
 
 
@@ -55,11 +56,11 @@ class VoucherController extends Controller
      */
     public function show(string $id)
     {
-        $vocher = vocher::find($id);
-        if (!$vocher) {
+        $voucher = voucher::find($id);
+        if (!$voucher) {
             return response()->json(['message' => 'time not found'], 404);
         }
-        return new VocherResource($vocher);
+        return new voucherResource($voucher);
     }
 
     /**
@@ -67,7 +68,7 @@ class VoucherController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $voucher = Vocher::find($id);
+        $voucher = voucher::find($id);
 
         if (!$voucher) {
             return response()->json(['message' => 'Voucher not found'], 404);
@@ -76,19 +77,20 @@ class VoucherController extends Controller
         $data = $request->validate([
             'code' => [
                 'required',
-                Rule::unique('vochers')->ignore($voucher->id),
+                Rule::unique('vouchers')->ignore($voucher->id),
             ],
             'start_time' => 'required|date|after:now',
             'end_time' => 'required|date|after:start_time',
             'usage_limit' => 'required|integer|min:0',
-            'price_vocher' => 'required|integer|min:0',
+            'price_voucher' => 'required|integer|min:0',
             'limit' => 'required|integer|in:1,2',
+            'description'=>'required'
 
         ]);
 
         $voucher->update($data);
 
-        return new VocherResource($voucher);
+        return new voucherResource($voucher);
     }
 
 
@@ -97,11 +99,11 @@ class VoucherController extends Controller
      */
     public function destroy(string $id)
     {
-        $vocher = vocher::find($id);
-        if (!$vocher) {
-            return response()->json(['message' => 'vocher not found'], 404);
+        $voucher = voucher::find($id);
+        if (!$voucher) {
+            return response()->json(['message' => 'voucher not found'], 404);
         }
-        $vocher->delete();
+        $voucher->delete();
         return response()->json(['message' => "delete success"], 200);
     }
 }
