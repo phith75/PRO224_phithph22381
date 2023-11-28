@@ -10,27 +10,32 @@ use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Socialite\Facades\Socialite;
 
-class authController extends Controller{
+class authController extends Controller
+{
     use HasApiTokens;
-    public function sign_up(Request $request) {
+    public function sign_up(Request $request)
+    {
         $data = $request->validate([
             'name' => 'required|string',
             'email' => 'required|string|unique:users,email',
-            'password' => 'required|string'
+            'password' => 'required|string',
+            'date_of_birth' => 'required',
+            'phone' => 'required',
+            'coin' => 'required|integer',
         ], [
             'name.required' => 'Nhập name.',
             'email.required' => 'Nhập eamil.',
             'email.unique' => 'Email đã tồn tại.',
             'password.required' => 'Nhập mật khẩu.'
         ]);
-    
+
         // Tạo User
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => bcrypt($data['password'])
         ]);
-    
+
         // Tạo Member
         $member = Member::create([
             'id_card' => sprintf('%08d', $user->id),
@@ -42,21 +47,22 @@ class authController extends Controller{
             'usable_points' => 0,
             'id_user' => $user->id,
         ]);
-    
+
         // Gán member_id cho User
-        
-    
+
+
         $token = $user->createToken('apiToken')->plainTextToken;
-    
+
         $res = [
             'user' => $user,
             'token' => $token
         ];
         return response($res, 201);
     }
-    
 
-    public function login(Request $request){
+
+    public function login(Request $request)
+    {
         $data = $request->validate([
             'email' => 'required|string',
             'password' => 'required|string'
@@ -84,7 +90,8 @@ class authController extends Controller{
     }
 
 
-    public function logout(Request $request){
+    public function logout(Request $request)
+    {
         try {
             $user = auth()->user();
             $user->tokens->each->delete();
@@ -104,35 +111,34 @@ class authController extends Controller{
     }
 
     public function handleGoogleCallback()
-{
-    try {
-        $user = Socialite::driver('google')->user();
+    {
+        try {
+            $user = Socialite::driver('google')->user();
 
-        $existingUser = User::where('email', $user->email)->first();
+            $existingUser = User::where('email', $user->email)->first();
 
-        if ($existingUser) {
-            Auth::login($existingUser);
-        } else {
-            $newUser = User::create([
-                'name' => $user->name,
-                'email' => $user->email,
-                'password' => bcrypt('randompassword')
+            if ($existingUser) {
+                Auth::login($existingUser);
+            } else {
+                $newUser = User::create([
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'password' => bcrypt('randompassword')
+                ]);
+
+                Auth::login($newUser);
+            }
+
+            $token = $newUser->createToken('apiToken')->plainTextToken;
+
+            return response()->json([
+                'user' => $newUser,
+                'token' => $token,
             ]);
-
-            Auth::login($newUser);
+        } catch (\Exception $e) {
+            return response([
+                'error' => 'Đã xảy ra lỗi khi đăng nhập bằng Google'
+            ], 500);
         }
-
-        $token = $newUser->createToken('apiToken')->plainTextToken;
-
-        return response()->json([
-            'user' => $newUser,
-            'token' => $token,
-        ]);
-    } catch (\Exception $e) {
-        return response([
-            'error' => 'Đã xảy ra lỗi khi đăng nhập bằng Google'
-        ], 500);
     }
-}
-
 }
