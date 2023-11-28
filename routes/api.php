@@ -59,7 +59,6 @@ Route::post('/login', [AuthController::class, 'login']);
 // <a href="{{ url('/login/google') }}">Đăng nhập bằng Google</a> dành cho mấy ông fe
 
 Route::get('print-ticket/{ticketId}', [TicketController::class, 'printTicket']);
-
 //////
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
@@ -78,6 +77,8 @@ Route::get('check_time_detail_by_film_id/{id_cinema}', [QuerryController::class,
 Route::get('chair_status/{id}', [QuerryController::class, 'chair_status']); // Lấy thông tin ghế đã đặt
 Route::get('chair_count', [QuerryController::class, 'chair_count']);   // Lấy số ghế đã đặt (để tính còn bao nhiêu ghế trống)  
 Route::get('categorie_detail_name', [QuerryController::class, 'categorie_detail_name']); // Lấy danh mục của phim (ví dụ: Hành động, Kinh điển)
+Route::get('chair_by_time_detail/{id}', [QuerryController::class, 'chair_by_time_detail']);
+
 
 Route::post('cache_seat', [QuerryController::class, 'cache_seat']); // Thêm, xóa giữ ghế
 Route::get('getReservedSeatsByTimeDetail/{id_time_detail}', [QuerryController::class, 'getReservedSeatsByTimeDetail']); // check xem có bao nhiêu ghế đang được giữ
@@ -91,11 +92,11 @@ Route::post('Revenue', [QuerryController::class, 'Revenue']);
 
 
 ///////
-Route::get('Payment', [PaymentController::class, 'vnpay_payment']); // thanh toán VNPAY
+Route::post('Payment', [PaymentController::class, 'vnpay_payment']); // thanh toán VNPAY
 
 Route::post('momo_payment', [PaymentController::class, 'momo_payment']); // thanh toán momo
 
-Route::get('getdata/{id}/{coin}', [PaymentController::class, 'getdata']); // thanh toán momo
+Route::post('getdata/{id}/{coin}', [PaymentController::class, 'getdata']); // thanh toán momo
 
 
 ///////
