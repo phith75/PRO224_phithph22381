@@ -67,7 +67,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/send-book-ticket-details-email', [EmailController::class, 'sendBookTicketDetailsEmail']); // router cho vào sau khi thanh toán
     Route::post('/sendEmail', [EmailController::class, 'sendEmail']); //không cần qtam cái này đừng ai xóa  
-    //check khi nhập vocher
+    //check khi nhập voucher
     Route::post('/usevoucher', [UservoucherController::class, 'useVoucher']);
 });
 //////
@@ -98,7 +98,6 @@ Route::post('Payment', [PaymentController::class, 'vnpay_payment']); // thanh to
 Route::post('momo_payment', [PaymentController::class, 'momo_payment']); // thanh toán momo
 
 Route::post('getdata/{id}/{coin}', [PaymentController::class, 'getdata']); //napj tien qua momo
-Route::post('getdata_vnpay/{id}/{coin}', [PaymentController::class, 'getdata_vnpay']); // nap tien qua vnpay
 
 
 ///////

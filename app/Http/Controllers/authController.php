@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\member;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -42,9 +43,24 @@ class authController extends Controller
             'image' => $request->input('image'),
             'date_of_birth' => $request->input('date_of_birth'),
         ]);
-
+    
+        // Tạo Member
+        $member = Member::create([
+            'id_card' => sprintf('%08d', $user->id),
+            'card_class' => 1,
+            'activation_date' => now(),
+            'total_spending' => 0,
+            'accumulated_points' => 0,
+            'points_used' => 0,
+            'usable_points' => 0,
+            'id_user' => $user->id,
+        ]);
+    
+        // Gán member_id cho User
+        
+    
         $token = $user->createToken('apiToken')->plainTextToken;
-
+    
         $res = [
             'user' => $user,
             'token' => $token,
@@ -52,6 +68,7 @@ class authController extends Controller
 
         return response($res, 201);
     }
+    
 
     public function login(Request $request)
     {
