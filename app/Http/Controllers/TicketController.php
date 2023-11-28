@@ -11,6 +11,7 @@ class TicketController extends Controller
 {
     public function printTicket($id)
     {
+        $ticket = DB::table('book_tickets')->where('id_code', $id)->update(["status" => 1]);
         // Logic để lấy thông tin vé từ $ticketId
         $book_ticket_detail = DB::table('book_tickets as bt')
             ->join('time_details as td', 'td.id', '=', 'bt.id_time_detail')
@@ -49,8 +50,23 @@ class TicketController extends Controller
         //     'name' => 'John Doe', // Thông tin khác về vé
         //     // ...
         // ];
+        $arr = [];
+        $food_ticket_detail = DB::table('food_ticket_details as ftk')
+            ->join('book_tickets as btk', 'ftk.book_ticket_id', '=', 'btk.id')
+            ->join('food as f', 'ftk.food_id', '=', 'f.id')
+            ->select(
+                'f.name',
+                'ftk.quantity',
+                'f.price'
+            )->where('btk.id_code', $id)
+            ->get();
 
-        $pdf = PDF::loadView('tickets.print', compact('book_ticket_detail', 'array_chair'));
+        foreach ($food_ticket_detail as $value) {
+
+            $arr[] = $value;
+        }
+        $food_ticket_detail = $arr;
+        $pdf = PDF::loadView('tickets.print', compact('book_ticket_detail', 'array_chair', 'food_ticket_detail'));
 
         // Gửi PDF cho trình duyệt để hiển thị hoặc tải xuống
         return $pdf->stream('ticket.pdf');

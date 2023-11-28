@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Food_ticket_detail;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -64,15 +65,26 @@ class QuerryController extends Controller
 
         return $movieRooms;
     }
-    public function chair_status($id)
+    public function chair_by_time_detail($id)
     {
+
+
         $chairs = DB::table('movie_chairs as mc')
-            ->select('mc.name')
+            ->selectRaw('GROUP_CONCAT(name) as name')
             ->where('mc.id_time_detail', $id)
-            ->get();
-        $chair_array = $chairs->pluck('name')->toArray();
-        return $chair_array;
+            ->first(); // Use first() instead of get()
+        // Check if $chairs is not null
+        if ($chairs) {
+            // Split the concatenated string into an array
+            $chair_array = explode(',', $chairs->name);
+            // If you want to return it as a JSON response
+            return $chair_array;
+        }
+        return [];
+        // Handle the case where $chairs is null, e.g., no data found
+
     }
+
     public function chair_count()
     {
         $sql = DB::table('time_details')
@@ -105,33 +117,27 @@ class QuerryController extends Controller
         return $arr_list_chair_count;
     }
 
+
     public function cache_seat(Request $request)
     {
+        $id_time_detail = $request->id_time_detail;
+
         $currentTime = Carbon::now();
         $seat_reservation = Cache::get('seat_reservation', []);
-        preg_match('/([A-Za-z]+)([0-9]+)/', $request->selected_seats, $matches);
-        $string_seat = $matches[1];
-        $number_seat = intval($matches[2]);
         // Kiểm tra xem đã có thông tin cho id_user và id_time_detail chưa
-        if (!isset($seat_reservation[$request->id_time_detail][$request->id_user])) {
-            $seat_reservation[$request->id_time_detail][$request->id_user] = [
-                'seat' => [],
-                'time' => [],
-                'price' => [],
-
-            ];
-        }
-        // Kiểm tra xem ghế đã được đặt chưa
+        $seat_reservation[$id_time_detail][$request->id_user] ??= [
+            'seat' => [],
+            'time' => [],
+        ];
         $selected_seats = explode(',', $request->selected_seats);
-
-        // Kiểm tra xem có sự trùng lặp về id_user và số ghế không
+        // Kiểm tra ghế đã được đặt
         if (
-            in_array($request->id_user, array_keys($seat_reservation[$request->id_time_detail])) &&
-            count(array_intersect($selected_seats, $seat_reservation[$request->id_time_detail][$request->id_user]['seat'])) > 0
+            in_array($request->id_user, array_keys($seat_reservation[$id_time_detail])) &&
+            count(array_intersect($selected_seats, $seat_reservation[$id_time_detail][$request->id_user]['seat'])) > 0
         ) {
-            // Hủy giữ ghế
             foreach ($selected_seats as $seat) {
                 $index = array_search($seat, $seat_reservation[$request->id_time_detail][$request->id_user]['seat']);
+// <<<<<<< HEAD
 
                 if (($number_seat == 1 && in_array($string_seat . "2", $seat_reservation[$request->id_time_detail][$request->id_user]['seat'])) || ($number_seat == 12 && in_array($string_seat . "11", $seat_reservation[$request->id_time_detail][$request->id_user]['seat']))) {
                     if ($number_seat == 1) {
@@ -156,40 +162,26 @@ class QuerryController extends Controller
                     unset($seat_reservation[$request->id_time_detail][$request->id_user]['seat'][$index]);
                     unset($seat_reservation[$request->id_time_detail][$request->id_user]['time'][$seat]);
                     unset($seat_reservation[$request->id_time_detail][$request->id_user]['price'][$seat]);
+// =======
+//                 if ($index !== false) {
+//                     unset($seat_reservation[$request->id_time_detail][$request->id_user]['seat'][$index]);
+//                     unset($seat_reservation[$request->id_time_detail][$request->id_user]['time'][$seat]);
+// >>>>>>> 9385ed69e93ec51d51c16b419db8ae70f4207ae1
                 }
             }
-        } elseif (count(array_intersect($selected_seats, Arr::flatten($seat_reservation[$request->id_time_detail]))) === 0) {
-            // Đặt ghế mới chỉ nếu ghế chưa được đặt bởi bất kỳ ai khác
-            $checked_seat = 0;
-
-            if (($number_seat == 2 && !in_array($string_seat . "1", $seat_reservation[$request->id_time_detail][$request->id_user]['seat'])) || ($number_seat == 11 && !in_array($string_seat . "12", $seat_reservation[$request->id_time_detail][$request->id_user]['seat']))) {
-                if ($number_seat == 2) {
-                    $checked_seat = "1";
-                } else {
-                    $checked_seat = "12";
-                }
-                $message = "khong duoc bo trong ghe " . $string_seat . $checked_seat;
-                return json_encode(['alert' => $message]);
-            }
-
-
+        } elseif (count(array_intersect($selected_seats, Arr::flatten($seat_reservation[$id_time_detail]))) === 0) {
             foreach ($selected_seats as $seat) {
                 $seat_reservation[$request->id_time_detail][$request->id_user]['seat'][] = $seat;
                 $seat_reservation[$request->id_time_detail][$request->id_user]['time'][$seat] = $currentTime->addMinutes(2);
-                $seat_reservation[$request->id_time_detail][$request->id_user]['price'][$seat] = intval($request->price);
             }
-        } else {
-            // Trả về thông báo rằng ghế đã được đặt
-            return response()->json(['message' => 'Ghế đã được đặt bởi người dùng khác.'], 403);
         }
-
         // Đặt lại dữ liệu vào Cache
         Cache::put('seat_reservation', $seat_reservation, $currentTime->addMinutes(2));
 
         // Trả về dữ liệu ghế và thời gian đã đặt
-
-        return $seat_reservation[$request->id_time_detail];
+        return $seat_reservation[$id_time_detail];
     }
+
     public function getReservedSeatsByTimeDetail($id_time_detail)
     {
         $seat_reservation = Cache::get('seat_reservation', []);
@@ -238,24 +230,26 @@ class QuerryController extends Controller
         $detail_purchase = DB::table('book_tickets as bt')
             ->join('time_details as td', 'td.id', '=', 'bt.id_time_detail')
             ->join('times', 'times.id', '=', 'td.time_id')
-            ->join('food_ticket_details as ftd', 'ftd.book_ticket_id', '=', 'bt.id')
-            ->join('food', 'food.id', '=', 'ftd.food_id')
+            ->leftJoin(DB::raw('(SELECT book_ticket_id, GROUP_CONCAT(name) as food_names FROM food_ticket_details JOIN food ON food.id = food_ticket_details.food_id GROUP BY book_ticket_id) as food_ticket_details'), function ($join) {
+                $join->on('food_ticket_details.book_ticket_id', '=', 'bt.id');
+            })
             ->join('movie_chairs as mc', 'mc.id', '=', 'bt.id_chair')
             ->join('users', 'users.id', '=', 'bt.user_id')
             ->select(
                 'bt.time',
                 'bt.amount as total_price',
-                'food.name as food_name',
-                'food.image as food_image',
-                'food.price as food_price',
+                'food_ticket_details.food_names',
                 'mc.name as chair_name',
                 'mc.price as chair_price',
                 'users.name as users_name',
-                'users.image as users_image',
                 'users.email as users_email'
             )
             ->where('users.id', $id)
             ->get();
+
+
+
+
         return $detail_purchase;
     }
     public function QR_book_tiket($id)
@@ -305,20 +299,42 @@ class QuerryController extends Controller
     }
     public function Revenue(Request $request)
     {
+        $now = Carbon::now();
         //thống kê từ lúc bắt đầu đến hiện tại và lọc theo tháng
-        $n = date("Y");
-        $year = '';
-        if ($request->date != $n) {
-            $year = $request->date;
+        $y = '';
+        $m  = '';
+
+
+        if ($request->month === null) {
+            $m = date('m');
         } else {
-            $year =  date("Y");
+            $m = $request->month;
+        };
+
+
+        if ($request->year === null) {
+            $y = date('Y');
+        } else {
+            $y = $request->year;
         }
 
+
+
+
+
         $revenue_month_y = DB::table('book_tickets')
-            ->select(DB::raw('DATE_FORMAT(created_at, "%m") as Month'), DB::raw('SUM(amount) as TotalAmount'))
-            ->whereYear('created_at', $year)
-            ->groupBy('Month')
-            ->get();
+            ->when($m, function ($query, $m) {
+                return $query->whereMonth('time', $m);
+            }, function ($query) {
+                return $query->whereMonth('time', date('m'));
+            })
+            ->when($y, function ($query, $y) {
+                return $query->whereYear('time', $y);
+            }, function ($query) {
+                return $query->whereYear('time', date('Y'));
+            })
+            ->sum('amount');
+
         //-------------------------------------------
 
 
@@ -335,7 +351,7 @@ class QuerryController extends Controller
         //thống kê tổng số khách hàng mới của của tháng này
 
 
-        $now = Carbon::now();
+
         $newUsers = User::whereYear('created_at', $now->year)
             ->whereMonth('created_at', $now->month)
             ->count();
@@ -366,14 +382,23 @@ class QuerryController extends Controller
 
         //----------------------------------------------------------------
         //lấy ra tổng số vé bán ra trong tháng theo từng phim
-        $total_book = DB::table('book_tickets')
+        $book_total_mon = DB::table('book_tickets')
             ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
             ->join('films', 'time_details.film_id', '=', 'films.id')
             ->select('films.name', DB::raw('COUNT(book_tickets.id) as TotalTickets'))
-            ->whereYear('time_details.date', $now->year)
-            ->whereMonth('time_details.date', $now->month)
+            ->whereYear('book_tickets.time', $now->year)
+            ->whereMonth('book_tickets.time', $now->month)
             ->groupBy('films.name')
             ->get();
+
+
+        //----------------------------------------------------------------
+        //lấy ra tống doanh thu từ đồ ăn theo tháng
+        $totalPricefoodmon = DB::table('food_ticket_details')
+            ->join('food', 'food_ticket_details.food_id', '=', 'food.id')
+            ->whereMonth('food_ticket_details.created_at', '=', $now->month)
+            ->whereYear('food_ticket_details.created_at', '=', $now->year)
+            ->sum(DB::raw('food.price'));
         //----------------------------------------------------------------
         // lấy ra so sánh doanh thu tháng này với tháng trước
 
@@ -426,14 +451,19 @@ class QuerryController extends Controller
         //----------------------------------------------------------------
         //lấy ra tổng số vé bán ra trong ngày theo từng phim 
 
-        $book_total = DB::table('book_tickets')
+        $book_total_day = DB::table('book_tickets')
             ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
             ->join('films', 'time_details.film_id', '=', 'films.id')
             ->select('films.name', DB::raw('COUNT(book_tickets.id) as TotalTickets'))
-            ->whereDate('time_details.date', $now)
+            ->whereDate('book_tickets.time', $now)
             ->groupBy('films.name')
             ->get();
 
+
+        $totalPricefoodday = DB::table('food_ticket_details')
+            ->join('food', 'food_ticket_details.food_id', '=', 'food.id')
+            ->whereDate('food_ticket_details.created_at', '=', $now)
+            ->sum(DB::raw('food.price'));
 
 
 
@@ -442,7 +472,8 @@ class QuerryController extends Controller
                 "revenueToday" => $revenueToday,
                 'revenue_film_day' => $revenue_film,
                 'newUsers' => $newUsers,
-                'book_total' => $book_total,
+                'book_total_day' => $book_total_day,
+                'totalPricefoodday' => $totalPricefoodday,
             ],
             "revenue_month" => [
                 'revenue_month_y' => $revenue_month_y,
@@ -450,8 +481,9 @@ class QuerryController extends Controller
                 'newUsers' => $newUsers,
                 'revenue_film' => $revenue_film,
                 'user_friendly' => $user_friendly,
-                'total_book' => $total_book,
-                'comparison' => $comparison
+                'book_total_mon' => $book_total_mon,
+                'comparison' => $comparison,
+                'totalPricefoodmon' => $totalPricefoodmon
             ]
 
 
@@ -460,6 +492,31 @@ class QuerryController extends Controller
 
         return $data;
     }
+    public function getShiftRevenue($id) //tạm thời
+    {
+        $now = Carbon::now();
+        $shifts = [
+            'Ca 1' => ['06:00:00', '11:59:59'],
+            'Ca 2' => ['12:00:00', '17:59:59'],
+            'Ca 3' => ['18:00:00', '23:59:59'],
+        ];
+
+        $revenues = [];
+
+        foreach ($shifts as $shift => $times) {
+            $revenue = DB::table('book_tickets')
+                ->whereTime('time', '>=', $times[0])
+                ->whereTime('time', '<=', $times[1])
+                ->whereDate('time', $now)
+                ->where('id_cinema_details', $id)
+                ->sum('amount');
+            $revenues[$shift] = $revenue;
+        }
+
+        return $revenues;
+    }
+
+
     public function time_detail_get_by_id($id)
     {
         $CinemaDetailbyId = DB::table('cinemas')

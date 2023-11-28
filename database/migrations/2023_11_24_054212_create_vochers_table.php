@@ -18,8 +18,11 @@ return new class extends Migration
             $table->timestamp('end_time');
             $table->integer('usage_limit');
             $table->integer('price_vocher');
+
             $table->integer('remaining_limit')->nullable();
             $table->integer('limit')->comment('1: Value1, 2: Value2');
+            $table->integer('percent')->comment('0%->100%');
+            $table->integer('minimum_amount');
             $table->timestamps();
             $table->softDeletes();
         });

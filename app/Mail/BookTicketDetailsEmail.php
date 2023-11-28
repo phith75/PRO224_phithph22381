@@ -25,9 +25,23 @@ class BookTicketDetailsEmail extends Mailable
     public function build()
     {
         $currentUser = Auth::user();
+        $arr = [];
         $latestTicket = Book_ticket::where('user_id', $currentUser->id)
             ->latest('created_at')
             ->first();
+        $food_ticket_detail = DB::table('food_ticket_details as ftk')
+            ->join('book_tickets as btk', 'ftk.book_ticket_id', '=', 'btk.id')
+            ->join('food as f', 'ftk.food_id', '=', 'f.id')
+            ->select(
+                'f.name',
+                'ftk.quantity',
+                'f.price'
+            )->where('btk.id_code', $currentUser->id)
+            ->get();
+        foreach ($food_ticket_detail as $value) {
+
+            $arr[] = $value;
+        }
         $book_ticket_detail = DB::table('book_tickets as bt')
             ->join('time_details as td', 'td.id', '=', 'bt.id_time_detail')
             ->join('times', 'times.id', '=', 'td.time_id')
@@ -59,19 +73,11 @@ class BookTicketDetailsEmail extends Mailable
             )
             ->where('bt.id_code', '=', $latestTicket->id_code)
             ->get()->first();
-
-        $book_ticket_detail_arr = [];
-        // dd($book_ticket_detail);
-        // foreach ($book_ticket_detail as $bt => $value) {
-        //     $book_ticket_detail_arr[$bt] = $value;
-        // }
-
-
         if (!$latestTicket) {
             return $this->subject('Thông tin đặt vé xem film - mã thanh toán: Chưa có vé')
                 ->markdown('emails.book_ticket_details', ['bookTicketDetails' => null]);
         }
-        return $this->subject('Thông tin đặt vé xem film - mã thanh toán: ' . $latestTicket->id_code)
-            ->markdown('emails.book_ticket_details', ['bookTicketDetails' => [$book_ticket_detail]]);
+        return $this->subject('Thông tin đặt vé xem film - mã thanh toán: ...' . substr($latestTicket->id_code, -7))
+            ->markdown('emails.book_ticket_details', ['bookTicketDetails' => [$book_ticket_detail], 'food_ticket_detail' => $arr]);
     }
 }
