@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\User;
@@ -45,12 +47,21 @@ class UsersController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $User = User::find($id)->first();
+        $User = User::find($id);
         if (!$User) {
             return response()->json(['message' => 'User not found'], 404);
         }
-        $User->update($request->except('_token'));
 
+        if (isset($request->old_password) && !Hash::check($request->input('old_password'), $User->password)) {
+            return response([
+                'msg' => 'Mật khẩu không chính xác',
+            ], 401);
+        }
+        if (isset($request->old_password) && isset($request->new_password)) {
+            $User->forceFill([
+                'password' => bcrypt($request->new_password),
+            ])->save();
+        }
         return new UserResource($User);
     }
 
