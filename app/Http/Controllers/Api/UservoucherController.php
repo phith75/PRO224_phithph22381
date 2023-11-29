@@ -16,12 +16,12 @@ class UservoucherController extends Controller
 
         // Kiểm tra xem voucher đã được sử dụng chưa
         $usedVoucher = UsedVoucher::where('user_id', $user->id)
-                                  ->where('voucher_code', $voucherCode)
-                                  ->first();
+            ->where('voucher_code', $voucherCode)
+            ->first();
 
         if ($usedVoucher) {
             return response()->json(['message' => 'Voucher đã được sử dụng.'], 403);
-        } 
+        }
 
         // Kiểm tra xem voucher có tồn tại hay không
         $voucher = voucher::where('code', $voucherCode)->first();
@@ -39,11 +39,11 @@ class UservoucherController extends Controller
             return response()->json(['message' => 'Chưa đến thời gian sử dụng voucher.'], 403);
         }
 
-            // Kiểm tra số lượng sử dụng voucher
-            if ($voucher->remaining_limit == 0 && $this->getUsageCount($voucher->code) >= $voucher->remaining_limit) {
-                return response()->json(['message' => 'Số lượng người sử dụng voucher đã đạt tới giới hạn.'], 403);
-            }
-            
+        // Kiểm tra số lượng sử dụng voucher
+        if ($voucher->remaining_limit == 0 && $this->getUsageCount($voucher->code) >= $voucher->remaining_limit) {
+            return response()->json(['message' => 'Số lượng người sử dụng voucher đã đạt tới giới hạn.'], 403);
+        }
+
 
         // Sau khi sử dụng voucher, ghi lại vào bảng used_vouchers
         UsedVoucher::create([
