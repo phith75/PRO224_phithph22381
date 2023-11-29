@@ -200,6 +200,7 @@ class QuerryController extends Controller
             ->select(
                 'bt.created_at as time',
                 'fl.name',
+                'fl.image',
                 'bt.id_code',
                 'bt.status',
                 'mv.name as movie_room_name',
