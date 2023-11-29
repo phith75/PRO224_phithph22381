@@ -564,4 +564,11 @@ class QuerryController extends Controller
 
         return $time_detail_by_film_id;
     }
+    public function get_used_vouchers_by_id_user($id)
+    {
+        $data = DB::table('used_vouchers as uv')
+            ->where('user_id', $id)
+            ->select('uv.*')->get();
+        return $data;
+    }
 }
