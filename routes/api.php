@@ -83,8 +83,8 @@ Route::get('chair_by_time_detail/{id}', [QuerryController::class, 'chair_by_time
 Route::post('cache_seat', [QuerryController::class, 'cache_seat']); // Thêm, xóa giữ ghế
 Route::get('getReservedSeatsByTimeDetail/{id_time_detail}', [QuerryController::class, 'getReservedSeatsByTimeDetail']); // check xem có bao nhiêu ghế đang được giữ
 
-Route::get('purchase_history_ad', [QuerryController::class, 'purchase_history_ad']); //
-Route::get('purchase_history_user/{id}', [QuerryController::class, 'purchase_history_user']); //
+Route::get('purchase_history_ad', [QuerryController::class, 'purchase_history_ad']); // chi tiết vé admin
+Route::get('purchase_history_user/{id}', [QuerryController::class, 'purchase_history_user']); // chi tiết vé user
 
 Route::get('QR_book/{id}', [QuerryController::class, 'QR_book_tiket']);
 Route::post('Revenue', [QuerryController::class, 'Revenue']);

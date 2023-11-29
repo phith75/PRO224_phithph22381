@@ -102,10 +102,10 @@ class QuerryController extends Controller
                 $num = $rowResult->number;
             }
 
-            $check_length = 70 - (strlen($num) - strlen(str_replace(",", "", $num)) + 1);
+            $check_length = 144 - (strlen($num) - strlen(str_replace(",", "", $num)) + 1);
 
             if ($num == null) {
-                $check_length = 70;
+                $check_length = 144;
             }
 
             $arr_list_chair_count[] = [
@@ -162,42 +162,56 @@ class QuerryController extends Controller
         $reservedSeats = [];
 
         if (isset($seat_reservation[$id_time_detail])) {
-            foreach ($seat_reservation[$id_time_detail] as $userData) {
+            foreach ($seat_reservation[$id_time_detail] as $id_user => $userData) {
                 // Lấy danh sách ghế được giữ cho mỗi người dùng
                 $userSeats = $userData['seat'];
-                // Thêm ghế vào danh sách ghế đã được giữ
-                $reservedSeats = array_merge($reservedSeats, $userSeats);
+
+                // Thêm danh sách ghế vào danh sách ghế đã được giữ
+                foreach ($userSeats as $seat) {
+                    $reservedSeats[] = [
+                        'seat' => $seat,
+                        'id_user' => $id_user
+                    ];
+                }
             }
         }
 
-        // Lọc và loại bỏ các giá trị trùng lặp (nếu có)
-        $reservedSeats = array_unique($reservedSeats);
-
         return $reservedSeats;
     }
+
+
     public function purchase_history_ad()
     {
-        $detail_purchase = DB::table('book_tickets as bt')
+        $book_ticket_detail = DB::table('book_tickets as bt')
             ->join('time_details as td', 'td.id', '=', 'bt.id_time_detail')
-            ->join('times', 'times.id', '=', 'td.time_id')
-            ->join('food_ticket_details as ftd', 'ftd.book_ticket_id', '=', 'bt.id')
-            ->join('food', 'food.id', '=', 'ftd.food_id')
             ->join('movie_chairs as mc', 'mc.id', '=', 'bt.id_chair')
+            ->join('times', 'times.id', '=', 'td.time_id')
             ->join('users', 'users.id', '=', 'bt.user_id')
+            ->join('films as fl', 'fl.id', '=', 'td.film_id')
+            ->join('times as tm', 'tm.id', '=', 'td.time_id')
+            ->join('movie_rooms as mv', 'mv.id', '=', 'td.room_id')
+            ->join('cinemas as cms', 'cms.id', '=', 'mv.id_cinema')
+            ->leftJoin(DB::raw('(SELECT book_ticket_id, GROUP_CONCAT(name) as food_names FROM food_ticket_details JOIN food ON food.id = food_ticket_details.food_id GROUP BY book_ticket_id) as food_ticket_details'), function ($join) {
+                $join->on('food_ticket_details.book_ticket_id', '=', 'bt.id');
+            })
             ->select(
-                'bt.time',
+                'bt.created_at as time',
+                'fl.name',
+                'bt.id_code',
+                'mv.name as movie_room_name',
+                'cms.name as name_cinema',
+                'cms.address',
+                'td.date',
+                'tm.time as time_suatchieu',
                 'bt.amount as total_price',
-                'food.name as food_name',
-                'food.image as food_image',
-                'food.price as food_price',
+                'food_ticket_details.food_names',
                 'mc.name as chair_name',
                 'mc.price as chair_price',
                 'users.name as users_name',
-                'users.image as users_image',
                 'users.email as users_email'
             )
             ->get();
-        return $detail_purchase;
+        return $book_ticket_detail;
     }
     public function purchase_history_user($id)
     {
@@ -237,7 +251,8 @@ class QuerryController extends Controller
                 'f.price'
             )->where('btk.id_code', $id)
             ->get();
-
+        $arr = [];
+        $food_ticket_detail = $food_ticket_detail ? $food_ticket_detail : [];
         foreach ($food_ticket_detail as $value) {
 
             $arr[] = $value;
@@ -298,14 +313,9 @@ class QuerryController extends Controller
 
         $revenue_month_y = DB::table('book_tickets')
             ->when($m, function ($query, $m) {
-                return $query->whereMonth('time', $m);
+                return $query->whereMonth('created_at', $m);
             }, function ($query) {
-                return $query->whereMonth('time', date('m'));
-            })
-            ->when($y, function ($query, $y) {
-                return $query->whereYear('time', $y);
-            }, function ($query) {
-                return $query->whereYear('time', date('Y'));
+                return $query->whereYear('created_at', date('Y'));
             })
             ->sum('amount');
 
@@ -318,7 +328,6 @@ class QuerryController extends Controller
         $revenue_mon = DB::table('book_tickets')
             ->select(DB::raw('DATE_FORMAT(created_at, "%Y-%m") as Month'), DB::raw('SUM(amount) as TotalAmount'))
             ->whereYear('created_at', $years)
-            ->whereMonth('created_at', $month)
             ->groupBy('Month')
             ->get();
         //----------------------------------------------------
@@ -386,23 +395,21 @@ class QuerryController extends Controller
 
         // Tính toán doanh thu tháng hiện tại
         $currentMonthRevenue = DB::table('book_tickets')
-            ->whereMonth('time', $month2)
-            ->whereYear('time', $year2)
+            ->whereMonth('created_at', $month2)
+            ->whereYear('created_at', $year2)
             ->sum('amount');
 
         // Tính toán doanh thu tháng trước
         $lastMonthRevenue = DB::table('book_tickets')
-            ->whereMonth('time', $lastMonthNumber)
-            ->whereYear('time', $lastYear)
+            ->whereMonth('created_at', $lastMonthNumber)
+            ->whereYear('created_at', $lastYear)
             ->sum('amount');
 
         // So sánh doanh thu
         $comparison = $currentMonthRevenue - $lastMonthRevenue;
         $revenueToday = DB::table('book_tickets')
-
-            ->whereDate('time', $now)
+            ->whereDate('created_at', $now)
             ->sum('amount');
-
 
         //-------------------------------
         //lấy ra khách hàng mới trong ngày
