@@ -25,15 +25,17 @@ class authController extends Controller
             'image' => 'nullable|string',
             'date_of_birth' => 'nullable|date',
             'coin' => 'nullable',
-
         ], [
             'name.required' => 'Nhập name.',
             'email.required' => 'Nhập email.',
             'email.unique' => 'Email đã tồn tại.',
             'password.required' => 'Nhập mật khẩu.',
+            // Add custom error messages for other fields if needed
         ]);
 
-
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $user = User::create([
             'name' => $request->input('name'),

@@ -31,6 +31,7 @@ use App\Http\Controllers\EmailController;
 use App\Http\Controllers\Api\ForgotPasswordController;
 use App\Http\Controllers\Api\UservoucherController;
 use App\Http\Controllers\Api\VoucherController;
+use App\Http\Controllers\Api\MemberController;
 use App\Http\Controllers\TicketController;
 
 /*u
@@ -74,17 +75,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 Route::get('film_cinema/{id}', [QuerryController::class, 'film_cinema']);  // Lấy thông tin phim theo rạp
 Route::get('time_detail_get_by_id/{id}', [QuerryController::class, 'time_detail_get_by_id']);
 Route::get('check_time_detail_by_film_id/{id_cinema}', [QuerryController::class, 'check_time_detail_by_film_id']); /////
-Route::get('chair_status/{id}', [QuerryController::class, 'chair_status']); // Lấy thông tin ghế đã đặt
 Route::get('chair_count', [QuerryController::class, 'chair_count']);   // Lấy số ghế đã đặt (để tính còn bao nhiêu ghế trống)  
 Route::get('categorie_detail_name', [QuerryController::class, 'categorie_detail_name']); // Lấy danh mục của phim (ví dụ: Hành động, Kinh điển)
 Route::get('chair_by_time_detail/{id}', [QuerryController::class, 'chair_by_time_detail']);
 
-
 Route::post('cache_seat', [QuerryController::class, 'cache_seat']); // Thêm, xóa giữ ghế
 Route::get('getReservedSeatsByTimeDetail/{id_time_detail}', [QuerryController::class, 'getReservedSeatsByTimeDetail']); // check xem có bao nhiêu ghế đang được giữ
 
-Route::get('purchase_history_ad', [QuerryController::class, 'purchase_history_ad']); //
-Route::get('purchase_history_user/{id}', [QuerryController::class, 'purchase_history_user']); //
+Route::get('purchase_history_ad', [QuerryController::class, 'purchase_history_ad']); // chi tiết vé admin
+Route::get('purchase_history_user/{id}', [QuerryController::class, 'purchase_history_user']); // chi tiết vé user
 
 Route::get('QR_book/{id}', [QuerryController::class, 'QR_book_tiket']);
 Route::post('Revenue', [QuerryController::class, 'Revenue']);
@@ -127,5 +126,4 @@ Route::resource('film', FilmController::class);
 // =======
 Route::resource('voucher', VoucherController::class);
 Route::resource('user', UsersController::class);
-//api add vocher
-// >>>>>>> 9385ed69e93ec51d51c16b419db8ae70f4207ae1
+Route::apiResource('member', MemberController::class);

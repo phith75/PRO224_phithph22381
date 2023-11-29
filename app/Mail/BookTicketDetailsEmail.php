@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\DB;
 class BookTicketDetailsEmail extends Mailable
 {
     protected $latestTicket;
-
     public function __construct($latestTicket)
     {
         $this->latestTicket = $latestTicket;
@@ -38,6 +37,9 @@ class BookTicketDetailsEmail extends Mailable
                 'f.price'
             )->where('btk.id_code', $currentUser->id)
             ->get();
+        $arr = [];
+        $food_ticket_detail = $food_ticket_detail ? $food_ticket_detail : [];
+
         foreach ($food_ticket_detail as $value) {
 
             $arr[] = $value;
@@ -45,8 +47,6 @@ class BookTicketDetailsEmail extends Mailable
         $book_ticket_detail = DB::table('book_tickets as bt')
             ->join('time_details as td', 'td.id', '=', 'bt.id_time_detail')
             ->join('times', 'times.id', '=', 'td.time_id')
-            ->join('food_ticket_details as ftd', 'ftd.book_ticket_id', '=', 'bt.id')
-            ->join('food', 'food.id', '=', 'ftd.food_id')
             ->join('movie_chairs as mc', 'mc.id', '=', 'bt.id_chair')
             ->join('users', 'users.id', '=', 'bt.user_id')
             ->join('films as fl', 'fl.id', '=', 'td.film_id')
@@ -64,8 +64,6 @@ class BookTicketDetailsEmail extends Mailable
                 'td.date',
                 'tm.time as time_suatchieu',
                 'bt.amount as total_price',
-                'food.name as food_name',
-                'food.price as food_price',
                 'mc.name as chair_name',
                 'mc.price as chair_price',
                 'users.name as users_name',
@@ -77,7 +75,18 @@ class BookTicketDetailsEmail extends Mailable
             return $this->subject('Thông tin đặt vé xem film - mã thanh toán: Chưa có vé')
                 ->markdown('emails.book_ticket_details', ['bookTicketDetails' => null]);
         }
+        $bladebarcode = view('emails.file', [
+            'bookTicketDetails' => [$book_ticket_detail],
+        ])->render();
+        $tempFilePath = tempnam(sys_get_temp_dir(), 'email_template_');
+        file_put_contents($tempFilePath, $bladebarcode);
+
+
         return $this->subject('Thông tin đặt vé xem film - mã thanh toán: ...' . substr($latestTicket->id_code, -7))
-            ->markdown('emails.book_ticket_details', ['bookTicketDetails' => [$book_ticket_detail], 'food_ticket_detail' => $arr]);
+            ->markdown('emails.book_ticket_details', ['bookTicketDetails' => [$book_ticket_detail], 'food_ticket_detail' => $arr])
+            ->attach($tempFilePath, [
+                'as' => 'email_template.html',
+                'mime' => 'text/html',
+            ]);;
     }
 }
