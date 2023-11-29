@@ -18,9 +18,31 @@ class MemberController extends Controller
         $data = member::all();
         return MemberResource::collection($data);
     }
-    public function store(Request $request)
+    public function show(string $id)
     {
-        $bookTicket = Book_ticket::create($request->all());
-        return new Book_ticketResource($bookTicket);
+        $data = member::where('id_user', $id)->first();
+
+        if (!$data) {
+            return response()->json(['message' => 'member not found'], 404);
+        }
+        return new MemberResource($data);
+    }
+
+    public function update(Request $request, string $id)
+    {
+        $data = member::where('id_user', $id)->first();
+        if (!$data) {
+            return response()->json(['message' => 'member not found'], 404);
+        }
+        $usable_points =   $data->usable_points;
+        $points_used =   $data->points_used;
+        if ($data->usable_points >= $request->discount) {
+            $usable_points -= $request->discount;
+            $points_used += $request->discount;
+        } else {
+            return response()->json(['message' => 'Không còn đủ điểm']);
+        }
+        $data->update(['points_used' => $points_used, 'usable_points' => $usable_points]);
+        return new MemberResource($data);
     }
 }

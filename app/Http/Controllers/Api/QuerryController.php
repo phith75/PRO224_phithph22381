@@ -201,6 +201,7 @@ class QuerryController extends Controller
                 'bt.created_at as time',
                 'fl.name',
                 'bt.id_code',
+                'bt.status',
                 'mv.name as movie_room_name',
                 'cms.name as name_cinema',
                 'cms.address',
@@ -218,7 +219,7 @@ class QuerryController extends Controller
     }
     public function purchase_history_user($id)
     {
-       
+
         $detail_purchase = DB::table('book_tickets as bt')
             ->join('time_details as td', 'td.id', '=', 'bt.id_time_detail')
             ->join('films as fl', 'fl.id', '=', 'td.film_id')

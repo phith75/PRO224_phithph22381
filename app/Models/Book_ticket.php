@@ -23,10 +23,10 @@ class Book_ticket extends Model
     public function updateMemberTotalSpending()
     {
         $member = Member::where('id_user', $this->user_id)->first();
-
         if ($member) {
+            $usable_speding = $member->usable_points + $this->amount / 100;
             $newTotalSpending = $member->total_spending + $this->amount;
-            $member->update(['total_spending' => $newTotalSpending]);
+            $member->update(['total_spending' => $newTotalSpending, 'usable_points' => $usable_speding]);
         }
     }
 }

@@ -20,7 +20,7 @@ class member extends Model
             if ($member->total_spending >= 3000000) {
                 $member->card_class = 2; // Cập nhật giá trị của card_class
             }
-            $ratio = 1000;
+            $ratio = 100;
             $member->accumulated_points = $member->total_spending / $ratio;
         });
     }
@@ -43,8 +43,8 @@ class member extends Model
     //                 $member->card_class = 2; // Cập nhật giá trị của card_class
     //             }
     //         }
-            // $ratio = 1000;
-            // $member->accumulated_points = $member->total_spending / $ratio;
+    // $ratio = 1000;
+    // $member->accumulated_points = $member->total_spending / $ratio;
     //     });
     // }
 }
