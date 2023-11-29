@@ -63,7 +63,7 @@ class UsersController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'string',
             'email' => 'string|email|unique:users,email,' . $user->id,
-            'new_password' => 'string|min:6',
+
 
             // Thêm bất kỳ quy tắc kiểm tra nào khác cho các trường khác nếu cần
         ]);
@@ -75,16 +75,16 @@ class UsersController extends Controller
         $user->update($request->except('_token', 'old_password'));
 
         // Cập nhật mật khẩu nếu cả mật khẩu cũ và mật khẩu mới đều được cung cấp
-        if ($request->filled('old_password') && $request->filled('new_password')) {
+        if ($request->filled('old_password') && $request->filled('new_password') && $request->new_password != null) {
             if (!Hash::check($request->input('old_password'), $user->password)) {
                 return response(['msg' => 'Mật khẩu không chính xác'], 401);
+            } else {
+                $user->forceFill([
+                    'password' => bcrypt($request->input('new_password')),
+                ])->save();
+                return response(['msg' => 'Mật khẩu đã được thay đổi'], 200);
             }
-
-            $user->forceFill([
-                'password' => bcrypt($request->input('new_password')),
-            ])->save();
         }
-
         // Trả về người dùng đã được cập nhật dưới dạng nguồn tài nguyên
         return new UserResource($user);
     }
