@@ -45,12 +45,11 @@ class UsersController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $User = User::find($id);
+        $User = User::find($id)->first();
         if (!$User) {
             return response()->json(['message' => 'User not found'], 404);
         }
-        User::where('id', $id)
-            ->update($request->except('_token'));
+        $User->update($request->except('_token'));
 
         return new UserResource($User);
     }

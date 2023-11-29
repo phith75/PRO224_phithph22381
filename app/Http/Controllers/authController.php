@@ -21,9 +21,11 @@ class authController extends Controller
             'name' => 'required|string',
             'email' => 'required|string|unique:users,email',
             'password' => 'required|string',
-            'phone' => 'nullable|string',         
-            'image' => 'nullable|string',         
+            'phone' => 'nullable|string',
+            'image' => 'nullable|string',
             'date_of_birth' => 'nullable|date',
+            'coin' => 'nullable',
+
         ], [
             'name.required' => 'Nhập name.',
             'email.required' => 'Nhập email.',
@@ -31,9 +33,7 @@ class authController extends Controller
             'password.required' => 'Nhập mật khẩu.',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 400);
-        }
+
 
         $user = User::create([
             'name' => $request->input('name'),
@@ -43,7 +43,7 @@ class authController extends Controller
             'image' => $request->input('image'),
             'date_of_birth' => $request->input('date_of_birth'),
         ]);
-    
+
         // Tạo Member
         $member = Member::create([
             'id_card' => sprintf('%08d', $user->id),
@@ -55,12 +55,12 @@ class authController extends Controller
             'usable_points' => 0,
             'id_user' => $user->id,
         ]);
-    
+
         // Gán member_id cho User
-        
-    
+
+
         $token = $user->createToken('apiToken')->plainTextToken;
-    
+
         $res = [
             'user' => $user,
             'token' => $token,
@@ -68,7 +68,6 @@ class authController extends Controller
 
         return response($res, 201);
     }
-    
 
     public function login(Request $request)
     {
@@ -102,5 +101,56 @@ class authController extends Controller
         return response($res, 201);
     }
 
-    // Rest of your code...
+
+    public function logout(Request $request)
+    {
+        try {
+            $user = auth()->user();
+            $user->tokens->each->delete();
+            return response()->json([
+                'message' => 'Logged out'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'User not found'
+            ], 404);
+        }
+    }
+    //đăng nhập bằng tk gg 
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    public function handleGoogleCallback()
+    {
+        try {
+            $user = Socialite::driver('google')->user();
+
+            $existingUser = User::where('email', $user->email)->first();
+
+            if ($existingUser) {
+                Auth::login($existingUser);
+            } else {
+                $newUser = User::create([
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'password' => bcrypt('randompassword')
+                ]);
+
+                Auth::login($newUser);
+            }
+
+            $token = $newUser->createToken('apiToken')->plainTextToken;
+
+            return response()->json([
+                'user' => $newUser,
+                'token' => $token,
+            ]);
+        } catch (\Exception $e) {
+            return response([
+                'error' => 'Đã xảy ra lỗi khi đăng nhập bằng Google'
+            ], 500);
+        }
+    }
 }
