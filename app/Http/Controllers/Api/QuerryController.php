@@ -218,10 +218,14 @@ class QuerryController extends Controller
     }
     public function purchase_history_user($id)
     {
+       
         $detail_purchase = DB::table('book_tickets as bt')
             ->join('time_details as td', 'td.id', '=', 'bt.id_time_detail')
+            ->join('films as fl', 'fl.id', '=', 'td.film_id')
             ->join('times', 'times.id', '=', 'td.time_id')
-            ->leftJoin(DB::raw('(SELECT book_ticket_id, GROUP_CONCAT(name) as food_names FROM food_ticket_details JOIN food ON food.id = food_ticket_details.food_id GROUP BY book_ticket_id) as food_ticket_details'), function ($join) {
+            ->join('movie_rooms as mrs', 'mrs.id', '=', 'td.room_id')
+            ->join('cinemas as cms', 'cms.id', '=', 'mrs.id_cinema')
+            ->leftJoin(DB::raw('(SELECT book_ticket_id, GROUP_CONCAT(name) as food_names  FROM food_ticket_details JOIN food ON food.id = food_ticket_details.food_id GROUP BY book_ticket_id) as food_ticket_details'), function ($join) {
                 $join->on('food_ticket_details.book_ticket_id', '=', 'bt.id');
             })
             ->join('movie_chairs as mc', 'mc.id', '=', 'bt.id_chair')
@@ -229,6 +233,12 @@ class QuerryController extends Controller
             ->select(
                 'bt.time',
                 'bt.amount as total_price',
+                'fl.name as film_name',
+                'fl.image as film_image',
+                'bt.id_code as id_code',
+                'td.date as date',
+                'cms.name as cinema_name',
+                'times.time as time_td',
                 'food_ticket_details.food_names',
                 'mc.name as chair_name',
                 'mc.price as chair_price',
