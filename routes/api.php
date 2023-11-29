@@ -31,6 +31,7 @@ use App\Http\Controllers\EmailController;
 use App\Http\Controllers\Api\ForgotPasswordController;
 use App\Http\Controllers\Api\UservoucherController;
 use App\Http\Controllers\Api\VoucherController;
+use App\Http\Controllers\Api\MemberController;
 use App\Http\Controllers\TicketController;
 
 /*u
@@ -120,4 +121,4 @@ Route::resource('rateStar', RateStarController::class);
 Route::resource('film', FilmController::class);
 Route::resource('voucher', VoucherController::class);
 Route::resource('user', UsersController::class);
-//api add voucher
+Route::apiResource('member', MemberController::class);
