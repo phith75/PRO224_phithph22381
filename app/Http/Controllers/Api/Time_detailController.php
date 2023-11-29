@@ -30,12 +30,12 @@ class Time_detailController extends Controller
                 'after_or_equal:' . now()->format('Y-m-d'),
             ],
         ];
-            $validator = Validator::make($request->all(), $rules);
-            if ($validator->fails()) {
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
-            $timeDetail = TimeDetail::create($request->all());
-    
+        $timeDetail = TimeDetail::create($request->all());
+
         return new TimeDetailResource($timeDetail);
     }
 
@@ -54,28 +54,31 @@ class Time_detailController extends Controller
     /**
      * Update the specified resource in storage.
      */
-public function update(Request $request, string $id)
-{
-    // Tìm TimeDetail theo id
-    $timeDetail = TimeDetail::find($id);
-    if (!$timeDetail) {
-        return response()->json(['message' => 'TimeDetail not found'], 404);
-    }
-    $rules = [
-        'date' => [
-            'required',
-            'date',
-            'after_or_equal:' . now()->format('Y-m-d'),
-        ],
-    ];
-    $validator = Validator::make($request->all(), $rules);
-    if ($validator->fails()) {
-        return response()->json(['error' => $validator->errors()], 422);
-    }
-    $timeDetail->update($request->all());
+    public function update(Request $request, string $id)
+    {
+        // Tìm TimeDetail theo id
+        $timeDetail = TimeDetail::find($id);
+        if (!$timeDetail) {
+            return response()->json(['message' => 'TimeDetail not found'], 404);
+        }
+        $rules = [];
+        if ($request->date) {
+            $rules = [
+                'date' => [
+                    'required',
+                    'date',
+                    'after_or_equal:' . now()->format('Y-m-d'),
+                ],
+            ];
+        }
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+        $timeDetail->update($request->all());
 
-    return new TimeDetailResource($timeDetail);
-}
+        return new TimeDetailResource($timeDetail);
+    }
 
 
     /**
