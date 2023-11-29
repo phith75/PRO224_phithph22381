@@ -24,13 +24,16 @@
     <p><strong>Cinema Address:</strong> {{ $book_ticket_detail->address }}</p>
     <p><strong>Date:</strong> {{ $book_ticket_detail->date }}</p>
     <p><strong>Showtime:</strong> {{ $book_ticket_detail->time_suatchieu }}</p>
-    <p><strong>Total Price:</strong> {{ $book_ticket_detail->total_price }}</p>
+    <p><strong>Total Price:</strong> {{ number_format($book_ticket_detail->total_price, 0, ',', '.') }} VND</p>
     <h2>Food Details:</h2>
     <ul>
-            <li>{{ $book_ticket_detail->food_name }} - {{ $book_ticket_detail->food_price}}</li>
-    </ul>
 
+    @foreach ($food_ticket_detail as $key => $food_detail)
+   <li> {{$food_detail->quantity}} *  {{$food_detail->name}}</li>
     
+@endforeach
+    </ul>
+           
     <hr> 
     {{-- Tách trang mỗi khi end 1 vé --}}
     @if (!$loop->last) 

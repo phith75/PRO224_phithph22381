@@ -233,9 +233,9 @@ class DatabaseSeeder extends Seeder
                 case 'food_ticket_details':
 
                     $data = [
-                        ['book_ticket_id' => 1, 'food_id' => 1],
+                        ['book_ticket_id' => 1, 'food_id' => 1, 'quantity' => 1],
 
-                        ['book_ticket_id' => 2, 'food_id' => 2]
+                        ['book_ticket_id' => 2, 'food_id' => 2, 'quantity' => 2]
                     ];
 
                     break;

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('code');
             $table->timestamp('start_time');
-            $table->timestamp('end_time');
+            $table->dateTime('end_time');
             $table->integer('usage_limit');
             $table->integer('price_voucher');
             $table->string('description');
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('vochers');
+        Schema::dropIfExists('vouchers');
     }
 };
