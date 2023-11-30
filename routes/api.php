@@ -92,7 +92,6 @@ Route::get('get_used_vouchers_by_id_user/{id}', [QuerryController::class, 'get_u
 
 
 
-
 ///////
 Route::post('Payment', [PaymentController::class, 'vnpay_payment']); // thanh toán VNPAY
 
