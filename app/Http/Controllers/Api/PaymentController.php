@@ -29,7 +29,18 @@ class PaymentController extends Controller
         //       'url'=>'',
         //       'coin'=>$_GET['amount']]
     }
-
+    public function coin_payment(Request $request)
+    {
+        $id_code = generateRandomString();
+        $amount = (int)$request->amount;
+        $coin_total = User::find($request->id)->first();
+        if ($coin_total->coin >= $amount) {
+            $coin = $coin_total->coin - $amount;
+            $coin_total->update(["coin" => $coin]);
+            return response(['msg' => 'Thanh toán thành công'], 200);
+        }
+        return response(['msg' => 'Số dư của bạn không đủ'], 200);
+    }
 
     public function vnpay_payment(Request $request)
     {
