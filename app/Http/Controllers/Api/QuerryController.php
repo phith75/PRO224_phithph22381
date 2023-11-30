@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Food_ticket_detail;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
+use App\Events\SeatReserved;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
@@ -152,6 +154,7 @@ class QuerryController extends Controller
                 $seat_reservation[$request->id_time_detail][$request->id_user]['time'][$seat] = $currentTime->addMinutes(2);
             }
         }
+        event(new SeatReserved($seat_reservation[$id_time_detail]));
         // Đặt lại dữ liệu vào Cache
         Cache::put('seat_reservation', $seat_reservation, $currentTime->addMinutes(2));
 
@@ -320,10 +323,6 @@ class QuerryController extends Controller
         } else {
             $y = $request->year;
         }
-
-
-
-
 
         $revenue_month_y = DB::table('book_tickets')
             ->when($m, function ($query, $m) {
