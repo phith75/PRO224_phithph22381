@@ -37,5 +37,5 @@ window.io = require('socket.io-client');
 
 window.Echo = new Echo({
     broadcaster: 'socket.io',
-    host: window.location.hostname + ':6001', // Adjust the port accordingly
+    host: window.location.hostname + ':8000', // Adjust the port accordingly
 });
