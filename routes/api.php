@@ -95,7 +95,6 @@ Route::post('updateSeatStatus', [QuerryController::class, 'updateSeatStatus']);
 
 
 
-
 ///////
 Route::post('Payment', [PaymentController::class, 'vnpay_payment']); // thanh toán VNPAY
 
