@@ -87,6 +87,8 @@ Route::get('purchase_history_user/{id}', [QuerryController::class, 'purchase_his
 
 Route::get('QR_book/{id}', [QuerryController::class, 'QR_book_tiket']);
 Route::post('Revenue', [QuerryController::class, 'Revenue']);
+Route::post('Revenue_cinema', [QuerryController::class, 'Revenue_cinema']);
+
 Route::get('getShiftRevenue/{id}', [QuerryController::class, 'getShiftRevenue']);
 Route::get('get_used_vouchers_by_id_user/{id}', [QuerryController::class, 'get_used_vouchers_by_id_user']); // lấy voucher sử dụng r
 
