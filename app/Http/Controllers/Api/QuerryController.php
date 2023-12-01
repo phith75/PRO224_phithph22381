@@ -6,8 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Food_ticket_detail;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Event;
-use App\Events\SeatReserved;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
@@ -184,6 +182,7 @@ class QuerryController extends Controller
                 }
             }
         }
+
         $pusher = new Pusher(env('PUSHER_APP_KEY'), env('PUSHER_APP_SECRET'), env('PUSHER_APP_ID'), [
             'cluster' => env('PUSHER_APP_CLUSTER'),
             'useTLS' => true,
@@ -192,29 +191,6 @@ class QuerryController extends Controller
         $pusher->trigger('Cinema', 'check-Seat', [
             'row' => $reservedSeats,
         ]);
-        // Trả về dữ liệu ghế và thời gian đã đặt
-    }
-
-    public function getReservedSeatsByTimeDetail($id_time_detail)
-    {
-        $seat_reservation = Cache::get('seat_reservation', []);
-        $reservedSeats = [];
-
-        if (isset($seat_reservation[$id_time_detail])) {
-            foreach ($seat_reservation[$id_time_detail] as $id_user => $userData) {
-                // Lấy danh sách ghế được giữ cho mỗi người dùng
-                $userSeats = $userData['seat'];
-                // Thêm danh sách ghế vào danh sách ghế đã được giữ
-                foreach ($userSeats as $seat) {
-                    $reservedSeats[] = [
-                        'seat' => $seat,
-                        'id_user' => $id_user
-                    ];
-                }
-            }
-        }
-
-        return $reservedSeats;
     }
 
 
