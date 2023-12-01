@@ -6,14 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Vocher extends Model
+class voucher extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = "vochers";
-    protected $fillable = ['code', 'start_time', 'end_time', 'usage_limit', 'price_vocher', 'limit','remaining_limit'];
+    protected $table = "vouchers";
+    protected $fillable = ['code', 'start_time', 'end_time', 'usage_limit', 'price_voucher', 'limit', 'remaining_limit', 'percent','description', 'minimum_amount'];
 
-    
+
     protected static function boot()
     {
         parent::boot();

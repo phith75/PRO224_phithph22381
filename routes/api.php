@@ -30,7 +30,8 @@ use App\Http\Controllers\Api\RateStarController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\Api\ForgotPasswordController;
 use App\Http\Controllers\Api\UservoucherController;
-use App\Http\Controllers\Api\VocherController;
+use App\Http\Controllers\Api\VoucherController;
+use App\Http\Controllers\Api\MemberController;
 use App\Http\Controllers\TicketController;
 
 /*u
@@ -59,7 +60,6 @@ Route::post('/login', [AuthController::class, 'login']);
 // <a href="{{ url('/login/google') }}">Đăng nhập bằng Google</a> dành cho mấy ông fe
 
 Route::get('print-ticket/{ticketId}', [TicketController::class, 'printTicket']);
-
 //////
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
@@ -68,26 +68,27 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/send-book-ticket-details-email', [EmailController::class, 'sendBookTicketDetailsEmail']); // router cho vào sau khi thanh toán
     Route::post('/sendEmail', [EmailController::class, 'sendEmail']); //không cần qtam cái này đừng ai xóa  
-    //check khi nhập vocher
+    //check khi nhập voucher
     Route::post('/usevoucher', [UservoucherController::class, 'useVoucher']);
 });
 //////
 Route::get('film_cinema/{id}', [QuerryController::class, 'film_cinema']);  // Lấy thông tin phim theo rạp
 Route::get('time_detail_get_by_id/{id}', [QuerryController::class, 'time_detail_get_by_id']);
 Route::get('check_time_detail_by_film_id/{id_cinema}', [QuerryController::class, 'check_time_detail_by_film_id']); /////
-Route::get('chair_status/{id}', [QuerryController::class, 'chair_status']); // Lấy thông tin ghế đã đặt
 Route::get('chair_count', [QuerryController::class, 'chair_count']);   // Lấy số ghế đã đặt (để tính còn bao nhiêu ghế trống)  
 Route::get('categorie_detail_name', [QuerryController::class, 'categorie_detail_name']); // Lấy danh mục của phim (ví dụ: Hành động, Kinh điển)
+Route::get('chair_by_time_detail/{id}', [QuerryController::class, 'chair_by_time_detail']);
 
 Route::post('cache_seat', [QuerryController::class, 'cache_seat']); // Thêm, xóa giữ ghế
 Route::get('getReservedSeatsByTimeDetail/{id_time_detail}', [QuerryController::class, 'getReservedSeatsByTimeDetail']); // check xem có bao nhiêu ghế đang được giữ
 
-Route::get('purchase_history_ad', [QuerryController::class, 'purchase_history_ad']); //
-Route::get('purchase_history_user/{id}', [QuerryController::class, 'purchase_history_user']); //
+Route::get('purchase_history_ad', [QuerryController::class, 'purchase_history_ad']); // chi tiết vé admin
+Route::get('purchase_history_user/{id}', [QuerryController::class, 'purchase_history_user']); // chi tiết vé user
 
 Route::get('QR_book/{id}', [QuerryController::class, 'QR_book_tiket']);
 Route::post('Revenue', [QuerryController::class, 'Revenue']);
 Route::get('getShiftRevenue/{id}', [QuerryController::class, 'getShiftRevenue']);
+Route::get('get_used_vouchers_by_id_user/{id}', [QuerryController::class, 'get_used_vouchers_by_id_user']); // lấy voucher sử dụng r
 
 
 
@@ -96,7 +97,6 @@ Route::post('Payment', [PaymentController::class, 'vnpay_payment']); // thanh to
 
 Route::post('momo_payment', [PaymentController::class, 'momo_payment']); // thanh toán momo
 
-Route::get('getdata/{id}/{coin}', [PaymentController::class, 'getdata']); //napj tien qua momo
 
 
 ///////
@@ -119,5 +119,11 @@ Route::resource('filmMaker', FilmMakerController::class);
 Route::resource('movieRoom', MovieRoomController::class);
 Route::resource('rateStar', RateStarController::class);
 Route::resource('film', FilmController::class);
-//api add vocher
-Route::resource('vocher', VocherController::class);
+// <<<<<<< HEAD
+// Route::resource('user', UsersController::class);
+// //api add vocher
+// Route::resource('vocher', VocherController::class);
+// =======
+Route::resource('voucher', VoucherController::class);
+Route::resource('user', UsersController::class);
+Route::apiResource('member', MemberController::class);

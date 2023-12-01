@@ -10,6 +10,37 @@ use Illuminate\Support\Facades\DB;
 class PaymentController extends Controller
 {
     //
+    public function getdata($id, $coin)
+    {
+
+
+        //cap nhat coin nap vao
+        if (isset($coin)) {
+
+            $coin_total = User::find($id);
+
+            if (!$coin) {
+                return response()->json(['message' => 'giao dịch chưa hoàn thành do lỗi trong lúc nạp coin'], 404);
+            }
+            $coin_total->update(['coin' => $coin]);
+            return $coin;
+        }
+        //     ['message' => "success",
+        //       'url'=>'',
+        //       'coin'=>$_GET['amount']]
+    }
+    public function coin_payment(Request $request)
+    {
+        $id_code = generateRandomString();
+        $amount = (int)$request->amount;
+        $coin_total = User::find($request->id)->first();
+        if ($coin_total->coin >= $amount) {
+            $coin = $coin_total->coin - $amount;
+            $coin_total->update(["coin" => $coin]);
+            return response(['msg' => 'Thanh toán thành công'], 200);
+        }
+        return response(['msg' => 'Số dư của bạn không đủ'], 200);
+    }
 
     public function vnpay_payment(Request $request)
     {
@@ -25,14 +56,18 @@ class PaymentController extends Controller
             $vnp_Returnurl = "http://127.0.0.1:8000/api/getdata/" . $request->id . '/' . $_GET['amount']; // Đường dẫn return sau khi thanh toán
         }
 
+        if (isset($request->coin)) {
+            $this->getdata($request->id, $request->amount);
+            $vnp_Returnurl = "http://localhost:5173/";
+        }
+
         $vnp_TmnCode = "SMWBPLOI"; //Mã website tại VNPAY 
         $vnp_HashSecret = "YCXCIZUKOICUEMGAZGIFLYLLNULOSTTK"; //Chuỗi bí mật
-
         $vnp_TxnRef = $startTime; //Mã đơn hàng. Trong thực tế Merchant cần insert đơn hàng vào DB và gửi mã này sang VNPAY
         $vnp_OrderInfo = 'Thanh toán hóa đơn';
         $vnp_OrderType = 'billpayment';
-        $_GET['amount'] = (int)$_GET['amount'];
-        $vnp_Amount = $_GET['amount'] * 100;
+        $amount = (int)$request->amount;
+        $vnp_Amount = $amount * 100;
         $vnp_Locale = 'vn';
         $vnp_BankCode = '';
         $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
@@ -137,9 +172,10 @@ class PaymentController extends Controller
         $accessKey = 'klm05TvNBzhg7h7j';
         $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa';
 
-        if (isset($_POST['coin'])) {
+        if (isset($request->coin)) {
 
-            $redirectUrl = "http://127.0.0.1:8000/api/getdata_vnpay/" . $request->id . '/' . $_GET['amount']; // duong dan
+            $this->getdata($request->id, $request->amount);
+            $redirectUrl = "http://localhost:5173/";
         }
         $orderInfo = "Thanh toán qua momo";
         $amount = (int)$request->amount;
@@ -178,22 +214,5 @@ class PaymentController extends Controller
         $jsonResult = json_decode($result, true);  // decode json
 
         return ($jsonResult);
-    }
-
-    public function getdata(Request $request, string $id)
-    {
-
-
-        //cap nhat coin nap vao
-        if (isset($coin)) {
-
-            $coin_total = User::find($id);
-            $money = $coin_total->coin + $coin;
-            if (!$coin) {
-                return response()->json(['message' => 'giao dịch chưa hoàn thành do lỗi trong lúc nạp coin'], 404);
-            }
-            $coin_total->update(['coin' => $money]);
-            return 'http://127.0.0.1:8000/';
-        }
     }
 }

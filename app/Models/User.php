@@ -23,14 +23,16 @@ class User extends Authenticatable
         'email',
         'password',
         'coin',
+        'role',
         'phone',
+        'image',
         'date_of_birth',
     ];
 
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var array<int, string>
+     * @var array<int, string> 
      */
     protected $hidden = [
         'password',
