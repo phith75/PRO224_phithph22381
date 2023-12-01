@@ -51,8 +51,10 @@ class PaymentController extends Controller
         $startTime = date("YmdHis");
         $expire = date('YmdHis', strtotime('+50 minutes', strtotime($startTime)));
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+        if (isset($request->coin)) {
 
-        $vnp_Returnurl = "http://localhost:5173/payment/id_code=" . $id_code . '/'; // Đường dẫn return sau khi thanh toán
+            $vnp_Returnurl = "http://127.0.0.1:8000/api/getdata/" . $request->id . '/' . $_GET['amount']; // Đường dẫn return sau khi thanh toán
+        }
 
         if (isset($request->coin)) {
             $this->getdata($request->id, $request->amount);

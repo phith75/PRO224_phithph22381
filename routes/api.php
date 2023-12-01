@@ -85,12 +85,13 @@ Route::get('purchase_history_ad', [QuerryController::class, 'purchase_history_ad
 Route::get('purchase_history_user/{id}', [QuerryController::class, 'purchase_history_user']); // chi tiết vé user
 
 Route::get('QR_book/{id}', [QuerryController::class, 'QR_book_tiket']);
-Route::post('Revenue', [QuerryController::class, 'Revzenue']);
+Route::post('Revenue', [QuerryController::class, 'Revenue']);
+Route::post('Revenue_cinema', [QuerryController::class, 'Revenue_cinema']);
+
 Route::get('getShiftRevenue/{id}', [QuerryController::class, 'getShiftRevenue']);
 Route::post('updateSeatStatus', [QuerryController::class, 'updateSeatStatus']);
 
 Route::get('get_used_vouchers_by_id_user/{id}', [QuerryController::class, 'get_used_vouchers_by_id_user']); // lấy voucher sử dụng r
-
 
 
 

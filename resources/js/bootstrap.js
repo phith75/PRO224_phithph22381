@@ -31,11 +31,3 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 //     enabledTransports: ['ws', 'wss'],
 // });
 // resources/js/bootstrap.js
-
-import Echo from 'laravel-echo';
-window.io = require('socket.io-client');
-
-window.Echo = new Echo({
-    broadcaster: 'socket.io',
-    host: window.location.hostname + ':6001', // Adjust the port accordingly
-});
