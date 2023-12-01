@@ -78,7 +78,6 @@ Route::get('check_time_detail_by_film_id/{id_cinema}', [QuerryController::class,
 Route::get('chair_count', [QuerryController::class, 'chair_count']);   // Lấy số ghế đã đặt (để tính còn bao nhiêu ghế trống)  
 Route::get('categorie_detail_name', [QuerryController::class, 'categorie_detail_name']); // Lấy danh mục của phim (ví dụ: Hành động, Kinh điển)
 Route::get('chair_by_time_detail/{id}', [QuerryController::class, 'chair_by_time_detail']);
-
 Route::post('cache_seat', [QuerryController::class, 'cache_seat']); // Thêm, xóa giữ ghế
 Route::get('getReservedSeatsByTimeDetail/{id_time_detail}', [QuerryController::class, 'getReservedSeatsByTimeDetail']); // check xem có bao nhiêu ghế đang được giữ
 
@@ -86,8 +85,10 @@ Route::get('purchase_history_ad', [QuerryController::class, 'purchase_history_ad
 Route::get('purchase_history_user/{id}', [QuerryController::class, 'purchase_history_user']); // chi tiết vé user
 
 Route::get('QR_book/{id}', [QuerryController::class, 'QR_book_tiket']);
-Route::post('Revenue', [QuerryController::class, 'Revenue']);
+Route::post('Revenue', [QuerryController::class, 'Revzenue']);
 Route::get('getShiftRevenue/{id}', [QuerryController::class, 'getShiftRevenue']);
+Route::post('updateSeatStatus', [QuerryController::class, 'updateSeatStatus']);
+
 Route::get('get_used_vouchers_by_id_user/{id}', [QuerryController::class, 'get_used_vouchers_by_id_user']); // lấy voucher sử dụng r
 
 

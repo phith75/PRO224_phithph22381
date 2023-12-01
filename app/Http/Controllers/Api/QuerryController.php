@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
+use Pusher\Pusher;
 
 class QuerryController extends Controller
 {
@@ -154,16 +155,9 @@ class QuerryController extends Controller
                 $seat_reservation[$request->id_time_detail][$request->id_user]['time'][$seat] = $currentTime->addMinutes(2);
             }
         }
-        event(new SeatReserved($seat_reservation[$id_time_detail]));
+
         // Đặt lại dữ liệu vào Cache
         Cache::put('seat_reservation', $seat_reservation, $currentTime->addMinutes(2));
-
-        // Trả về dữ liệu ghế và thời gian đã đặt
-        return $seat_reservation[$id_time_detail];
-    }
-
-    public function getReservedSeatsByTimeDetail($id_time_detail)
-    {
         $seat_reservation = Cache::get('seat_reservation', []);
         $reservedSeats = [];
 
@@ -181,8 +175,21 @@ class QuerryController extends Controller
                 }
             }
         }
+        $pusher = new Pusher(env('PUSHER_APP_KEY'), env('PUSHER_APP_SECRET'), env('PUSHER_APP_ID'), [
+            'cluster' => env('PUSHER_APP_CLUSTER'),
+            'useTLS' => true,
+        ]);
+        $updatedRow = 'success';
+        $pusher->trigger('Cinema', 'check-Seat', [
+            'row' => $reservedSeats,
 
-        return $reservedSeats;
+        ]);
+        // Trả về dữ liệu ghế và thời gian đã đặt
+        return $seat_reservation[$id_time_detail];
+    }
+
+    public function getReservedSeatsByTimeDetail($id_time_detail)
+    {
     }
 
 
