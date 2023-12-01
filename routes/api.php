@@ -90,6 +90,9 @@ Route::post('Revenue', [QuerryController::class, 'Revenue']);
 Route::get('getShiftRevenue/{id}', [QuerryController::class, 'getShiftRevenue']);
 Route::get('get_used_vouchers_by_id_user/{id}', [QuerryController::class, 'get_used_vouchers_by_id_user']); // lấy voucher sử dụng r
 
+Route::post('updateSeatStatus', [QuerryController::class, 'updateSeatStatus']);
+
+
 
 
 

@@ -14,8 +14,10 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
+use Pusher\Pusher;
 
 class QuerryController extends Controller
+
 {
 
     public function film_cinema($id)
@@ -30,6 +32,15 @@ class QuerryController extends Controller
             ->distinct()
             ->get();
         return $films;
+    }
+    public function updateSeatStatus(Request $request)
+    {
+        // Logic to update seat status...
+        $updatedRow = "success";
+        // Trigger Pusher event after updating seat status
+
+
+        // Continue with other logic or return a response
     }
     public function categorie_detail_name()
     {
@@ -154,12 +165,34 @@ class QuerryController extends Controller
                 $seat_reservation[$request->id_time_detail][$request->id_user]['time'][$seat] = $currentTime->addMinutes(2);
             }
         }
-        event(new SeatReserved($seat_reservation[$id_time_detail]));
         // Đặt lại dữ liệu vào Cache
         Cache::put('seat_reservation', $seat_reservation, $currentTime->addMinutes(2));
+        $seat_reservation = Cache::get('seat_reservation', []);
+        $reservedSeats = [];
 
+        if (isset($seat_reservation[$id_time_detail])) {
+            foreach ($seat_reservation[$id_time_detail] as $id_user => $userData) {
+                // Lấy danh sách ghế được giữ cho mỗi người dùng
+                $userSeats = $userData['seat'];
+
+                // Thêm danh sách ghế vào danh sách ghế đã được giữ
+                foreach ($userSeats as $seat) {
+                    $reservedSeats[] = [
+                        'seat' => $seat,
+                        'id_user' => $id_user
+                    ];
+                }
+            }
+        }
+        $pusher = new Pusher(env('PUSHER_APP_KEY'), env('PUSHER_APP_SECRET'), env('PUSHER_APP_ID'), [
+            'cluster' => env('PUSHER_APP_CLUSTER'),
+            'useTLS' => true,
+        ]);
+
+        $pusher->trigger('Cinema', 'check-Seat', [
+            'row' => $reservedSeats,
+        ]);
         // Trả về dữ liệu ghế và thời gian đã đặt
-        return $seat_reservation[$id_time_detail];
     }
 
     public function getReservedSeatsByTimeDetail($id_time_detail)
@@ -171,7 +204,6 @@ class QuerryController extends Controller
             foreach ($seat_reservation[$id_time_detail] as $id_user => $userData) {
                 // Lấy danh sách ghế được giữ cho mỗi người dùng
                 $userSeats = $userData['seat'];
-
                 // Thêm danh sách ghế vào danh sách ghế đã được giữ
                 foreach ($userSeats as $seat) {
                     $reservedSeats[] = [

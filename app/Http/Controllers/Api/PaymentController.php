@@ -12,13 +12,10 @@ class PaymentController extends Controller
     //
     public function getdata($id, $coin)
     {
-
-
         //cap nhat coin nap vao
         if (isset($coin)) {
-
             $coin_total = User::find($id);
-
+            
             if (!$coin) {
                 return response()->json(['message' => 'giao dịch chưa hoàn thành do lỗi trong lúc nạp coin'], 404);
             }
