@@ -6,14 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 class PaymentController extends Controller
 {
     //
     public function getdata($id, $coin)
     {
-
-
         //cap nhat coin nap vao
         if (isset($coin)) {
 
@@ -29,18 +28,53 @@ class PaymentController extends Controller
         //       'url'=>'',
         //       'coin'=>$_GET['amount']]
     }
-    public function coin_payment(Request $request)
-    {
-        $id_code = generateRandomString();
-        $amount = (int)$request->amount;
-        $coin_total = User::find($request->id)->first();
-        if ($coin_total->coin >= $amount) {
-            $coin = $coin_total->coin - $amount;
-            $coin_total->update(["coin" => $coin]);
-            return response(['msg' => 'Thanh toán thành công'], 200);
-        }
-        return response(['msg' => 'Số dư của bạn không đủ'], 200);
+
+public function coin_payment(Request $request, $id)
+{
+    $id_code = generateRandomString();
+    $amount = (int)$request->amount;
+    $data = [
+        "id_code" => $id_code,
+        "amount" => $amount
+    ];
+
+    $user = User::find($id);
+
+    if (!$user) {
+        return response()->json(['message' => 'Sai thông tin người dùng'], 404);
     }
+
+    // Validate the request
+    $validator = Validator::make($request->all(), [
+        'id' => 'string',
+        'amount' => 'integer',
+        'password' => 'required|string', // Thêm quy tắc kiểm tra mật khẩu
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 422);
+    }
+
+    if (Hash::check($request->input('password'), $user->password)) {
+        if ($user->coin >= $amount) {
+            $coin = $user->coin - $amount;
+            $user->update(["coin" => $coin]);
+
+            // Thêm data vào response nếu cần
+            $response = [
+                'msg' => 'Thanh toán thành công',
+                'data' => $data
+            ];
+
+            return response()->json($response, 200);
+        }
+
+        return response()->json(['msg' => 'Số dư của bạn không đủ'], 200);
+    } else {
+        return response()->json(['msg' => 'Nhập sai mật khẩu, vui lòng thử lại!'], 201);
+    }
+}
+
 
     public function vnpay_payment(Request $request)
     {

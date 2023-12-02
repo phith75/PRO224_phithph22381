@@ -100,6 +100,7 @@ Route::post('Payment', [PaymentController::class, 'vnpay_payment']); // thanh to
 
 Route::post('momo_payment', [PaymentController::class, 'momo_payment']); // thanh toán momo
 
+Route::post('coin_payment/{id}', [PaymentController::class, 'coin_payment']); // thanh toán coin
 
 
 ///////

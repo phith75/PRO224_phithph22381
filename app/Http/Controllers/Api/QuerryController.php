@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
 use App\Events\SeatReserved;
 
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Carbon;
@@ -499,7 +500,7 @@ class QuerryController extends Controller
             ->select('cinemas.name as cinema_name', DB::raw('SUM(book_tickets.amount) as total_amount'))
             ->groupBy('cinemas.name')
             ->get();
-
+            
         $revenue_staff_day_filter = DB::table('book_tickets')
             ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
             ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
@@ -513,27 +514,30 @@ class QuerryController extends Controller
             ->groupBy('cinemas.name')
             ->get();
 
-
-
-        //---------
         ///số vé bán ra theo từng tên phim của một ngày
         $tickets_total = DB::table('book_tickets')
             ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
             ->join('films', 'time_details.film_id', '=', 'films.id')
+            ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
+            ->join('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
             ->select('films.name', DB::raw('COUNT(book_tickets.id) as total_tickets'))
             ->whereDate('book_tickets.time', '=', $now)
+            ->where('cinemas.id', $request->id_cinema)
             ->groupBy('films.name')
             ->get();
-
 
         ///lấy ra tổng doanh thu theo ngày từ đồ ăn
         $revenue_food =  DB::table('book_tickets')
             ->join('food_ticket_details', 'book_tickets.id', '=', 'food_ticket_details.book_ticket_id')
             ->join('food', 'food_ticket_details.food_id', '=', 'food.id')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+
+            ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
+            ->join('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
             ->whereDate('book_tickets.time', '=', $now)
+            ->where('cinemas.id', $request->id_cinema)
+
             ->sum('food.price');
-
-
 
         return [
             "revenue_staff" => [
@@ -543,8 +547,6 @@ class QuerryController extends Controller
                 'revenue_food' => $revenue_food
             ],
             "revenue_admin_cinema" => []
-
-
         ];
     }
     public function getShiftRevenue($id) //tạm thời
