@@ -14,8 +14,6 @@ class PaymentController extends Controller
     //
     public function getdata($id, $coin)
     {
-
-
         //cap nhat coin nap vao
         if (isset($coin)) {
             $coin_total = User::find($id);
@@ -59,7 +57,6 @@ class PaymentController extends Controller
             if ($user->coin >= $amount) {
                 $coin = $user->coin - $amount;
                 $user->update(["coin" => $coin]);
-    
                 // Thêm data vào response nếu cần
                 $response = [
                     'msg' => 'Thanh toán thành công',
@@ -88,10 +85,6 @@ class PaymentController extends Controller
 
         $vnp_Returnurl = "http://localhost:5173/payment/id_code=" . $id_code . '/'; // Đường dẫn return sau khi thanh toán
 
-        if (isset($request->coin)) {
-            $this->getdata($request->id, $request->amount);
-            $vnp_Returnurl = "http://localhost:5173/";
-        }
         $vnp_TmnCode = "SMWBPLOI"; //Mã website tại VNPAY 
         $vnp_HashSecret = "YCXCIZUKOICUEMGAZGIFLYLLNULOSTTK"; //Chuỗi bí mật
         $vnp_TxnRef = $startTime; //Mã đơn hàng. Trong thực tế Merchant cần insert đơn hàng vào DB và gửi mã này sang VNPAY
@@ -203,11 +196,7 @@ class PaymentController extends Controller
         $accessKey = 'klm05TvNBzhg7h7j';
         $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa';
 
-        if (isset($request->coin)) {
-
-            $this->getdata($request->id, $request->amount);
-            $redirectUrl = "http://localhost:5173/";
-        }
+       
         $orderInfo = "Thanh toán qua momo";
         $amount = (int)$request->amount;
 
