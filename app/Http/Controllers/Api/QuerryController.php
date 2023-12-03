@@ -186,7 +186,8 @@ class QuerryController extends Controller
                 foreach ($userSeats as $seat) {
                     $reservedSeats[] = [
                         'seat' => $seat,
-                        'id_user' => $id_user
+                        'id_user' => $id_user,
+                        'id_time_detail' => $id_time_detail
                     ];
                 }
             }
@@ -195,7 +196,6 @@ class QuerryController extends Controller
             'cluster' => env('PUSHER_APP_CLUSTER'),
             'useTLS' => true,
         ]);
-
         $pusher->trigger(
             'Cinema',
             'SeatKepted',
