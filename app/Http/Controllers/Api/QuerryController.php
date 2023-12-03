@@ -214,6 +214,7 @@ class QuerryController extends Controller
             ->join('movie_chairs as mc', 'mc.id', '=', 'bt.id_chair')
             ->join('times', 'times.id', '=', 'td.time_id')
             ->join('users', 'users.id', '=', 'bt.user_id')
+            ->join('members','members.id_user' , '=', 'bt.user_id')
             ->join('films as fl', 'fl.id', '=', 'td.film_id')
             ->join('times as tm', 'tm.id', '=', 'td.time_id')
             ->join('movie_rooms as mv', 'mv.id', '=', 'td.room_id')
@@ -227,6 +228,7 @@ class QuerryController extends Controller
                 'fl.image',
                 'bt.id_code',
                 'bt.status',
+                'members.id_card',
                 'mv.name as movie_room_name',
                 'cms.name as name_cinema',
                 'cms.address',
@@ -237,7 +239,9 @@ class QuerryController extends Controller
                 'mc.name as chair_name',
                 'mc.price as chair_price',
                 'users.name as users_name',
-                'users.email as users_email'
+                'users.email as users_email',
+                'users.id as user_id'
+
             )->whereNull('bt.deleted_at')
             ->get();
         return $book_ticket_detail;
