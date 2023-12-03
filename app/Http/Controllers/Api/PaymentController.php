@@ -92,7 +92,10 @@ class PaymentController extends Controller
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
 
         $vnp_Returnurl = "http://localhost:5173/payment/id_code=" . $id_code . '/'; // Đường dẫn return sau khi thanh toán
-
+        if($request->id_user != null){
+            $vnp_Returnurl = "http://localhost:5173/"; // Đường dẫn return sau khi thanh toán
+            
+        }
         $vnp_TmnCode = "SMWBPLOI"; //Mã website tại VNPAY 
         $vnp_HashSecret = "YCXCIZUKOICUEMGAZGIFLYLLNULOSTTK"; //Chuỗi bí mật
         $vnp_TxnRef = $startTime; //Mã đơn hàng. Trong thực tế Merchant cần insert đơn hàng vào DB và gửi mã này sang VNPAY
@@ -209,8 +212,11 @@ class PaymentController extends Controller
         $amount = (int)$request->amount;
 
         $orderId = time() . "";
-        // $redirectUrl = "http://localhost:5173/type_payment=" . $type_payment;
         $ipnUrl = "http://localhost:5173/";
+        if($request->id_user != null){
+            $redirectUrl = "http://localhost:5173/"; // Đường dẫn return sau khi thanh toán
+            
+        }
         $extraData = "";
         $requestId = time() . "";
         $requestType = "captureWallet";
