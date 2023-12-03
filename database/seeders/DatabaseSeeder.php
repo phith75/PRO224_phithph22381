@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             'time_details',
             'movie_chairs',
             'cinemas',
-            'book_ticket_details',
+            'food_ticket_details',
             'food',
             'users',
             'book_tickets',
@@ -103,6 +103,7 @@ class DatabaseSeeder extends Seeder
                             'trailer' => "https://youtube.com/spidermantrailer",
                             'time' => "150 minutes",
                             'release_date' => "2021-12-17",
+                            'end_date' => "2023-12-17",
                             'description' => "Peter Parker is unmasked...",
                             'status' => 1
                         ],
@@ -113,6 +114,7 @@ class DatabaseSeeder extends Seeder
                             'trailer' => "https://youtube.com/batmantrailer",
                             'time' => "175 minutes",
                             'release_date' => "2022-03-04",
+                            'end_date' => "2023-12-17",
                             'description' => "Batman ventures into Gotham's underworld...",
                             'status' => 1
                         ]
@@ -204,9 +206,9 @@ class DatabaseSeeder extends Seeder
 
                     $data = [
 
-                        ['name' => 'A1', 'price' => 10,'id_time_detail'  => 1],
+                        ['name' => 'A1', 'price' => 10, 'id_time_detail'  => 1],
 
-                        ['name' => 'A2', 'price' => 10,'id_time_detail'  => 1],
+                        ['name' => 'A2', 'price' => 10, 'id_time_detail'  => 1],
 
                         ['name' => 'A3', 'price' => 10, 'id_time_detail' => 1],
 
@@ -228,14 +230,12 @@ class DatabaseSeeder extends Seeder
 
                     break;
 
-                case 'book_ticket_details':
+                case 'food_ticket_details':
 
                     $data = [
+                        ['book_ticket_id' => 1, 'food_id' => 1, 'quantity' => 1],
 
-                        ['book_ticket_id' => 1, 'time_id' => 1, 'food_id' => 1, 'chair' => 'A1', 'quantity' => 2, 'price' => 20],
-
-                        ['book_ticket_id' => 2, 'time_id' => 2, 'food_id' => 2, 'chair' => 'B3', 'quantity' => 1, 'price' => 10]
-
+                        ['book_ticket_id' => 2, 'food_id' => 2, 'quantity' => 2]
                     ];
 
                     break;
@@ -255,11 +255,9 @@ class DatabaseSeeder extends Seeder
                 case 'book_tickets':
 
                     $data = [
+                        ['user_id' => 1, 'id_time_detail' => 1, 'payment' => 1, 'amount' => 15, 'id_chair' => 1, 'time' => '10:00 AM'],
 
-                        ['user_id' => 1, 'id_time_detail' => 1, 'payment' => 1, 'amount' => 15, 'price' => 15, 'status' => 1],
-
-                        ['user_id' => 2, 'id_time_detail' => 2, 'payment' => 2, 'amount' => 10, 'price' => 10, 'status' => 1]
-
+                        ['user_id' => 2, 'id_time_detail' => 2, 'payment' => 2, 'amount' => 10, 'id_chair' => 3, 'time' => '1:00 PM']
                     ];
 
                     break;

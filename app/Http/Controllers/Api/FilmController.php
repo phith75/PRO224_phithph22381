@@ -40,10 +40,8 @@ class FilmController extends Controller
     {
         $films = Film::find($id);
 
-        if(!$films){
+        if (!$films) {
             return response()->json(['error_code' => 404, 'message' => 'Mã lỗi 404: Không tìm film.'], 404);
-
-   
         }
         return new FilmResource($films);
     }
@@ -55,10 +53,10 @@ class FilmController extends Controller
     {
         $data = $request->all();
         $films = Film::find($id);
-        
+
         if (!$films) {
             return response()->json(['error_code' => 404, 'message' => 'Mã lỗi 404: Không tìm thấy phim.'], 404);
-        } 
+        }
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
             $resultDelete = Storage::delete('/' . $films->image);
             if ($resultDelete) {
@@ -70,7 +68,7 @@ class FilmController extends Controller
         $films->update($data);
         return response()->json(['message' => 'Phim đã được cập nhật thành công', 'film' => $films], 200);
     }
-    
+
 
     /**
      * Remove the specified resource from storage.

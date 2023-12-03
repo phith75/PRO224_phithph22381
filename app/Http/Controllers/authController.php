@@ -3,48 +3,93 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\member;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Validator;
 
 class authController extends Controller
 {
     use HasApiTokens;
+
     public function sign_up(Request $request)
     {
-        $data = $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'email' => 'required|string|unique:users,email',
-            'password' => 'required|string'
+            'password' => 'required|string',
+            'phone' => 'nullable|string',
+            'image' => 'nullable|string',
+            'date_of_birth' => 'nullable|date',
+            'coin' => 'nullable',
+        ], [
+            'name.required' => 'Nhập name.',
+            'email.required' => 'Nhập email.',
+            'email.unique' => 'Email đã tồn tại.',
+            'password.required' => 'Nhập mật khẩu.',
+            // Add custom error messages for other fields if needed
         ]);
 
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
         $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password'])
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'password' => bcrypt($request->input('password')),
+            'phone' => $request->input('phone'),
+            'image' => $request->input('image'),
+            'date_of_birth' => $request->input('date_of_birth'),
         ]);
+
+        // Tạo Member
+        $member = Member::create([
+            'id_card' => sprintf('%08d', $user->id),
+            'card_class' => 1,
+            'activation_date' => now(),
+            'total_spending' => 0,
+            'accumulated_points' => 0,
+            'points_used' => 0,
+            'usable_points' => 0,
+            'id_user' => $user->id,
+        ]);
+
+        // Gán member_id cho User
+
 
         $token = $user->createToken('apiToken')->plainTextToken;
 
         $res = [
             'user' => $user,
-            'token' => $token
+            'token' => $token,
         ];
+
         return response($res, 201);
     }
+
     public function login(Request $request)
     {
-        $data = $request->validate([
+        $validator = Validator::make($request->all(), [
             'email' => 'required|string',
-            'password' => 'required|string'
+            'password' => 'required|string',
+        ], [
+            'email.required' => 'Nhập email.',
+            'password.required' => 'Nhập mật khẩu.',
         ]);
 
-        $user = User::where('email', $data['email'])->first();
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
+        }
 
-        if (!$user || !Hash::check($data['password'], $user->password)) {
+        $user = User::where('email', $request->input('email'))->first();
+
+        if (!$user || !Hash::check($request->input('password'), $user->password)) {
             return response([
-                'msg' => 'incorrect username or password'
+                'msg' => 'Email hoặc mật khẩu không chính xác',
             ], 401);
         }
 
@@ -52,11 +97,12 @@ class authController extends Controller
 
         $res = [
             'user' => $user,
-            'token' => $token
+            'token' => $token,
         ];
 
         return response($res, 201);
     }
+
 
     public function logout(Request $request)
     {
@@ -70,6 +116,43 @@ class authController extends Controller
             return response()->json([
                 'message' => 'User not found'
             ], 404);
+        }
+    }
+    //đăng nhập bằng tk gg 
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    public function handleGoogleCallback()
+    {
+        try {
+            $user = Socialite::driver('google')->user();
+
+            $existingUser = User::where('email', $user->email)->first();
+
+            if ($existingUser) {
+                Auth::login($existingUser);
+            } else {
+                $newUser = User::create([
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'password' => bcrypt('randompassword')
+                ]);
+
+                Auth::login($newUser);
+            }
+
+            $token = $newUser->createToken('apiToken')->plainTextToken;
+
+            return response()->json([
+                'user' => $newUser,
+                'token' => $token,
+            ]);
+        } catch (\Exception $e) {
+            return response([
+                'error' => 'Đã xảy ra lỗi khi đăng nhập bằng Google'
+            ], 500);
         }
     }
 }

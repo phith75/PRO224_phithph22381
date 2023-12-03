@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\authController;
-
+use App\Http\Controllers\Api\QuerryController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,4 +12,5 @@ use App\Http\Controllers\authController;
 | routes are loaded by the RouteServiceProvider and all of them will
 | be assigned to the "web" middleware group. Make something great!
 |
+
 */

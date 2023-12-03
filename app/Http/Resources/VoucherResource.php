@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class Book_ticket_detailResource extends JsonResource
+class voucherResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

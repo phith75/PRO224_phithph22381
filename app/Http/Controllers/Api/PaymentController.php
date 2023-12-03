@@ -3,28 +3,103 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 class PaymentController extends Controller
 {
     //
+    public function post_money(Request $request)
+    {$validator = Validator::make($request->all(), [
+        'id_user' => 'integer|required',
+        'coin' => 'integer|required',
+    ]);
 
-    public function vnpay_payment()
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 422);
+    }           
+    
+    $coin= $request->coin;
+        //cap nhat coin nap vao
+            $coin_total = User::find($request->id_user);
+            if (!$coin) {
+                return response()->json(['message' => 'giao dịch chưa hoàn thành do lỗi trong lúc nạp coin'], 404);
+            }
+            $coin += $coin_total->coin;
+            $coin_total->update(['coin' => $coin]);
+            return $coin;
+        //     ['message' => "success",
+        //       'url'=>'',
+        //       'coin'=>$_GET['amount']]
+    }
+    public function coin_payment(Request $request, $id)
     {
         $id_code = generateRandomString();
+        $amount = (int)$request->amount;
+        $data = [
+            "id_code" => $id_code,
+            "amount" => $amount
+        ];
+    
+        $user = User::find($id);
+        
+        if (!$user) {
+            return response()->json(['message' => 'Sai thông tin người dùng'], 404);
+        }
+    
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'id' => 'string',
+            'amount' => 'integer',
+            'password' => 'required|string', // Thêm quy tắc kiểm tra mật khẩu
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+    
+        if (Hash::check($request->input('password'), $user->password)) {
+            if ($user->coin >= $amount) {
+                $coin = $user->coin - $amount;
+                $user->update(["coin" => $coin]);
+                // Thêm data vào response nếu cần
+                $response = [
+                    'msg' => 'Thanh toán thành công',
+                    'data' => $data
+                ];
+    
+                return response()->json($response, 200);
+            }
+    
+            return response()->json(['msg' => 'Số dư của bạn không đủ'], 200);
+        } else {
+            return response()->json(['msg' => 'Nhập sai mật khẩu, vui lòng thử lại!'], 201);
+        }
+    }
+    
+
+    public function vnpay_payment(Request $request)
+    {
+        $id_code = generateRandomString();
+
         error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
         date_default_timezone_set('Asia/Ho_Chi_Minh');
         $startTime = date("YmdHis");
-        $expire = date('YmdHis', strtotime('+15 minutes', strtotime($startTime)));
+        $expire = date('YmdHis', strtotime('+50 minutes', strtotime($startTime)));
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        $vnp_Returnurl = "http://localhost:5173/book_ticket/" . $_GET['id'] . '/id_code=' . $id_code . '/'; // Đường dẫn return sau khi thanh toán
+
+        $vnp_Returnurl = "http://localhost:5173/payment/id_code=" . $id_code . '/'; // Đường dẫn return sau khi thanh toán
+
         $vnp_TmnCode = "SMWBPLOI"; //Mã website tại VNPAY 
         $vnp_HashSecret = "YCXCIZUKOICUEMGAZGIFLYLLNULOSTTK"; //Chuỗi bí mật
-
         $vnp_TxnRef = $startTime; //Mã đơn hàng. Trong thực tế Merchant cần insert đơn hàng vào DB và gửi mã này sang VNPAY
         $vnp_OrderInfo = 'Thanh toán hóa đơn';
         $vnp_OrderType = 'billpayment';
-        $vnp_Amount = $_GET['amount'] * 100;
+        $amount = (int)$request->amount;
+        $vnp_Amount = $amount * 100;
         $vnp_Locale = 'vn';
         $vnp_BankCode = '';
         $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
@@ -115,38 +190,43 @@ class PaymentController extends Controller
             header('Location: ' . $vnp_Url);
             die();
         } else {
-            return redirect($returnData['data']);
+            return $returnData;
         }
         // vui lòng tham khảo thêm tại code demo
     }
 
-    public function momo_payment()
+    public function momo_payment(Request $request)
     {
-
+        $id_code = generateRandomString();
         $endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
-
+        $redirectUrl = "http://localhost:5173/PayMentMoMo/id_code=" . $id_code . '/';;
         $partnerCode = 'MOMOBKUN20180529';
         $accessKey = 'klm05TvNBzhg7h7j';
         $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa';
+
+       
         $orderInfo = "Thanh toán qua momo";
-        $amount = $_POST['price'];
+        $amount = (int)$request->amount;
+
         $orderId = time() . "";
-        $redirectUrl = "http://localhost:5173/";
+        // $redirectUrl = "http://localhost:5173/type_payment=" . $type_payment;
         $ipnUrl = "http://localhost:5173/";
         $extraData = "";
         $requestId = time() . "";
         $requestType = "captureWallet";
         // $extraData = ($_POST["extraData"] ? $_POST["extraData"] : "");
         //before sign HMAC SHA256 signature
-        $rawHash = "accessKey=" . $accessKey . "&amount=" . $amount . "&extraData=" . $extraData . "&ipnUrl=" . $ipnUrl . "&orderId=" . $orderId . "&orderInfo=" . $orderInfo . "&partnerCode=" . $partnerCode . "&redirectUrl=" . $redirectUrl . "&requestId=" . $requestId . "&requestType=" . $requestType;
+        $rawHash = "accessKey=" . $accessKey  . "&amount=" . $amount . "&extraData=" . $extraData . "&ipnUrl=" . $ipnUrl . "&orderId=" . $orderId . "&orderInfo=" . $orderInfo . "&partnerCode=" . $partnerCode . "&redirectUrl=" . $redirectUrl . "&requestId=" . $requestId . "&requestType=" . $requestType;
 
         $signature = hash_hmac("sha256", $rawHash, $secretKey);
 
         $data = array(
+
             'partnerCode' => $partnerCode,
             'partnerName' => "Test",
             "storeId" => "MomoTestStore",
             'requestId' => $requestId,
+
             'amount' => $amount,
             'orderId' => $orderId,
             'orderInfo' => $orderInfo,
@@ -160,6 +240,6 @@ class PaymentController extends Controller
         $result = execPostRequest($endpoint, json_encode($data));
         $jsonResult = json_decode($result, true);  // decode json
 
-        return redirect($jsonResult['payUrl']);
+        return ($jsonResult);
     }
 }

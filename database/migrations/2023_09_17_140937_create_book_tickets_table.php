@@ -9,19 +9,20 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('book_tickets', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('user_id');
-            $table->bigInteger('id_time_detail');
-            $table->tinyInteger('payment');
-            $table->integer('amount');
-            $table->double('price', 8, 2);
-            $table->tinyInteger('status')->default(0);
-            $table->integer('id_code')->nullable();
+            $table->bigInteger('user_id')->unsigned();
+            $table->bigInteger('id_time_detail')->unsigned();
+            $table->tinyInteger('payment')->nullable();
+            $table->integer('amount')->nullable();
+            $table->string('time', 255)->nullable();
+            $table->string('id_chair', 255);
+            $table->string('id_code')->nullable();
+            $table->integer('status')->default(0);
             $table->timestamps();
-            $table->softDeletes(); // add
+            $table->softDeletes();
         });
     }
     /**
