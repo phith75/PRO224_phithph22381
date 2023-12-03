@@ -6,15 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\Food_ticket_detail;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Event;
-use App\Events\SeatReserved;
-
+use Illuminate\Support\Facades\Hash;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
+use App\Models\Book_ticket;
+use Carbon\Carbon;
+use App\Models\Chairs;
 use Pusher\Pusher;
 
 class QuerryController extends Controller
@@ -159,6 +159,21 @@ class QuerryController extends Controller
 
         // Đặt lại dữ liệu vào Cache
         Cache::put('seat_reservation', $seat_reservation, $currentTime->addMinutes(2));
+        $pusher = new Pusher(env('PUSHER_APP_KEY'), env('PUSHER_APP_SECRET'), env('PUSHER_APP_ID'), [
+            'cluster' => env('PUSHER_APP_CLUSTER'),
+            'useTLS' => true,
+        ]);
+
+        $pusher->trigger('Cinema', 'check-Seat', [
+            $seat_reservation[$id_time_detail],
+
+        ]);
+        // Trả về dữ liệu ghế và thời gian đã đặt
+
+    }
+
+    public function getReservedSeatsByTimeDetail($id_time_detail)
+    {
         $seat_reservation = Cache::get('seat_reservation', []);
         $reservedSeats = [];
 
@@ -180,17 +195,15 @@ class QuerryController extends Controller
             'cluster' => env('PUSHER_APP_CLUSTER'),
             'useTLS' => true,
         ]);
-        $updatedRow = 'success';
-        $pusher->trigger('Cinema', 'check-Seat', [
-            'row' => $reservedSeats,
 
-        ]);
-        // Trả về dữ liệu ghế và thời gian đã đặt
-        return $seat_reservation[$id_time_detail];
-    }
+        $pusher->trigger(
+            'Cinema',
+            'SeatKepted',
+            $reservedSeats,
 
-    public function getReservedSeatsByTimeDetail($id_time_detail)
-    {
+        );
+
+        return $reservedSeats;
     }
 
 
@@ -317,6 +330,15 @@ class QuerryController extends Controller
         //thống kê từ lúc bắt đầu đến hiện tại và lọc theo tháng
         $y = '';
         $m  = '';
+
+
+        if ($request->month === null) {
+            $m = date('m');
+        } else {
+            $m = $request->month;
+        };
+
+
         if ($request->year === null) {
             $y = date('Y');
         } else {
@@ -325,14 +347,16 @@ class QuerryController extends Controller
 
 
 
-        $query =  DB::table('book_tickets')
-            ->whereYear('created_at', $y);
-        if ($request->month !== null) {
 
 
-            $query->whereMonth('created_at', $request->month);
-        }
-        $revenue_month_y = $query->sum('amount');
+        $revenue_month_y = DB::table('book_tickets')
+            ->when($m, function ($query, $m) {
+                return $query->whereMonth('created_at', $m);
+            }, function ($query) {
+                return $query->whereYear('created_at', date('Y'));
+            })
+            ->sum('amount');
+
         //-------------------------------------------
 
 
@@ -343,7 +367,6 @@ class QuerryController extends Controller
             ->select(DB::raw('DATE_FORMAT(created_at, "%Y-%m") as Month'), DB::raw('SUM(amount) as TotalAmount'))
             ->whereYear('created_at', $years)
             ->groupBy('Month')->whereNull('book_tickets.deleted_at')
-
             ->get();
         //----------------------------------------------------
         //thống kê tổng số khách hàng mới của của tháng này
@@ -388,6 +411,8 @@ class QuerryController extends Controller
             ->whereMonth('book_tickets.time', $now->month)->whereNull('book_tickets.deleted_at')
             ->groupBy('films.name')
             ->get();
+
+
         //----------------------------------------------------------------
         //lấy ra tống doanh thu từ đồ ăn theo tháng
         $totalPricefoodmon = DB::table('food_ticket_details')
@@ -500,7 +525,7 @@ class QuerryController extends Controller
             ->select('cinemas.name as cinema_name', DB::raw('SUM(book_tickets.amount) as total_amount'))
             ->groupBy('cinemas.name')
             ->get();
-            
+
         $revenue_staff_day_filter = DB::table('book_tickets')
             ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
             ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
@@ -633,5 +658,49 @@ class QuerryController extends Controller
             ->where('user_id', $id)
             ->select('uv.*')->get();
         return $data;
+    }
+    public function refund_coin(Request $request, $id)
+    {
+        $now = Carbon::now();
+
+        $status = Book_ticket::find($id);
+        $check_time = DB::table('time_details')->join('times', 'time_details.time_id', '=', 'times.id')
+            ->where('time_details.id', $status->id_time_detail)
+            ->get()->first();
+        $dateTimeString = $check_time->date . ' ' . $check_time->time;
+
+        // Tạo đối tượng Carbon từ chuỗi datetime
+        $dateTime = Carbon::parse($dateTimeString);
+
+        // Chuyển đổi thành timestamp
+        $time = Carbon::createFromTimestamp($dateTime->timestamp);
+        // So sánh với thời điểm hiện tại
+        $twoHoursAgo = $now->subHours(2);
+        if ($status && $time->gte($twoHoursAgo)) {
+            $refund_coins = User::find($status->user_id);
+            if (Hash::check($request->input('password'), $refund_coins->password)) {
+                if (!$status) {
+                    return response([
+                        'msg' => 'Vé không tồn tại !',
+                    ], 401);
+                }
+                $cancel_chair = Chairs::find($status->id_chair);
+                if (!$cancel_chair) {
+                    return response([
+                        'msg' => 'Ghế không tồn tại hoặc đã hủy !',
+                    ], 401);
+                }
+                $cancel_chair->delete();
+                $update = $status->update(['status' => 3]);
+                $coin_usage = $refund_coins->coin;
+                $amount = ($status->amount *= 0.7) + $coin_usage;
+                $refund_coins->update(['coin' => $amount]);
+                return response()->json(['message' => "Hủy thành công, số coin " . ($status->amount *= 0.7) . " đã được hoàn vào ví coin của bạn"], 200);
+            } else {
+                return response()->json(['msg' => 'Nhập sai mật khẩu, vui lòng thử lại!'], 201);
+            }
+        } else {
+            return response()->json(['msg' => 'Vé không tồn tại hoặc đã quá thời gian hủy vé!'], 201);
+        }
     }
 }

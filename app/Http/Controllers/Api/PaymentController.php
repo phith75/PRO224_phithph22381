@@ -5,75 +5,82 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+
 class PaymentController extends Controller
 {
     //
-    public function getdata($id, $coin)
+    public function post_money(Request $request)
     {
-        //cap nhat coin nap vao
-        if (isset($coin)) {
+        $validator = Validator::make($request->all(), [
+            'id_user' => 'integer|required',
+            'coin' => 'integer|required',
+        ]);
 
-            $coin_total = User::find($id);
-
-            if (!$coin) {
-                return response()->json(['message' => 'giao dịch chưa hoàn thành do lỗi trong lúc nạp coin'], 404);
-            }
-            $coin_total->update(['coin' => $coin]);
-            return $coin;
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
         }
+
+        $coin = $request->coin;
+        //cap nhat coin nap vao
+        $coin_total = User::find($request->id_user);
+        if (!$coin) {
+            return response()->json(['message' => 'giao dịch chưa hoàn thành do lỗi trong lúc nạp coin'], 404);
+        }
+        $coin += $coin_total->coin;
+        $coin_total->update(['coin' => $coin]);
+        return $coin;
         //     ['message' => "success",
         //       'url'=>'',
         //       'coin'=>$_GET['amount']]
     }
+    public function coin_payment(Request $request, $id)
+    {
+        $id_code = generateRandomString();
+        $amount = (int)$request->amount;
+        $data = [
+            "id_code" => $id_code,
+            "amount" => $amount
+        ];
 
-public function coin_payment(Request $request, $id)
-{
-    $id_code = generateRandomString();
-    $amount = (int)$request->amount;
-    $data = [
-        "id_code" => $id_code,
-        "amount" => $amount
-    ];
+        $user = User::find($id);
 
-    $user = User::find($id);
-
-    if (!$user) {
-        return response()->json(['message' => 'Sai thông tin người dùng'], 404);
-    }
-
-    // Validate the request
-    $validator = Validator::make($request->all(), [
-        'id' => 'string',
-        'amount' => 'integer',
-        'password' => 'required|string', // Thêm quy tắc kiểm tra mật khẩu
-    ]);
-
-    if ($validator->fails()) {
-        return response()->json(['errors' => $validator->errors()], 422);
-    }
-
-    if (Hash::check($request->input('password'), $user->password)) {
-        if ($user->coin >= $amount) {
-            $coin = $user->coin - $amount;
-            $user->update(["coin" => $coin]);
-
-            // Thêm data vào response nếu cần
-            $response = [
-                'msg' => 'Thanh toán thành công',
-                'data' => $data
-            ];
-
-            return response()->json($response, 200);
+        if (!$user) {
+            return response()->json(['message' => 'Sai thông tin người dùng'], 404);
         }
 
-        return response()->json(['msg' => 'Số dư của bạn không đủ'], 200);
-    } else {
-        return response()->json(['msg' => 'Nhập sai mật khẩu, vui lòng thử lại!'], 201);
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'id' => 'string',
+            'amount' => 'integer',
+            'password' => 'required|string', // Thêm quy tắc kiểm tra mật khẩu
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        if (Hash::check($request->input('password'), $user->password)) {
+            if ($user->coin >= $amount) {
+                $coin = $user->coin - $amount;
+                $user->update(["coin" => $coin]);
+                // Thêm data vào response nếu cần
+                $response = [
+                    'msg' => 'Thanh toán thành công',
+                    'data' => $data
+                ];
+
+                return response()->json($response, 200);
+            }
+
+            return response()->json(['msg' => 'Số dư của bạn không đủ'], 200);
+        } else {
+            return response()->json(['msg' => 'Nhập sai mật khẩu, vui lòng thử lại!'], 201);
+        }
     }
-}
 
 
     public function vnpay_payment(Request $request)
@@ -88,11 +95,6 @@ public function coin_payment(Request $request, $id)
         if (isset($request->coin)) {
 
             $vnp_Returnurl = "http://127.0.0.1:8000/api/getdata/" . $request->id . '/' . $_GET['amount']; // Đường dẫn return sau khi thanh toán
-        }
-
-        if (isset($request->coin)) {
-            $this->getdata($request->id, $request->amount);
-            $vnp_Returnurl = "http://localhost:5173/";
         }
 
         $vnp_TmnCode = "SMWBPLOI"; //Mã website tại VNPAY 
@@ -206,14 +208,9 @@ public function coin_payment(Request $request, $id)
         $accessKey = 'klm05TvNBzhg7h7j';
         $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa';
 
-        if (isset($request->coin)) {
 
-            $this->getdata($request->id, $request->amount);
-            $redirectUrl = "http://localhost:5173/";
-        }
         $orderInfo = "Thanh toán qua momo";
         $amount = (int)$request->amount;
-
 
         $orderId = time() . "";
         // $redirectUrl = "http://localhost:5173/type_payment=" . $type_payment;
