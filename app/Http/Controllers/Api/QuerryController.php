@@ -6,12 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\Food_ticket_detail;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
+use App\Models\Book_ticket;
+use Carbon\Carbon;
+use App\Models\Chairs;
+use Pusher\Pusher;
 
 class QuerryController extends Controller
 {
@@ -152,11 +156,20 @@ class QuerryController extends Controller
                 $seat_reservation[$request->id_time_detail][$request->id_user]['time'][$seat] = $currentTime->addMinutes(2);
             }
         }
+
         // Đặt lại dữ liệu vào Cache
         Cache::put('seat_reservation', $seat_reservation, $currentTime->addMinutes(2));
+        $pusher = new Pusher(env('PUSHER_APP_KEY'), env('PUSHER_APP_SECRET'), env('PUSHER_APP_ID'), [
+            'cluster' => env('PUSHER_APP_CLUSTER'),
+            'useTLS' => true,
+        ]);
 
+        $pusher->trigger('Cinema', 'check-Seat', [
+            $seat_reservation[$id_time_detail],
+
+        ]);
         // Trả về dữ liệu ghế và thời gian đã đặt
-        return $seat_reservation[$id_time_detail];
+
     }
 
     public function getReservedSeatsByTimeDetail($id_time_detail)
@@ -178,6 +191,17 @@ class QuerryController extends Controller
                 }
             }
         }
+        $pusher = new Pusher(env('PUSHER_APP_KEY'), env('PUSHER_APP_SECRET'), env('PUSHER_APP_ID'), [
+            'cluster' => env('PUSHER_APP_CLUSTER'),
+            'useTLS' => true,
+        ]);
+
+        $pusher->trigger(
+            'Cinema',
+            'SeatKepted',
+            $reservedSeats,
+
+        );
 
         return $reservedSeats;
     }
@@ -200,7 +224,9 @@ class QuerryController extends Controller
             ->select(
                 'bt.created_at as time',
                 'fl.name',
+                'fl.image',
                 'bt.id_code',
+                'bt.status',
                 'mv.name as movie_room_name',
                 'cms.name as name_cinema',
                 'cms.address',
@@ -218,7 +244,7 @@ class QuerryController extends Controller
     }
     public function purchase_history_user($id)
     {
-       
+
         $detail_purchase = DB::table('book_tickets as bt')
             ->join('time_details as td', 'td.id', '=', 'bt.id_time_detail')
             ->join('films as fl', 'fl.id', '=', 'td.film_id')
@@ -485,6 +511,69 @@ class QuerryController extends Controller
 
         return $data;
     }
+    public function Revenue_cinema(Request $request)
+    {
+        $now = Carbon::now();
+        /// lấy ra doanh thu 1 ngày theo rạp cho nhân viên xem
+        $revenue_staff_day = DB::table('book_tickets')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
+            ->join('films', 'time_details.film_id', '=', 'films.id')
+            ->join('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
+            ->where('cinemas.id', $request->id_cinema)
+            ->whereDate('book_tickets.time', $now)
+            ->select('cinemas.name as cinema_name', DB::raw('SUM(book_tickets.amount) as total_amount'))
+            ->groupBy('cinemas.name')
+            ->get();
+
+        $revenue_staff_day_filter = DB::table('book_tickets')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
+            ->join('films', 'time_details.film_id', '=', 'films.id')
+            ->join('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
+            ->where('cinemas.id', $request->id_cinema)
+            ->whereDay('book_tickets.time', $request->day)
+            ->whereMonth('book_tickets.time', $now->month)
+            ->whereYear('book_tickets.time', $now->year)
+            ->select('cinemas.name as cinema_name', DB::raw('SUM(book_tickets.amount) as total_amount'))
+            ->groupBy('cinemas.name')
+            ->get();
+
+        ///số vé bán ra theo từng tên phim của một ngày
+        $tickets_total = DB::table('book_tickets')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->join('films', 'time_details.film_id', '=', 'films.id')
+            ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
+            ->join('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
+            ->select('films.name', DB::raw('COUNT(book_tickets.id) as total_tickets'))
+            ->whereDate('book_tickets.time', '=', $now)
+            ->where('cinemas.id', $request->id_cinema)
+            ->groupBy('films.name')
+            ->get();
+
+        ///lấy ra tổng doanh thu theo ngày từ đồ ăn
+        $revenue_food =  DB::table('book_tickets')
+            ->join('food_ticket_details', 'book_tickets.id', '=', 'food_ticket_details.book_ticket_id')
+            ->join('food', 'food_ticket_details.food_id', '=', 'food.id')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+
+            ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
+            ->join('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
+            ->whereDate('book_tickets.time', '=', $now)
+            ->where('cinemas.id', $request->id_cinema)
+
+            ->sum('food.price');
+
+        return [
+            "revenue_staff" => [
+                'revenue_staff_day' => $revenue_staff_day,
+                'revenue_staff_day_filter' => $revenue_staff_day_filter,
+                'tickets_total' => $tickets_total,
+                'revenue_food' => $revenue_food
+            ],
+            "revenue_admin_cinema" => []
+        ];
+    }
     public function getShiftRevenue($id) //tạm thời
     {
         $now = Carbon::now();
@@ -562,5 +651,56 @@ class QuerryController extends Controller
             ->get();
 
         return $time_detail_by_film_id;
+    }
+    public function get_used_vouchers_by_id_user($id)
+    {
+        $data = DB::table('used_vouchers as uv')
+            ->where('user_id', $id)
+            ->select('uv.*')->get();
+        return $data;
+    }
+    public function refund_coin(Request $request, $id)
+    {
+        $now = Carbon::now();
+
+        $status = Book_ticket::find($id);
+        $check_time = DB::table('time_details')->join('times', 'time_details.time_id', '=', 'times.id')
+            ->where('time_details.id', $status->id_time_detail)
+            ->get()->first();
+        $dateTimeString = $check_time->date . ' ' . $check_time->time;
+
+        // Tạo đối tượng Carbon từ chuỗi datetime
+        $dateTime = Carbon::parse($dateTimeString);
+
+        // Chuyển đổi thành timestamp
+        $time = Carbon::createFromTimestamp($dateTime->timestamp);
+        // So sánh với thời điểm hiện tại
+        $twoHoursAgo = $now->subHours(2);
+        if ($status && $time->gte($twoHoursAgo)) {
+            $refund_coins = User::find($status->user_id);
+            if (Hash::check($request->input('password'), $refund_coins->password)) {
+                if (!$status) {
+                    return response([
+                        'msg' => 'Vé không tồn tại !',
+                    ], 401);
+                }
+                $cancel_chair = Chairs::find($status->id_chair);
+                if (!$cancel_chair) {
+                    return response([
+                        'msg' => 'Ghế không tồn tại hoặc đã hủy !',
+                    ], 401);
+                }
+                $cancel_chair->delete();
+                $update = $status->update(['status' => 3]);
+                $coin_usage = $refund_coins->coin;
+                $amount = ($status->amount *= 0.7) + $coin_usage;
+                $refund_coins->update(['coin' => $amount]);
+                return response()->json(['message' => "Hủy thành công, số coin " . ($status->amount *= 0.7) . " đã được hoàn vào ví coin của bạn"], 200);
+            } else {
+                return response()->json(['msg' => 'Nhập sai mật khẩu, vui lòng thử lại!'], 201);
+            }
+        } else {
+            return response()->json(['msg' => 'Vé không tồn tại hoặc đã quá thời gian hủy vé!'], 201);
+        }
     }
 }

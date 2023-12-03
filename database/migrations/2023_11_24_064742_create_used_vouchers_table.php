@@ -17,8 +17,6 @@ return new class extends Migration
             $table->string('voucher_code');
             $table->timestamp('used_at')->nullable();
             $table->timestamps();
-
-            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

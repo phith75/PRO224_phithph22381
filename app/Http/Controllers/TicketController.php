@@ -51,7 +51,6 @@ class TicketController extends Controller
         if ($food_ticket_exists) {
             // Có thể thực hiện các thao tác khác dựa trên thông tin food ticket
         }
-
         $array_chair = explode(",", $book_ticket_detail->chair_name);
 
         // $ticketData = [
