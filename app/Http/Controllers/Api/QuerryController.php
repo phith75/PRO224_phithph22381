@@ -15,6 +15,7 @@ use Illuminate\Support\Arr;
 use App\Models\Book_ticket;
 use Carbon\Carbon;
 use App\Models\Chairs;
+use Pusher\Pusher;
 
 class QuerryController extends Controller
 {
@@ -155,11 +156,20 @@ class QuerryController extends Controller
                 $seat_reservation[$request->id_time_detail][$request->id_user]['time'][$seat] = $currentTime->addMinutes(2);
             }
         }
+
         // Đặt lại dữ liệu vào Cache
         Cache::put('seat_reservation', $seat_reservation, $currentTime->addMinutes(2));
+        $pusher = new Pusher(env('PUSHER_APP_KEY'), env('PUSHER_APP_SECRET'), env('PUSHER_APP_ID'), [
+            'cluster' => env('PUSHER_APP_CLUSTER'),
+            'useTLS' => true,
+        ]);
 
+        $pusher->trigger('Cinema', 'check-Seat', [
+            $seat_reservation[$id_time_detail],
+
+        ]);
         // Trả về dữ liệu ghế và thời gian đã đặt
-        return $seat_reservation[$id_time_detail];
+
     }
 
     public function getReservedSeatsByTimeDetail($id_time_detail)
@@ -176,12 +186,22 @@ class QuerryController extends Controller
                 foreach ($userSeats as $seat) {
                     $reservedSeats[] = [
                         'seat' => $seat,
-                        'id_user' => $id_user,
-                        'id_time_detail' => $id_time_detail
+                        'id_user' => $id_user
                     ];
                 }
             }
         }
+        $pusher = new Pusher(env('PUSHER_APP_KEY'), env('PUSHER_APP_SECRET'), env('PUSHER_APP_ID'), [
+            'cluster' => env('PUSHER_APP_CLUSTER'),
+            'useTLS' => true,
+        ]);
+
+        $pusher->trigger(
+            'Cinema',
+            'SeatKepted',
+            $reservedSeats,
+
+        );
 
         return $reservedSeats;
     }
