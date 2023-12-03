@@ -655,6 +655,18 @@ class QuerryController extends Controller
             ->get();
 
         return $time_detail_by_film_id;
+    }public function get_room_by_id_cinema(Request $request, $id){
+        $movie_rooms = DB::table('movie_rooms')
+        ->join('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
+        ->where('movie_rooms.id_cinema', $id)
+        ->select(
+            'movie_rooms.*',
+            'cinemas.name as name_cinema'
+        )
+        ->get();
+
+        return $movie_rooms;
+
     }
     public function get_used_vouchers_by_id_user($id)
     {
@@ -721,4 +733,5 @@ class QuerryController extends Controller
             return response()->json(['msg' => 'Vé không tồn tại hoặc đã quá thời gian hủy vé!'], 201);
         }
     }
+    
 }
