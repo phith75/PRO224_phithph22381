@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('id_cinema')->nullable();
+            $table->integer('id_staff_check')->default(0);
             $table->string('image', 255)->nullable();
             $table->string('phone', 255)->nullable();
             $table->tinyInteger('role')->default(0);
