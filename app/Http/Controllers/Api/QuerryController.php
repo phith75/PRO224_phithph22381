@@ -209,79 +209,79 @@ class QuerryController extends Controller
     public function purchase_history_ad()
     {
         $book_ticket_detail = DB::table('book_tickets as bt')
-        ->join('time_details as td', 'td.id', '=', 'bt.id_time_detail')
-        ->join('movie_chairs as mc', 'mc.id', '=', 'bt.id_chair')
-        ->join('times', 'times.id', '=', 'td.time_id')
-        ->join('users', 'users.id', '=', 'bt.user_id')
-        ->join('members','members.id_user' , '=', 'bt.user_id')
-        ->join('films as fl', 'fl.id', '=', 'td.film_id')
-        ->join('times as tm', 'tm.id', '=', 'td.time_id')
-        ->join('movie_rooms as mv', 'mv.id', '=', 'td.room_id')
-        ->join('cinemas as cms', 'cms.id', '=', 'mv.id_cinema')
-        ->leftJoin(DB::raw('(SELECT book_ticket_id, GROUP_CONCAT(CONCAT(quantity, " ", name)) as food_items FROM food_ticket_details JOIN food ON food.id = food_ticket_details.food_id GROUP BY book_ticket_id) as food_ticket_details'), function ($join) {
-            $join->on('food_ticket_details.book_ticket_id', '=', 'bt.id');
-        })
-        ->select(
-            'bt.created_at as time',
-            'fl.name',
-            'fl.image',
-            'bt.id_code',
-            'bt.status',
-            'members.id_card',
-            'mv.name as movie_room_name',
-            'cms.name as name_cinema',
-            'cms.address',
-            'td.date',
-            'tm.time as time_suatchieu',
-            'bt.amount as total_price',
-            'food_ticket_details.food_items',
-            'mc.name as chair_name',
-            'mc.price as chair_price',
-            'users.name as users_name',
-            'users.email as users_email',
-            'users.id as user_id'
-        )
-        ->whereNull('bt.deleted_at')
-        ->get();
-    
+            ->join('time_details as td', 'td.id', '=', 'bt.id_time_detail')
+            ->join('movie_chairs as mc', 'mc.id', '=', 'bt.id_chair')
+            ->join('times', 'times.id', '=', 'td.time_id')
+            ->join('users', 'users.id', '=', 'bt.user_id')
+            ->join('members', 'members.id_user', '=', 'bt.user_id')
+            ->join('films as fl', 'fl.id', '=', 'td.film_id')
+            ->join('times as tm', 'tm.id', '=', 'td.time_id')
+            ->join('movie_rooms as mv', 'mv.id', '=', 'td.room_id')
+            ->join('cinemas as cms', 'cms.id', '=', 'mv.id_cinema')
+            ->leftJoin(DB::raw('(SELECT book_ticket_id, GROUP_CONCAT(CONCAT(quantity, " ", name)) as food_items FROM food_ticket_details JOIN food ON food.id = food_ticket_details.food_id GROUP BY book_ticket_id) as food_ticket_details'), function ($join) {
+                $join->on('food_ticket_details.book_ticket_id', '=', 'bt.id');
+            })
+            ->select(
+                'bt.created_at as time',
+                'fl.name',
+                'fl.image',
+                'bt.id_code',
+                'bt.status',
+                'members.id_card',
+                'mv.name as movie_room_name',
+                'cms.name as name_cinema',
+                'cms.address',
+                'td.date',
+                'tm.time as time_suatchieu',
+                'bt.amount as total_price',
+                'food_ticket_details.food_items',
+                'mc.name as chair_name',
+                'mc.price as chair_price',
+                'users.name as users_name',
+                'users.email as users_email',
+                'users.id as user_id'
+            )
+            ->whereNull('bt.deleted_at')
+            ->get();
+
         return $book_ticket_detail;
     }
     public function purchase_history_user($id)
     {
 
         $detail_purchase = DB::table('book_tickets as bt')
-        ->join('time_details as td', 'td.id', '=', 'bt.id_time_detail')
-        ->join('movie_chairs as mc', 'mc.id', '=', 'bt.id_chair')
-        ->join('times', 'times.id', '=', 'td.time_id')
-        ->join('users', 'users.id', '=', 'bt.user_id')
-        ->join('members','members.id_user' , '=', 'bt.user_id')
-        ->join('films as fl', 'fl.id', '=', 'td.film_id')
-        ->join('times as tm', 'tm.id', '=', 'td.time_id')
-        ->join('movie_rooms as mv', 'mv.id', '=', 'td.room_id')
-        ->join('cinemas as cms', 'cms.id', '=', 'mv.id_cinema')
-        ->leftJoin(DB::raw('(SELECT book_ticket_id, GROUP_CONCAT(CONCAT(quantity, " ", name)) as food_items FROM food_ticket_details JOIN food ON food.id = food_ticket_details.food_id GROUP BY book_ticket_id) as food_ticket_details'), function ($join) {
-            $join->on('food_ticket_details.book_ticket_id', '=', 'bt.id');
-        })
-        ->select(
-            'bt.created_at as time',
-            'fl.name',
-            'fl.image',
-            'bt.id_code',
-            'bt.status',
-            'members.id_card',
-            'mv.name as movie_room_name',
-            'cms.name as name_cinema',
-            'cms.address',
-            'td.date',
-            'tm.time as time_suatchieu',
-            'bt.amount as total_price',
-            'food_ticket_details.food_items',
-            'mc.name as chair_name',
-            'mc.price as chair_price',
-            'users.name as users_name',
-            'users.email as users_email',
-            'users.id as user_id'
-        )
+            ->join('time_details as td', 'td.id', '=', 'bt.id_time_detail')
+            ->join('movie_chairs as mc', 'mc.id', '=', 'bt.id_chair')
+            ->join('times', 'times.id', '=', 'td.time_id')
+            ->join('users', 'users.id', '=', 'bt.user_id')
+            ->join('members', 'members.id_user', '=', 'bt.user_id')
+            ->join('films as fl', 'fl.id', '=', 'td.film_id')
+            ->join('times as tm', 'tm.id', '=', 'td.time_id')
+            ->join('movie_rooms as mv', 'mv.id', '=', 'td.room_id')
+            ->join('cinemas as cms', 'cms.id', '=', 'mv.id_cinema')
+            ->leftJoin(DB::raw('(SELECT book_ticket_id, GROUP_CONCAT(CONCAT(quantity, " ", name)) as food_items FROM food_ticket_details JOIN food ON food.id = food_ticket_details.food_id GROUP BY book_ticket_id) as food_ticket_details'), function ($join) {
+                $join->on('food_ticket_details.book_ticket_id', '=', 'bt.id');
+            })
+            ->select(
+                'bt.created_at as time',
+                'fl.name',
+                'fl.image',
+                'bt.id_code',
+                'bt.status',
+                'members.id_card',
+                'mv.name as movie_room_name',
+                'cms.name as name_cinema',
+                'cms.address',
+                'td.date',
+                'tm.time as time_suatchieu',
+                'bt.amount as total_price',
+                'food_ticket_details.food_items',
+                'mc.name as chair_name',
+                'mc.price as chair_price',
+                'users.name as users_name',
+                'users.email as users_email',
+                'users.id as user_id'
+            )
             ->where('users.id', $id)
             ->whereNull('bt.deleted_at')
             ->get();
@@ -843,41 +843,46 @@ class QuerryController extends Controller
             ->first();
         return $CinemaDetailbyId;
     }
-    public function check_time_detail_by_film_id($id_cinema)
+    public function check_time_detail_by_film_id(Request $request, $id_cinema)
     {
         $now = now();
-        $forDayLater = now()->addDays(4);
+        $now = now(); // Assuming $now is already defined
+
         $time_detail_by_film_id = DB::table('time_details as td')
             ->join('movie_rooms as mv', 'mv.id', '=', 'td.room_id')
             ->join('cinemas as cms', 'cms.id', '=', 'mv.id_cinema')
             ->join('times as tms', 'tms.id', '=', 'td.time_id')
             ->where('cms.id', $id_cinema)
-            ->where(function ($query) use ($now, $forDayLater) {
+            ->where(function ($query) use ($now) {
                 $query->where('td.date', '>', $now->format('Y-m-d'))
                     ->orWhere(function ($subQuery) use ($now) {
                         $subQuery->where('td.date', '=', $now->format('Y-m-d'))
                             ->whereTime('tms.time', '>=', $now->format('H:i'));
                     });
-            })->whereNull('td.deleted_at')
+            })
+            ->whereNull('td.deleted_at')
+            ->whereBetween('td.date', [$now->format('Y-m-d'), $now->addDays(4)->format('Y-m-d')])
             ->select(
                 'td.film_id',
                 'td.id as show',
             )
             ->get();
 
+
         return $time_detail_by_film_id;
-    }public function get_room_by_id_cinema(Request $request, $id){
+    }
+    public function get_room_by_id_cinema(Request $request, $id)
+    {
         $movie_rooms = DB::table('movie_rooms')
-        ->join('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
-        ->where('movie_rooms.id_cinema', $id)
-        ->select(
-            'movie_rooms.*',
-            'cinemas.name as name_cinema'
-        )
-        ->get();
+            ->join('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
+            ->where('movie_rooms.id_cinema', $id)
+            ->select(
+                'movie_rooms.*',
+                'cinemas.name as name_cinema'
+            )
+            ->get();
 
         return $movie_rooms;
-
     }
     public function get_used_vouchers_by_id_user($id)
     {
@@ -903,9 +908,9 @@ class QuerryController extends Controller
         $dateTimeString = $check_time->date . ' ' . $check_time->time;
         $check = Book_ticket::where('user_id', $status->user_id)
             ->whereBetween('time', [$startOfMonth, $endOfMonth])
-            ->where('status',3)
+            ->where('status', 3)
             ->count();
-        if($check >= 2){
+        if ($check >= 2) {
             return response([
                 'msg' => 'Bạn đã hủy tối đa trong tháng này !',
             ], 401);
@@ -917,7 +922,7 @@ class QuerryController extends Controller
         // So sánh với thời điểm hiện tại
         $twoHoursAgo = $now->subHours(2);
 
-        if($status && $time->gte($twoHoursAgo)) {
+        if ($status && $time->gte($twoHoursAgo)) {
             $refund_coins = User::find($status->user_id);
             if (Hash::check($request->input('password'), $refund_coins->password)) {
                 if (!$status) {
@@ -944,5 +949,4 @@ class QuerryController extends Controller
             return response()->json(['msg' => 'Vé không tồn tại hoặc đã quá thời gian hủy vé!'], 401);
         }
     }
-    
 }
