@@ -156,7 +156,6 @@ class QuerryController extends Controller
                 $seat_reservation[$request->id_time_detail][$request->id_user]['time'][$seat] = $currentTime->addMinutes(2);
             }
         }
-
         // Đặt lại dữ liệu vào Cache
         Cache::put('seat_reservation', $seat_reservation, $currentTime->addMinutes(2));
         $pusher = new Pusher(env('PUSHER_APP_KEY'), env('PUSHER_APP_SECRET'), env('PUSHER_APP_ID'), [
@@ -334,15 +333,6 @@ class QuerryController extends Controller
         //thống kê từ lúc bắt đầu đến hiện tại và lọc theo tháng
         $y = '';
         $m  = '';
-
-
-        if ($request->month === null) {
-            $m = date('m');
-        } else {
-            $m = $request->month;
-        };
-
-
         if ($request->year === null) {
             $y = date('Y');
         } else {
@@ -351,16 +341,14 @@ class QuerryController extends Controller
 
 
 
+        $query =  DB::table('book_tickets')
+            ->whereYear('created_at', $y);
+        if ($request->month !== null) {
 
 
-        $revenue_month_y = DB::table('book_tickets')
-            ->when($m, function ($query, $m) {
-                return $query->whereMonth('created_at', $m);
-            }, function ($query) {
-                return $query->whereYear('created_at', date('Y'));
-            })
-            ->sum('amount');
-
+            $query->whereMonth('created_at', $request->month);
+        }
+        $revenue_month_y = $query->sum('amount');
         //-------------------------------------------
 
 
@@ -371,10 +359,48 @@ class QuerryController extends Controller
             ->select(DB::raw('DATE_FORMAT(created_at, "%Y-%m") as Month'), DB::raw('SUM(amount) as TotalAmount'))
             ->whereYear('created_at', $years)
             ->groupBy('Month')->whereNull('book_tickets.deleted_at')
+
             ->get();
         //----------------------------------------------------
         //thống kê tổng số khách hàng mới của của tháng này
 
+        $ticket_day =  DB::table('book_tickets')
+            ->join('users', 'book_tickets.id_staff_check', '=', 'users.id')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
+            ->join('cinemas', 'movie_rooms.id_cinema', '=', 'cinemas.id')
+            ->join('films', 'time_details.film_id', '=', 'films.id')
+            ->where('users.role', '<>', 0)
+            ->whereDay('book_tickets.time', $now->day)
+            ->whereMonth('book_tickets.time', $now->month)
+            ->whereYear('book_tickets.time', $now->year)
+            ->select('users.name', DB::raw('COUNT(book_tickets.id) as total_tickets'))
+            ->groupBy('book_tickets.id_staff_check', 'users.name')
+            ->get();
+
+        $ticket_mon =  DB::table('book_tickets')
+            ->join('users', 'book_tickets.id_staff_check', '=', 'users.id')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
+            ->join('cinemas', 'movie_rooms.id_cinema', '=', 'cinemas.id')
+            ->join('films', 'time_details.film_id', '=', 'films.id')
+            ->where('users.role', '<>', 0)
+            ->whereMonth('book_tickets.time', $now->month)
+            ->whereYear('book_tickets.time', $now->year)
+            ->select('users.name', DB::raw('COUNT(book_tickets.id) as total_tickets'))
+            ->groupBy('book_tickets.id_staff_check', 'users.name')
+            ->get();
+        $ticket_year =  DB::table('book_tickets')
+            ->join('users', 'book_tickets.id_staff_check', '=', 'users.id')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
+            ->join('cinemas', 'movie_rooms.id_cinema', '=', 'cinemas.id')
+            ->join('films', 'time_details.film_id', '=', 'films.id')
+            ->where('users.role', '<>', 0)
+            ->whereYear('book_tickets.time', $now->year)
+            ->select('users.name', DB::raw('COUNT(book_tickets.id) as total_tickets'))
+            ->groupBy('book_tickets.id_staff_check', 'users.name')
+            ->get();
 
 
         $newUsers = User::whereYear('created_at', $now->year)
@@ -415,8 +441,6 @@ class QuerryController extends Controller
             ->whereMonth('book_tickets.time', $now->month)->whereNull('book_tickets.deleted_at')
             ->groupBy('films.name')
             ->get();
-
-
         //----------------------------------------------------------------
         //lấy ra tống doanh thu từ đồ ăn theo tháng
         $totalPricefoodmon = DB::table('food_ticket_details')
@@ -497,6 +521,9 @@ class QuerryController extends Controller
                 'newUsers' => $newUsers,
                 'book_total_day' => $book_total_day,
                 'totalPricefoodday' => $totalPricefoodday,
+                'ticket_day' => $ticket_day,
+                'ticket_mon' => $ticket_mon,
+                'ticket_year' => $ticket_year
             ],
             "revenue_month" => [
                 'revenue_month_y' => $revenue_month_y,
@@ -529,7 +556,7 @@ class QuerryController extends Controller
             ->select('cinemas.name as cinema_name', DB::raw('SUM(book_tickets.amount) as total_amount'))
             ->groupBy('cinemas.name')
             ->get();
-
+        // lọc theo ngày 
         $revenue_staff_day_filter = DB::table('book_tickets')
             ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
             ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
@@ -544,7 +571,7 @@ class QuerryController extends Controller
             ->get();
 
         ///số vé bán ra theo từng tên phim của một ngày
-        $tickets_total = DB::table('book_tickets')
+        $tickets_total_day = DB::table('book_tickets')
             ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
             ->join('films', 'time_details.film_id', '=', 'films.id')
             ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
@@ -568,14 +595,190 @@ class QuerryController extends Controller
 
             ->sum('food.price');
 
+
+        //lọc ra doanh thu ngày tháng năm hiện tại theo rạp (admin)
+        $revenue_admin_day_filter = DB::table('book_tickets')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
+            ->join('films', 'time_details.film_id', '=', 'films.id')
+            ->join('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
+            ->where('cinemas.id', $request->id_cinema)
+            ->whereDay('book_tickets.time', $request->day)
+            ->whereMonth('book_tickets.time', $now->month)
+            ->whereYear('book_tickets.time', $now->year)
+            ->select('cinemas.name as cinema_name', DB::raw('SUM(book_tickets.amount) as total_amount'))
+            ->groupBy('cinemas.name')
+            ->get();
+
+        //lọc ra doanh thu tháng  hiện tại theo rạp (admin)
+        $revenue_admin_mon_filter = DB::table('book_tickets')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
+            ->join('films', 'time_details.film_id', '=', 'films.id')
+            ->join('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
+            ->where('cinemas.id', $request->id_cinema)
+            ->whereMonth('book_tickets.time', $request->month)
+            ->whereYear('book_tickets.time', $now->year)
+            ->select('cinemas.name as cinema_name', DB::raw('SUM(book_tickets.amount) as total_amount'))
+            ->groupBy('cinemas.name')
+            ->get();
+        //lọc ra doanh thu năm  hiện tại theo rạp (admin)
+        $revenue_admin_year_filter = DB::table('book_tickets')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
+            ->join('films', 'time_details.film_id', '=', 'films.id')
+            ->join('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
+            ->where('cinemas.id', $request->id_cinema)
+            ->whereYear('book_tickets.time', $request->year)
+            ->select('cinemas.name as cinema_name', DB::raw('SUM(book_tickets.amount) as total_amount'))
+            ->groupBy('cinemas.name')
+            ->get();
+
+
+        //lấy ra doanh thu ngày tháng năm hiện tại theo rạp tự động (admin)
+        $revenue_admin_day = DB::table('book_tickets')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
+            ->join('films', 'time_details.film_id', '=', 'films.id')
+            ->join('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
+            ->where('cinemas.id', $request->id_cinema)
+            ->whereDate('book_tickets.time', $now)
+            ->select('cinemas.name as cinema_name', DB::raw('SUM(book_tickets.amount) as total_amount'))
+            ->groupBy('cinemas.name')
+            ->get();
+
+
+        //lọc ra doanh thu tháng  hiện tại theo rạp (admin)
+        $revenue_admin_mon = DB::table('book_tickets')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
+            ->join('films', 'time_details.film_id', '=', 'films.id')
+            ->join('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
+            ->where('cinemas.id', $request->id_cinema)
+            ->whereMonth('book_tickets.time', $now->month)
+            ->whereYear('book_tickets.time', $now->year)
+            ->select('cinemas.name as cinema_name', DB::raw('SUM(book_tickets.amount) as total_amount'))
+            ->groupBy('cinemas.name')
+            ->get();
+
+        ///số vé bán ra theo từng tên phim của một ngày
+        $tickets_total_mon = DB::table('book_tickets')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->join('films', 'time_details.film_id', '=', 'films.id')
+            ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
+            ->join('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
+            ->select('films.name', DB::raw('COUNT(book_tickets.id) as total_tickets'))
+            ->whereMonth('book_tickets.time', '=', $now->month)
+            ->whereYear('book_tickets.time', '=', $now->year)
+            ->where('cinemas.id', $request->id_cinema)
+            ->groupBy('films.name')
+            ->get();
+
+        $ticket_staff_total_day = DB::table('book_tickets')
+            ->join('users', 'book_tickets.id_staff_check', '=', 'users.id')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
+            ->join('cinemas', 'movie_rooms.id_cinema', '=', 'cinemas.id')
+            ->join('films', 'time_details.film_id', '=', 'films.id')
+            ->where('users.role', '<>', 0)
+            ->where('cinemas.id', $request->id_cinema)
+            ->whereDate('book_tickets.time', $now)
+            ->select('users.name', DB::raw('COUNT(book_tickets.id) as total_tickets'))
+            ->groupBy('book_tickets.id_staff_check', 'users.name')
+            ->get();
+
+
+        $ticket_staff_total_mon = DB::table('book_tickets')
+            ->join('users', 'book_tickets.id_staff_check', '=', 'users.id')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
+            ->join('cinemas', 'movie_rooms.id_cinema', '=', 'cinemas.id')
+            ->join('films', 'time_details.film_id', '=', 'films.id')
+            ->where('users.role', '<>', 0)
+            ->where('cinemas.id', $request->id_cinema)
+            ->whereMonth('book_tickets.time', $now->month)
+            ->whereYear('book_tickets.time', $now->year)
+            ->select('users.name', DB::raw('COUNT(book_tickets.id) as total_tickets'))
+            ->groupBy('book_tickets.id_staff_check', 'users.name')
+            ->get();
+
+        $ticket_staff_fill_day =  DB::table('book_tickets')
+            ->join('users', 'book_tickets.id_staff_check', '=', 'users.id')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
+            ->join('cinemas', 'movie_rooms.id_cinema', '=', 'cinemas.id')
+            ->join('films', 'time_details.film_id', '=', 'films.id')
+            ->where('users.role', '<>', 0)
+            ->where('cinemas.id', $request->id_cinema)
+            ->whereDay('book_tickets.time', $request->day)
+            ->whereMonth('book_tickets.time', $now->month)
+            ->whereYear('book_tickets.time', $now->year)
+            ->select('users.name', DB::raw('COUNT(book_tickets.id) as total_tickets'))
+            ->groupBy('book_tickets.id_staff_check', 'users.name')
+            ->get();
+
+        $ticket_staff_fill_mon =  DB::table('book_tickets')
+            ->join('users', 'book_tickets.id_staff_check', '=', 'users.id')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
+            ->join('cinemas', 'movie_rooms.id_cinema', '=', 'cinemas.id')
+            ->join('films', 'time_details.film_id', '=', 'films.id')
+            ->where('users.role', '<>', 0)
+            ->where('cinemas.id', $request->id_cinema)
+            ->whereMonth('book_tickets.time', $request->month)
+            ->whereYear('book_tickets.time', $now->year)
+            ->select('users.name', DB::raw('COUNT(book_tickets.id) as total_tickets'))
+            ->groupBy('book_tickets.id_staff_check', 'users.name')
+            ->get();
+
+        $total_food_mon = DB::table('book_tickets')
+            ->join('food_ticket_details', 'book_tickets.id', '=', 'food_ticket_details.book_ticket_id')
+            ->join('food', 'food_ticket_details.food_id', '=', 'food.id')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+
+            ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
+            ->join('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
+            ->whereMonth('book_tickets.time', $request->month)
+            ->whereYear('book_tickets.time', $now->year)
+            ->where('cinemas.id', $request->id_cinema)
+
+            ->sum('food.price');
+        $total_food_year = DB::table('book_tickets')
+            ->join('food_ticket_details', 'book_tickets.id', '=', 'food_ticket_details.book_ticket_id')
+            ->join('food', 'food_ticket_details.food_id', '=', 'food.id')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+
+            ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
+            ->join('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
+            ->whereYear('book_tickets.time', $now->year)
+            ->where('cinemas.id', $request->id_cinema)
+
+            ->sum('food.price');
+
         return [
             "revenue_staff" => [
                 'revenue_staff_day' => $revenue_staff_day,
                 'revenue_staff_day_filter' => $revenue_staff_day_filter,
-                'tickets_total' => $tickets_total,
+                'tickets_total_day' => $tickets_total_day,
                 'revenue_food' => $revenue_food
             ],
-            "revenue_admin_cinema" => []
+            "revenue_admin_cinema" => [
+                'revenue_admin_day_filter' => $revenue_admin_day_filter,
+                'revenue_admin_mon_filter' => $revenue_admin_mon_filter,
+                'revenue_admin_year_filter' => $revenue_admin_year_filter,
+                'revenue_admin_day' => $revenue_admin_day,
+                'revenue_admin_mon' => $revenue_admin_mon,
+                'tickets_total_day' => $tickets_total_day,
+                'tickets_total_mon' => $tickets_total_mon,
+                'ticket_staff_total_day' => $ticket_staff_total_day,
+                'ticket_staff_total_mon' => $ticket_staff_total_mon,
+                'ticket_staff_fill_day' => $ticket_staff_fill_day,
+                'ticket_staff_fill_mon' => $ticket_staff_fill_mon,
+                'revenue_food' => $revenue_food,
+                'total_food_mon' => $total_food_mon,
+                'total_food_year' => $total_food_year,
+
+            ]
         ];
     }
     public function getShiftRevenue($id) //tạm thời
