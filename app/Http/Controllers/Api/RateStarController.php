@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Film;
 use App\Models\RateStar;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\RateStarResource;
+use App\Models\Book_ticket;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class RateStarController extends Controller
 {
@@ -22,9 +26,63 @@ class RateStarController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
+{
+    $user = auth()->user();
+
+    // Bắt validate request
+    $validator = Validator::make($request->all(), [
+        'star_rating' => 'required|integer|min:1|max:5',
+        'film_id' => 'required|exists:films,id',
+    ]);
+    if ($validator->fails()) {
+        return response()->json(['error' => $validator->errors()], 422);
+    }
+
+    // Tạo mới bình luận và đánh giá
+    $rating = RateStar::create([
+        'user_id' => $user->id,//lấy khi login
+        'film_id' => $request->film_id, // 
+        'star_rating' => $request->star_rating,//đánh giá sao
+        'comment' => $request->comment, //comment
+    ]);
+
+    return response()->json(['message' => 'Bình luận và đánh giá đã được thêm mới.', 'data' => $rating]);
+}
+
+
+    //số lượng đánh giá sao
+    public function getRatings($film_id)
     {
-        $RateStar = RateStar::create($request->all());
-        return new RateStarResource($RateStar);
+        // Lấy tất cả đánh giá cho bộ phim có film_id tương ứng
+        $ratings = RateStar::where('film_id', $film_id)->get();
+
+        // Tính trung bình số sao
+        $averageStars = $ratings->avg('star_rating');
+
+        // Lấy số sao và comment mà user đang đăng nhập đã đánh giá (nếu có)
+        $userRating = null;
+        if (auth()->check()) {
+            $userId = auth()->user()->id;
+            $userRating = $ratings->where('user_id', $userId)->first();
+        }
+
+        $response = [
+            'totalReviews' => $ratings->count(),
+            'averageStars' => $averageStars,
+        ];
+
+        // Thêm thông tin đánh giá của user vào response
+        if ($userRating) {
+            $response['userRating'] = [
+                'star_rating' => $userRating->star_rating,
+                'comment' => $userRating->comment,
+            ];
+        }
+
+        // Thêm tất cả đánh giá vào response
+        $response['allRatings'] = $ratings;
+
+        return response()->json($response);
     }
 
     /**

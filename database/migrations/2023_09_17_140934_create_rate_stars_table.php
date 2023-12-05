@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('rate_stars', function (Blueprint $table) {
             $table->id();
-            $table->text('comment');
-            $table->integer('user_id');
-            $table->integer('film_id');
-            $table->integer('star');
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('film_id');
+            $table->text('comment')->nullable();
+            $table->unsignedInteger('star_rating'); // Chỉ lấy số sao từ 1 đến 5
+            
             $table->timestamps();
-            $table->softDeletes(); // add
+            $table->softDeletes(); //add
         });
     }
 

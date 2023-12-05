@@ -70,7 +70,6 @@ Route::get('print-ticket/{ticketId}', [TicketController::class, 'printTicket']);
 //////
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('refund_coin/{id}', [QuerryController::class, 'refund_coin']); // Hoàn tiền vào ví coin 70%
-
     //nhớ chú ý đến token khi login sai là không chạy được hết nhé 
     //nếu lỗi không chạy được thì login  lại và nhập lại token
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -78,8 +77,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/sendEmail', [EmailController::class, 'sendEmail']); //không cần qtam cái này đừng ai xóa  
     //check khi nhập voucher
     Route::post('/usevoucher', [UservoucherController::class, 'useVoucher']);
+    //đánh giá sao film
+    Route::resource('rateStar', RateStarController::class);
+
 });
 //////
+Route::get('/film-ratings/{film_id}',[RateStarController::class, 'getRatings']);
 Route::get('film_cinema/{id}', [QuerryController::class, 'film_cinema']);  // Lấy thông tin phim theo rạp
 Route::get('time_detail_get_by_id/{id}', [QuerryController::class, 'time_detail_get_by_id']);
 Route::get('check_time_detail_by_film_id/{id_cinema}', [QuerryController::class, 'check_time_detail_by_film_id']); /////
@@ -129,7 +132,7 @@ Route::resource('time_detail', Time_detailController::class); // crud cái này
 Route::resource('category_detail', CategoryDetailController::class); // cái này nx
 Route::resource('filmMaker', FilmMakerController::class);
 Route::resource('movieRoom', MovieRoomController::class);
-Route::resource('rateStar', RateStarController::class);
+
 Route::resource('film', FilmController::class);
 Route::resource('user', UsersController::class);
 // //api add vocher
