@@ -908,7 +908,7 @@ class QuerryController extends Controller
         $dateTimeString = $check_time->date . ' ' . $check_time->time;
         $check = Book_ticket::where('user_id', $status->user_id)
             ->whereBetween('time', [$startOfMonth, $endOfMonth])
-            ->where('status', 3)
+            ->where('status', 2)
             ->count();
         if ($check >= 2) {
             return response([
@@ -937,7 +937,7 @@ class QuerryController extends Controller
                     ], 401);
                 }
                 $cancel_chair->delete();
-                $update = $status->update(['status' => 3]);
+                $update = $status->update(['status' => 2]);
                 $coin_usage = $refund_coins->coin;
                 $amount = intval(($status->amount *= 0.7)) + $coin_usage;
                 $refund_coins->update(['coin' => $amount]);
