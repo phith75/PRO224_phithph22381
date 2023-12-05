@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+use Pusher\Pusher;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Chairs;
+use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ChairsResource;
 use App\Models\Chairs as ModelsChairs;
 use Illuminate\Http\Request;
@@ -26,6 +28,24 @@ class ChairsController extends Controller
     public function store(Request $request)
     {
         $Chairs = ModelsChairs::create($request->all());
+       
+        $chairs = DB::table('movie_chairs as mc')
+            ->selectRaw('GROUP_CONCAT(name) as name')
+            ->where('mc.id_time_detail', $Chairs->id_time_detail)
+            ->whereNull('mc.deleted_at')
+            ->first(); // Use first() instead of get()
+            // Split the concatenated string into an array
+            $chair_array = explode(',', $chairs->name);
+            $pusher = new Pusher(env('PUSHER_APP_KEY'), env('PUSHER_APP_SECRET'), env('PUSHER_APP_ID'), [
+                'cluster' => env('PUSHER_APP_CLUSTER'),
+                'useTLS' => true,
+            ]);
+            $pusher->trigger('Cinema', 'room_seat', [
+                $chair_array
+            ]);
+            return $chair_array;
+        
+        
         return new ChairsResource($Chairs);
     }
 
@@ -52,7 +72,6 @@ class ChairsController extends Controller
         }
         ModelsChairs::where('id', $id)
             ->update($request->except('_token'));
-
         return new ChairsResource($Chairs);
     }
 

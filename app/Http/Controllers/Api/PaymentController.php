@@ -14,29 +14,32 @@ class PaymentController extends Controller
 {
     //
     public function post_money(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'id_user' => 'integer|required',
-            'coin' => 'integer|required',
-        ]);
+{
+    $validator = Validator::make($request->all(), [
+        'id_user' => 'integer|required',
+        'coin' => 'integer|required',
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        $coin = $request->coin;
-        //cap nhat coin nap vao
-        $coin_total = User::find($request->id_user);
-        if (!$coin) {
-            return response()->json(['message' => 'giao dịch chưa hoàn thành do lỗi trong lúc nạp coin'], 404);
-        }
-        $coin += $coin_total->coin;
-        $coin_total->update(['coin' => $coin]);
-        return $coin;
-        //     ['message' => "success",
-        //       'url'=>'',
-        //       'coin'=>$_GET['amount']]
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 422);
     }
+
+    $coin = $request->coin;
+
+    // cap nhat coin nap vao
+    $coin_total = User::find($request->id_user);
+
+    if (!$coin) {
+        return response()->json(['message' => 'giao dịch chưa hoàn thành do lỗi trong lúc nạp coin'], 404);
+    }
+
+    $coin += $coin_total->coin;
+    $coin_total->update(['coin' => $coin]);
+
+    // Redirect to a new route or reload the current page after processing the form
+    return response()->json([ 'status'=>'success','message' => 'giao dịch thành công'], 200);
+}
+
     public function coin_payment(Request $request, $id)
     {
         $id_code = generateRandomString();

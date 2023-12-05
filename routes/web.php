@@ -14,3 +14,6 @@ use App\Http\Controllers\Api\QuerryController;
 |
 
 */
+Route::get('/', function(){
+    return view('welcome');
+});
