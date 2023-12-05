@@ -5,9 +5,14 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use App\Models\Book_ticket;
+use Carbon\Carbon;
+use App\Models\Chairs;
 
 class Kernel extends ConsoleKernel
 {
@@ -19,6 +24,9 @@ class Kernel extends ConsoleKernel
 
         $schedule->call(function () {
             $this->clearExpiredSeats();
+        })->everyMinute();
+        $schedule->call(function () {
+            $this->checkTimeBookTicket();
         })->everyMinute();
     }
 
@@ -52,5 +60,28 @@ class Kernel extends ConsoleKernel
 
         // Cập nhật dữ liệu vào Cache
         Cache::put('seat_reservation', $seat_reservation);
+    }
+    public function checkTimeBookTicket()
+    {
+        $now = Carbon::now('Asia/Ho_Chi_Minh');
+        
+        $bookTickets = Book_ticket::where('status', 0)
+            ->get();
+        foreach ($bookTickets as $bookTicket) {
+            $check_time = DB::table('time_details')
+                ->join('times', 'time_details.time_id', '=', 'times.id')
+                ->where('time_details.id', $bookTicket->id_time_detail)
+                ->get()
+                ->first();
+                
+
+            $dateTimeString = $check_time->date . ' ' . $check_time->time;
+            $dateTime = Carbon::parse($dateTimeString);
+            if ($now->gt($dateTime)) {
+                // Use the query builder instance to update the record
+
+                Book_ticket::where('id', $bookTicket->id)->update(['status' => 3]);
+            }
+        }
     }
 }

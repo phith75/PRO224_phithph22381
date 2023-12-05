@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Food_ticket_detail;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
+
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
@@ -43,6 +44,7 @@ class QuerryController extends Controller
             ->get();
         return $names;
     }
+    
     public function movie_rooms($id_cinema, $date, $filmId)
     {
         $movieRooms = DB::table('time_details')
