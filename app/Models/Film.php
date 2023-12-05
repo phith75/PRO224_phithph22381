@@ -10,5 +10,5 @@ class Film extends Model
 {
     use HasFactory, SoftDeletes;
     protected $table = "films";
-    protected $fillable = ['id', 'name', 'slug', 'status', 'trailer', 'time', 'image', 'release_date', 'end_date', 'description', 'status'];
+    protected $fillable = ['id', 'name', 'slug', 'status', 'limit_age', 'trailer', 'time', 'image', 'poster','release_date', 'end_date', 'description', 'status'];
 }

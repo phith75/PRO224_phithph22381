@@ -35,11 +35,10 @@ class BookTicketDetailsEmail extends Mailable
                 'f.name',
                 'ftk.quantity',
                 'f.price'
-            )->where('btk.id_code', $currentUser->id)
+            )->where('btk.id', $currentUser->id)
             ->get();
         $arr = [];
         $food_ticket_detail = $food_ticket_detail ? $food_ticket_detail : [];
-
         foreach ($food_ticket_detail as $value) {
 
             $arr[] = $value;
@@ -69,14 +68,14 @@ class BookTicketDetailsEmail extends Mailable
                 'users.name as users_name',
                 'users.email as users_email'
             )
-            ->where('bt.id_code', '=', $latestTicket->id_code)
+            ->where('bt.id', '=', $latestTicket->id)
             ->get()->first();
         if (!$latestTicket) {
             return $this->subject('Thông tin đặt vé xem film - mã thanh toán: Chưa có vé')
                 ->markdown('emails.book_ticket_details', ['bookTicketDetails' => null]);
         }
         $bladebarcode = view('emails.file', [
-            'bookTicketDetails' => [$book_ticket_detail],
+            'bookTicketDetails' => [$latestTicket],
         ])->render();
         $tempFilePath = tempnam(sys_get_temp_dir(), 'email_template_');
         file_put_contents($tempFilePath, $bladebarcode);
