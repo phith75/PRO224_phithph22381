@@ -11,15 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rate_stars', function (Blueprint $table) {
+        Schema::create('social_networks', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('film_id');
-            $table->text('comment')->nullable();
-            $table->unsignedInteger('star_rating'); // Chỉ lấy số sao từ 1 đến 5
-            
+            $table->integer('user_id');
+            $table->tinyInteger('type'); // 1: facebook; 2:twitter; 3:google
+            $table->string('social_id')->nullable();
             $table->timestamps();
-            $table->softDeletes(); //add
         });
     }
 
@@ -28,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rate_stars');
+        Schema::dropIfExists('social_networks');
     }
 };

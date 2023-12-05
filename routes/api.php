@@ -1,38 +1,40 @@
 <?php
 
-use App\Http\Controllers\Api\BannerController;
-use App\Http\Controllers\Api\BlogsController;
-use App\Http\Controllers\Api\Food_ticket_detailController;
-use App\Http\Controllers\Api\Book_ticketController;
-use App\Http\Controllers\Api\CategoryController;
-use App\Http\Controllers\Api\CategoryDetailController;
-use App\Http\Controllers\Api\ChairsController;
-use App\Http\Controllers\Api\CinemasController;
-use App\Http\Controllers\Api\Contact_infosController;
-use App\Http\Controllers\Api\FeedbackController;
+use App\Models\Blogs;
+use App\Models\Banner;
+use App\Models\FilmMaker;
+use Illuminate\Http\Request;
+use App\Models\Fook_ticket_detail;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\authController;
+use App\Http\Controllers\EmailController;
+use App\Http\Controllers\SocialController;
+use App\Http\Controllers\TicketController;
 use App\Http\Controllers\Api\FilmController;
 use App\Http\Controllers\Api\FoodController;
-use App\Http\Controllers\Api\MovieRoomController;
 use App\Http\Controllers\Api\TimeController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Models\Banner;
-use App\Models\Blogs;
-use App\Models\Fook_ticket_detail;
-use App\Http\Controllers\Api\PassportAuthController;
-use App\Http\Controllers\Api\QuerryController;
-use App\Http\Controllers\Api\Time_detailController;
+use App\Http\Controllers\Api\BlogsController;
+use App\Http\Controllers\Api\PhotoController;
 use App\Http\Controllers\Api\UsersController;
-use App\Http\Controllers\authController;
-use App\Models\FilmMaker;
-use App\Http\Controllers\Api\PaymentController;
-use App\Http\Controllers\Api\RateStarController;
-use App\Http\Controllers\EmailController;
-use App\Http\Controllers\Api\ForgotPasswordController;
-use App\Http\Controllers\Api\UservoucherController;
-use App\Http\Controllers\Api\VoucherController;
+use App\Http\Controllers\Api\BannerController;
+use App\Http\Controllers\Api\ChairsController;
 use App\Http\Controllers\Api\MemberController;
-use App\Http\Controllers\TicketController;
+use App\Http\Controllers\Api\QuerryController;
+use App\Http\Controllers\Api\CinemasController;
+use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\VoucherController;
+use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\FeedbackController;
+use App\Http\Controllers\Api\RateStarController;
+use App\Http\Controllers\Api\MovieRoomController;
+use App\Http\Controllers\Api\Book_ticketController;
+use App\Http\Controllers\Api\Time_detailController;
+use App\Http\Controllers\Api\UservoucherController;
+use App\Http\Controllers\Api\PassportAuthController;
+use App\Http\Controllers\Api\Contact_infosController;
+use App\Http\Controllers\Api\CategoryDetailController;
+use App\Http\Controllers\Api\ForgotPasswordController;
+use App\Http\Controllers\Api\Food_ticket_detailController;
 
 /*u
 |--------------------------------------------------------------------------
@@ -51,7 +53,11 @@ Route::post('reset-password', [ForgotPasswordController::class, 'resetPassword']
 //đăng kí
 Route::post('/signup', [authController::class, 'sign_up']);
 Route::post('/login', [AuthController::class, 'login']);
+//đăng nhập bằng fb
+Route::get('auth/facebook', [SocialController::class, 'facebookRedirect']);
+Route::get('auth/facebook/callback', [SocialController::class, 'loginWithFacebook']);
 
+//
 //đăng nhập bằng tk gg
 // Route cho việc chuyển hướng đến Google để đăng nhập
 // Route::get('/login/google', [AuthController::class, 'redirectToGoogle'])->middleware('auth.basic');
@@ -59,11 +65,11 @@ Route::post('/login', [AuthController::class, 'login']);
 //để ở view đăng nhập của gg
 // <a href="{{ url('/login/google') }}">Đăng nhập bằng Google</a> dành cho mấy ông fe
 
+
 Route::get('print-ticket/{ticketId}', [TicketController::class, 'printTicket']);
 //////
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('refund_coin/{id}', [QuerryController::class, 'refund_coin']); // Hoàn tiền vào ví coin 70%
-
     //nhớ chú ý đến token khi login sai là không chạy được hết nhé 
     //nếu lỗi không chạy được thì login  lại và nhập lại token
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -71,8 +77,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/sendEmail', [EmailController::class, 'sendEmail']); //không cần qtam cái này đừng ai xóa  
     //check khi nhập voucher
     Route::post('/usevoucher', [UservoucherController::class, 'useVoucher']);
+    //đánh giá sao film
+    Route::resource('rateStar', RateStarController::class);
+
 });
 //////
+Route::get('/film-ratings/{film_id}',[RateStarController::class, 'getRatings']);
 Route::get('film_cinema/{id}', [QuerryController::class, 'film_cinema']);  // Lấy thông tin phim theo rạp
 Route::get('time_detail_get_by_id/{id}', [QuerryController::class, 'time_detail_get_by_id']);
 Route::get('check_time_detail_by_film_id/{id_cinema}', [QuerryController::class, 'check_time_detail_by_film_id']); /////
@@ -123,13 +133,12 @@ Route::resource('time_detail', Time_detailController::class); // crud cái này
 Route::resource('category_detail', CategoryDetailController::class); // cái này nx
 Route::resource('filmMaker', FilmMakerController::class);
 Route::resource('movieRoom', MovieRoomController::class);
-Route::resource('rateStar', RateStarController::class);
+
 Route::resource('film', FilmController::class);
-// <<<<<<< HEAD
-// Route::resource('user', UsersController::class);
+Route::resource('user', UsersController::class);
 // //api add vocher
-// Route::resource('vocher', VocherController::class);
-// =======
+Route::resource('vocher', VocherController::class);
 Route::resource('voucher', VoucherController::class);
 Route::resource('user', UsersController::class);
 Route::apiResource('member', MemberController::class);
+Route::apiResource('photo', PhotoController::class);

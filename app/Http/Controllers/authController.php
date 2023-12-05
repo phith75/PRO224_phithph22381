@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\member;
+use Facebook\Facebook;
 use Illuminate\Http\Request;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Laravel\Sanctum\HasApiTokens;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Validator;
+use App\Models\social_networks;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class authController extends Controller
 {
@@ -118,41 +122,53 @@ class authController extends Controller
             ], 404);
         }
     }
-    //đăng nhập bằng tk gg 
-    public function redirectToGoogle()
-    {
-        return Socialite::driver('google')->redirect();
-    }
 
-    public function handleGoogleCallback()
+    public function facebook(Request $request)
     {
+        $facebook = $request->only('access_token');
+        if (!$facebook || !isset($facebook['access_token'])) {
+            return $this->responseErrors(config('code.user.login_facebook_failed'), trans('messages.user.login_facebook_failed'));
+        }
+        // Khởi tạo instance của Facebook Graph SDK
+        $fb = new Facebook([
+            'app_id' => config('services.facebook.app_id'),
+            'app_secret' => config('services.facebook.app_secret'),
+        ]);
+
         try {
-            $user = Socialite::driver('google')->user();
-
-            $existingUser = User::where('email', $user->email)->first();
-
-            if ($existingUser) {
-                Auth::login($existingUser);
-            } else {
-                $newUser = User::create([
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'password' => bcrypt('randompassword')
-                ]);
-
-                Auth::login($newUser);
+            $response = $fb->get('/me?fields=id,name,email,link,birthday', $facebook['access_token']); // Lấy thông tin 
+            // user facebook sử dụng access_token được gửi lên từ client
+            $profile = $response->getGraphUser();
+            if (!$profile || !isset($profile['id'])) { // Nếu access_token không lấy đc thông tin hợp lệ thì trả về login false luôn
+                return $this->responseErrors(config('code.user.login_facebook_failed'), trans('messages.user.login_facebook_failed'));
             }
 
-            $token = $newUser->createToken('apiToken')->plainTextToken;
+            $email = $profile['email'] ?? null;
+            $social = social_networks::where('social_id', $profile['id'])->where('type', config('user.social_network.type.facebook'))->first();
+            // Lấy được userId của Facebook ta kiểm tra trong bảng social_networks đã có chưa, nếu có thì tài khoản facebook này 
+            // đã từng đăng nhập vào hệ thống ta chỉ cần lấy ra user rồi generate jwt trả về cho client; Ngược lại nếu chưa có thì 
+            // ta sẽ tiếp tục dùng email trả về từ facebook kiểm tra xem nếu có user với email như thế rồi thì lấy luôn user đó nếu 
+            // không thì tạo user mới với email trên và tạo bản ghi social_network lưu thông tin userId của facebook rồi generate   
+            // để trả về cho client
+            if ($social) {
+                $user = $social->user;
+            } else {
+                $user = $email ? User::firstOrCreate(['email' => $email]) : User::create();
+                $user->socialNetwork()->create([
+                    'social_id' => $profile['id'],
+                    'type' => config('user.social_network.type.facebook'),
+                ]);
+                $user->name = $profile['name'];
+                $user->save();
+            }
 
-            return response()->json([
-                'user' => $newUser,
-                'token' => $token,
-            ]);
+            $token = JWTAuth::fromUser($user);
+
+            return $this->responseSuccess(compact('token', 'user'));
         } catch (\Exception $e) {
-            return response([
-                'error' => 'Đã xảy ra lỗi khi đăng nhập bằng Google'
-            ], 500);
+            Log::error('Error when login with facebook: ' . $e->getMessage());
+            return $this->responseErrors(config('code.user.login_facebook_failed'), trans('messages.user.login_facebook_failed'));
         }
     }
+
 }

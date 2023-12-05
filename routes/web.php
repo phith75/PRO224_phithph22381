@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\authController;
+use App\Http\Controllers\SocialController;
 use App\Http\Controllers\Api\QuerryController;
 /*
 |--------------------------------------------------------------------------
