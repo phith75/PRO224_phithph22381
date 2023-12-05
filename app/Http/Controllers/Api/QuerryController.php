@@ -906,13 +906,13 @@ class QuerryController extends Controller
             if (Hash::check($request->input('password'), $refund_coins->password)) {
                 if (!$status) {
                     return response([
-                        'msg' => 'Vé không tồn tại !',
+                        'message' => 'Vé không tồn tại !',
                     ], 401);
                 }
                 $cancel_chair = Chairs::find($status->id_chair);
                 if (!$cancel_chair) {
                     return response([
-                        'msg' => 'Ghế không tồn tại hoặc đã hủy !',
+                        'message' => 'Ghế không tồn tại hoặc đã hủy !',
                     ], 401);
                 }
                 $cancel_chair->delete();
@@ -922,10 +922,10 @@ class QuerryController extends Controller
                 $refund_coins->update(['coin' => $amount]);
                 return response()->json(['message' => "Hủy thành công, số coin " . intval($status->amount *= 0.7) . " đã được hoàn vào ví coin của bạn"], 200);
             } else {
-                return response()->json(['msg' => 'Nhập sai mật khẩu, vui lòng thử lại!'], 401);
+                return response()->json(['message' => 'Nhập sai mật khẩu, vui lòng thử lại!'], 401);
             }
         } else {
-            return response()->json(['msg' => 'Vé không tồn tại hoặc đã quá thời gian hủy vé!'], 401);
+            return response()->json(['message' => 'Vé không tồn tại hoặc đã quá thời gian hủy vé!'], 401);
         }
     }
 }
