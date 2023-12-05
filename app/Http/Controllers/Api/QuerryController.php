@@ -893,7 +893,7 @@ class QuerryController extends Controller
         if ($check >= 2) {
             return response([
                 'msg' => 'Bạn đã hủy tối đa trong tháng này !',
-            ], 401);
+            ], 403);
         }
         // Tạo đối tượng Carbon từ chuỗi datetime
         $dateTime = Carbon::parse($dateTimeString);
@@ -907,13 +907,13 @@ class QuerryController extends Controller
                 if (!$status) {
                     return response([
                         'message' => 'Vé không tồn tại !',
-                    ], 401);
+                    ], 403);
                 }
                 $cancel_chair = Chairs::find($status->id_chair);
                 if (!$cancel_chair) {
                     return response([
                         'message' => 'Ghế không tồn tại hoặc đã hủy !',
-                    ], 401);
+                    ], 403);
                 }
                 $cancel_chair->delete();
                 $update = $status->update(['status' => 2]);
@@ -922,10 +922,10 @@ class QuerryController extends Controller
                 $refund_coins->update(['coin' => $amount]);
                 return response()->json(['message' => "Hủy thành công, số coin " . intval($status->amount *= 0.7) . " đã được hoàn vào ví coin của bạn"], 200);
             } else {
-                return response()->json(['message' => 'Nhập sai mật khẩu, vui lòng thử lại!'], 401);
+                return response()->json(['message' => 'Nhập sai mật khẩu, vui lòng thử lại!'], 403);
             }
         } else {
-            return response()->json(['message' => 'Vé không tồn tại hoặc đã quá thời gian hủy vé!'], 401);
+            return response()->json(['message' => 'Vé không tồn tại hoặc đã quá thời gian hủy vé!'], 403);
         }
     }
 }
