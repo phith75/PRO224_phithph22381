@@ -73,8 +73,8 @@ class QuerryController extends Controller
     }
     public function chair_by_time_detail($id)
     {
-
-
+        $chair_array = [];
+        $arr = [];
         $chairs = DB::table('movie_chairs as mc')
             ->selectRaw('GROUP_CONCAT(name) as name')
             ->where('mc.id_time_detail', $id)
@@ -84,10 +84,25 @@ class QuerryController extends Controller
         if ($chairs) {
             // Split the concatenated string into an array
             $chair_array = explode(',', $chairs->name);
+            
             // If you want to return it as a JSON response
-            return $chair_array;
         }
-        return [];
+        foreach ($chair_array as $chair) {
+            $arr[] = [
+                'seat' => $chair,
+                'id_time_detail' => $id
+            ];
+        }
+        $pusher = new Pusher(env('PUSHER_APP_KEY'), env('PUSHER_APP_SECRET'), env('PUSHER_APP_ID'), [
+            'cluster' => env('PUSHER_APP_CLUSTER'),
+            'useTLS' => true,
+        ]);
+        $pusher->trigger('Cinema', 'room_seat', [
+            $arr
+        ]);
+        return $arr;
+
+        
         // Handle the case where $chairs is null, e.g., no data found
 
     }
@@ -128,7 +143,6 @@ class QuerryController extends Controller
     public function cache_seat(Request $request)
     {
         $id_time_detail = $request->id_time_detail;
-
         $currentTime = Carbon::now();
         $seat_reservation = Cache::get('seat_reservation', []);
         // Kiểm tra xem đã có thông tin cho id_user và id_time_detail chưa
@@ -263,6 +277,7 @@ class QuerryController extends Controller
                 $join->on('food_ticket_details.book_ticket_id', '=', 'bt.id');
             })
             ->select(
+                'bt.id as id_book_ticket',
                 'bt.created_at as time',
                 'fl.name',
                 'fl.image',
@@ -272,6 +287,7 @@ class QuerryController extends Controller
                 'mv.name as movie_room_name',
                 'cms.name as name_cinema',
                 'cms.address',
+                
                 'td.date',
                 'tm.time as time_suatchieu',
                 'bt.amount as total_price',
@@ -895,12 +911,9 @@ class QuerryController extends Controller
     {
         $now = Carbon::now();
         $startOfMonth = Carbon::now()->startOfMonth();
-
         // Lấy ngày cuối cùng của tháng hiện tại
         $endOfMonth = Carbon::now()->endOfMonth();
-
         // Sử dụng whereBetween để xác định khoảng thời gian
-
         $status = Book_ticket::find($id);
         $check_time = DB::table('time_details')->join('times', 'time_details.time_id', '=', 'times.id')
             ->where('time_details.id', $status->id_time_detail)

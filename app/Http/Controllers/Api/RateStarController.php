@@ -28,7 +28,6 @@ class RateStarController extends Controller
     public function store(Request $request)
 {
     $user = auth()->user();
-
     // Bắt validate request
     $validator = Validator::make($request->all(), [
         'star_rating' => 'required|integer|min:1|max:5',
@@ -52,7 +51,9 @@ class RateStarController extends Controller
 
     //số lượng đánh giá sao
     public function getRatings($film_id)
-    {
+    {   
+        $user = auth()->user();
+
         // Lấy tất cả đánh giá cho bộ phim có film_id tương ứng
         $ratings = RateStar::where('film_id', $film_id)->get();
 
