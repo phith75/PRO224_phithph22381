@@ -875,7 +875,8 @@ class QuerryController extends Controller
     }
     public function refund_coin(Request $request, $id)
     {
-        $now = Carbon::now();
+        $now = Carbon::now('Asia/Ho_Chi_Minh');
+
         $startOfMonth = Carbon::now()->startOfMonth();
         // Lấy ngày cuối cùng của tháng hiện tại
         $endOfMonth = Carbon::now()->endOfMonth();
@@ -897,11 +898,10 @@ class QuerryController extends Controller
         // Tạo đối tượng Carbon từ chuỗi datetime
         $dateTime = Carbon::parse($dateTimeString);
         // Chuyển đổi thành timestamp
-        $time = Carbon::createFromTimestamp($dateTime->timestamp);
+        
         // So sánh với thời điểm hiện tại
-        $twoHoursAgo = $now->subHours(2);
-
-        if ($status && $time->gte($twoHoursAgo)) {
+        $twoHoursAgo = $dateTime->subHours(2);
+        if ($status && !$now->gte($twoHoursAgo)) {
             $refund_coins = User::find($status->user_id);
             if (Hash::check($request->input('password'), $refund_coins->password)) {
                 if (!$status) {
