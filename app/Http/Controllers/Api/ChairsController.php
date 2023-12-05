@@ -18,8 +18,40 @@ class ChairsController extends Controller
 
     public function index()
     {
-        $data = ModelsChairs::all();
-        return ChairsResource::collection($data);
+        $chair_array = [];
+        $arr = [];
+        $chairs = DB::table('movie_chairs as mc')
+            ->selectRaw('GROUP_CONCAT(name) as name, mc.id_time_detail')
+            ->whereNull('mc.deleted_at')
+            ->groupBy('mc.id_time_detail')
+            ->get();
+        
+        // Check if $chairs is not null
+        if ($chairs) {
+            foreach ($chairs as $chair) {
+                // Split the concatenated string into an array
+                $chair_array = explode(',', $chair->name);
+        
+                // Use a nested foreach loop to iterate through each seat in $chair_array
+                foreach ($chair_array as $seat) {
+                    $arr[] = [
+                        'seat' => $seat,
+                        'id_time_detail' => $chair->id_time_detail
+                    ];
+                }
+            }
+            // If you want to return it as a JSON response
+            
+        }
+        
+        $pusher = new Pusher(env('PUSHER_APP_KEY'), env('PUSHER_APP_SECRET'), env('PUSHER_APP_ID'), [
+            'cluster' => env('PUSHER_APP_CLUSTER'),
+            'useTLS' => true,
+        ]);
+        $pusher->trigger('Cinema', 'room_seat', [
+            $arr
+        ]);
+        return $arr;
     }
 
     /**

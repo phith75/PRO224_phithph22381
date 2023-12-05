@@ -71,41 +71,7 @@ class QuerryController extends Controller
 
         return $movieRooms;
     }
-    public function chair_by_time_detail($id)
-    {
-        $chair_array = [];
-        $arr = [];
-        $chairs = DB::table('movie_chairs as mc')
-            ->selectRaw('GROUP_CONCAT(name) as name')
-            ->where('mc.id_time_detail', $id)
-            ->whereNull('mc.deleted_at')
-            ->first(); // Use first() instead of get()
-        // Check if $chairs is not null
-        if ($chairs) {
-            // Split the concatenated string into an array
-            $chair_array = explode(',', $chairs->name);
-            
-            // If you want to return it as a JSON response
-        }
-        foreach ($chair_array as $chair) {
-            $arr[] = [
-                'seat' => $chair,
-                'id_time_detail' => $id
-            ];
-        }
-        $pusher = new Pusher(env('PUSHER_APP_KEY'), env('PUSHER_APP_SECRET'), env('PUSHER_APP_ID'), [
-            'cluster' => env('PUSHER_APP_CLUSTER'),
-            'useTLS' => true,
-        ]);
-        $pusher->trigger('Cinema', 'room_seat', [
-            $arr
-        ]);
-        return $arr;
-
-        
-        // Handle the case where $chairs is null, e.g., no data found
-
-    }
+    
 
     public function chair_count()
     {
