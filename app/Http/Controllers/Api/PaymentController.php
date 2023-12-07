@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth; 
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -40,8 +41,9 @@ class PaymentController extends Controller
         return response()->json(['status' => 'success', 'message' => 'giao dịch thành công'], 200);
     }
 
-    public function coin_payment(Request $request, $id)
-    {
+    public function coin_payment(Request $request)
+    {   
+       
         $id_code = generateRandomString();
         $amount = (int)$request->amount;
         $data = [
@@ -49,7 +51,7 @@ class PaymentController extends Controller
             "amount" => $amount
         ];
 
-        $user = User::find($id);
+        $user = User::find($request->id);
         if (!$user) {
             return response()->json(['message' => 'Sai thông tin người dùng'], 404);
         }

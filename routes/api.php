@@ -113,7 +113,7 @@ Route::post('momo_payment', [PaymentController::class, 'momo_payment']); // than
 
 Route::post('post_money', [PaymentController::class, 'post_money']); //napj tien qua momo
 
-Route::post('coin_payment/{id}', [PaymentController::class, 'coin_payment']); // thanh toán coin_payment
+Route::post('coin_payment', [PaymentController::class, 'coin_payment']); // thanh toán coin_payment
 
 ///////
 
