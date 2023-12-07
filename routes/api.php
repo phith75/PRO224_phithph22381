@@ -93,18 +93,15 @@ Route::get('chair_by_time_detail', [QuerryController::class, 'chair_by_time_deta
 Route::post('cache_seat', [QuerryController::class, 'cache_seat']); // Thêm, xóa giữ ghế
 Route::get('getReservedSeatsByTimeDetail/{id_time_detail}', [QuerryController::class, 'getReservedSeatsByTimeDetail']); // check xem có bao nhiêu ghế đang được giữ
 
-Route::get('purchase_history_ad', [QuerryController::class, 'purchase_history_ad']); // chi tiết vé admin
+Route::get('purchase_history_ad', [QuerryController::class, 'purchase_history_ad']); // chi tiết vé a   min
 Route::get('purchase_history_user/{id}', [QuerryController::class, 'purchase_history_user']); // chi tiết vé user
 
-Route::get('QR_book/{id}', [QuerryController::class, 'QR_book_tiket']);
+Route::get('QR_book/{id}', [QuerryController::class, 'QR_book_tiket']);       
 Route::post('Revenue', [QuerryController::class, 'Revenue']);
 Route::post('Revenue_cinema', [QuerryController::class, 'Revenue_cinema']);
 Route::get('getShiftRevenue/{id}', [QuerryController::class, 'getShiftRevenue']);
 Route::get('get_used_vouchers_by_id_user', [QuerryController::class, 'get_used_vouchers_by_id_user']); // lấy voucher sử dụng r
 Route::get('get_room_by_id_cinema/{id}', [QuerryController::class, 'get_room_by_id_cinema']);
-
-
-
 
 
 ///////
