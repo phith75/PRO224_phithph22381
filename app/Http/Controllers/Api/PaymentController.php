@@ -50,14 +50,12 @@ class PaymentController extends Controller
         ];
 
         $user = User::find($id);
-
         if (!$user) {
             return response()->json(['message' => 'Sai thông tin người dùng'], 404);
         }
 
         // Validate the request
         $validator = Validator::make($request->all(), [
-            'id' => 'string',
             'amount' => 'integer',
             'password' => 'required|string', // Thêm quy tắc kiểm tra mật khẩu
         ]);
@@ -75,7 +73,6 @@ class PaymentController extends Controller
                     'msg' => 'Thanh toán thành công',
                     'data' => $data
                 ];
-
                 return response()->json($response, 200);
             }
 
@@ -84,8 +81,6 @@ class PaymentController extends Controller
             return response()->json(['msg' => 'Nhập sai mật khẩu, vui lòng thử lại!'], 201);
         }
     }
-
-
     public function vnpay_payment(Request $request)
     {
         $id_code = generateRandomString();

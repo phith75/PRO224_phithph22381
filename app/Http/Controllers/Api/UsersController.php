@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -63,18 +65,27 @@ class UsersController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'string',
             'email' => 'string|email|unique:users,email,' . $user->id,
-
-
-            // Thêm bất kỳ quy tắc kiểm tra nào khác cho các trường khác nếu cần
         ]);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // Cập nhật thông tin người dùng dựa trên dữ liệu yêu cầu
+        // Check and handle image upload
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            // Delete old image
+            $resultDelete = Storage::delete($user->image);
+
+            // Upload new image
+            $params['image'] = $resultDelete ? uploadFile('image', $request->file('image')) : $user->image;
+        } else {
+            // No new image provided
+            $params['image'] = $user->image;
+        }
+
+        // Update user information based on request data
         $user->update($request->except('_token', 'old_password'));
 
-        // Cập nhật mật khẩu nếu cả mật khẩu cũ và mật khẩu mới đều được cung cấp
+        // Update password if both old and new passwords are provided
         if ($request->filled('old_password') && $request->filled('new_password') && $request->new_password != null) {
             if (!Hash::check($request->input('old_password'), $user->password)) {
                 return response(['msg' => 'Mật khẩu không chính xác'], 401);
@@ -85,9 +96,10 @@ class UsersController extends Controller
                 return response(['msg' => 'Mật khẩu đã được thay đổi'], 200);
             }
         }
-        // Trả về người dùng đã được cập nhật dưới dạng nguồn tài nguyên
+        // Return the updated user as a resource
         return new UserResource($user);
     }
+
 
 
     /**

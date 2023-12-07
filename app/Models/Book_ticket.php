@@ -14,7 +14,6 @@ class Book_ticket extends Model
     protected static function boot()
     {
         parent::boot();
-
         static::created(function ($bookTicket) {
             $bookTicket->updateMemberTotalSpending();
         });
