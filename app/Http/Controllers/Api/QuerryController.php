@@ -201,7 +201,7 @@ class QuerryController extends Controller
             ->join('times as tm', 'tm.id', '=', 'td.time_id')
             ->join('movie_rooms as mv', 'mv.id', '=', 'td.room_id')
             ->join('cinemas as cms', 'cms.id', '=', 'mv.id_cinema')
-            ->leftJoin(DB::raw('(SELECT book_ticket_id, GROUP_CONCAT(CONCAT(quantity, " ", name)) as food_items FROM food_ticket_details JOIN food ON food.id = food_ticket_details.food_id GROUP BY book_ticket_id) as food_ticket_details'), function ($join) {
+            ->leftJoin(DB::raw('(SELECT book_ticket_id, GROUP_CONCAT(CONCAT(quantity, " x ", name)) as food_items FROM food_ticket_details JOIN food ON food.id = food_ticket_details.food_id GROUP BY book_ticket_id) as food_ticket_details'), function ($join) {
                 $join->on('food_ticket_details.book_ticket_id', '=', 'bt.id');
             })
             ->select(
@@ -830,7 +830,6 @@ class QuerryController extends Controller
     {
         $now = now();
         $now = now(); // Assuming $now is already defined
-
         $time_detail_by_film_id = DB::table('time_details as td')
             ->join('movie_rooms as mv', 'mv.id', '=', 'td.room_id')
             ->join('cinemas as cms', 'cms.id', '=', 'mv.id_cinema')
@@ -850,8 +849,32 @@ class QuerryController extends Controller
                 'td.id as show',
             )
             ->get();
-
-
+        return $time_detail_by_film_id;
+    }
+    public function check_time_detail_by_film(Request $request)
+    {
+        $now = now();
+        $now = now(); // Assuming $now is already defined
+        $time_detail_by_film_id = DB::table('time_details as td')
+            ->join('movie_rooms as mv', 'mv.id', '=', 'td.room_id')
+            ->join('cinemas as cms', 'cms.id', '=', 'mv.id_cinema')
+            ->join('times as tms', 'tms.id', '=', 'td.time_id')
+            ->where('cms.id', $request->id_cinema)
+            ->where(function ($query) use ($now) {
+                $query->where('td.date', '>', $now->format('Y-m-d'))
+                    ->orWhere(function ($subQuery) use ($now) {
+                        $subQuery->where('td.date', '=', $now->format('Y-m-d'))
+                            ->whereTime('tms.time', '>=', $now->format('H:i'));
+                    });
+            })
+            ->whereNull('td.deleted_at')
+            ->where('film_id',$request->film_id)
+            ->whereBetween('td.date', [$now->format('Y-m-d'), $now->addDays(4)->format('Y-m-d')])
+            ->select(
+                'td.film_id',
+                'td.id as show',
+            )
+            ->get();
         return $time_detail_by_film_id;
     }
     public function get_room_by_id_cinema(Request $request, $id)

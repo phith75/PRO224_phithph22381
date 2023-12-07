@@ -40,7 +40,7 @@ class BookTicketDetailsEmail extends Mailable
         $arr = [];
         $food_ticket_detail = $food_ticket_detail ? $food_ticket_detail : [];
         foreach ($food_ticket_detail as $value) {
-
+            
             $arr[] = $value;
         }
         $book_ticket_detail = DB::table('book_tickets as bt')
@@ -79,8 +79,6 @@ class BookTicketDetailsEmail extends Mailable
         ])->render();
         $tempFilePath = tempnam(sys_get_temp_dir(), 'email_template_');
         file_put_contents($tempFilePath, $bladebarcode);
-
-
         return $this->subject('Thông tin đặt vé xem film - mã thanh toán: ...' . substr($latestTicket->id_code, -7))
             ->markdown('emails.book_ticket_details', ['bookTicketDetails' => [$book_ticket_detail], 'food_ticket_detail' => $arr])
             ->attach($tempFilePath, [
