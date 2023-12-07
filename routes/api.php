@@ -85,7 +85,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 Route::get('/film-ratings/{film_id}',[RateStarController::class, 'getRatings']);
 Route::get('film_cinema/{id}', [QuerryController::class, 'film_cinema']);  // Lấy thông tin phim theo rạp
 Route::get('time_detail_get_by_id/{id}', [QuerryController::class, 'time_detail_get_by_id']);
-Route::get('check_time_detail_by_film/{id_cinema}', [QuerryController::class, 'check_time_detail_by_film_id']); /////
+Route::get('check_time_detail_by_film_id/{id_cinema}', [QuerryController::class, 'check_time_detail_by_film_id']); /////
 Route::get('time_detail_film', [QuerryController::class, 'check_time_detail_by_film']); /////
 
 Route::get('chair_count', [QuerryController::class, 'chair_count']);   // Lấy số ghế đã đặt (để tính còn bao nhiêu ghế trống)  
