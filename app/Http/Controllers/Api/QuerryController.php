@@ -111,7 +111,7 @@ class QuerryController extends Controller
     public function cache_seat(Request $request)
     {
         $id_time_detail = $request->id_time_detail;
-        $currentTime = Carbon::now();
+        $currentTime = Carbon::now('Asia/Ho_Chi_Minh');
         $seat_reservation = Cache::get('seat_reservation', []);
         // Kiểm tra xem đã có thông tin cho id_user và id_time_detail chưa
         $seat_reservation[$id_time_detail][$request->id_user] ??= [
@@ -149,6 +149,7 @@ class QuerryController extends Controller
             $seat_reservation[$id_time_detail],
 
         ]);
+        return  $seat_reservation[$id_time_detail];
         // Trả về dữ liệu ghế và thời gian đã đặt
 
     }
@@ -304,7 +305,7 @@ class QuerryController extends Controller
                 'fl.name',
                 'bt.id_code',
                 'mv.name as movie_room_name',
-                'fl.image',
+                'fl.poster as image',
                 'cms.name as name_cinema',
                 'cms.address',
                 'td.date',
