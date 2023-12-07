@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\TimeDetail;
+use Illuminate\Support\Facades\DB;
+
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
@@ -21,7 +23,20 @@ class Time_detailController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
+    {   
+        $check_time_detail = DB::table('time_details')
+            ->where('time_details.room_id', $request->room_id)           
+            ->join('times as tms', 'tms.id', '=', 'time_details.time_id')
+            ->where('time_details.time_id', $request->time_id)
+            ->where('time_details.date', $request->date)
+            ->whereNull('time_details.deleted_at')->get()->first();
+            $ngay_format = date("d/m/Y", strtotime($request->date));
+        if($check_time_detail){
+            return response([
+                'message' => 'Suất chiếu '. $ngay_format .' '.$check_time_detail->time .' đã tồn tại',
+            ], 401);
+
+        }
         // Định nghĩa các quy tắc validation
         $rules = [
             'date' => [
