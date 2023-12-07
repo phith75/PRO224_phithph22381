@@ -35,12 +35,12 @@ class BookTicketDetailsEmail extends Mailable
                 'f.name',
                 'ftk.quantity',
                 'f.price'
-            )->where('btk.id', $currentUser->id)
+            )->where('btk.user_id', $currentUser->id)
             ->get();
+
         $arr = [];
         $food_ticket_detail = $food_ticket_detail ? $food_ticket_detail : [];
         foreach ($food_ticket_detail as $value) {
-            
             $arr[] = $value;
         }
         $book_ticket_detail = DB::table('book_tickets as bt')
