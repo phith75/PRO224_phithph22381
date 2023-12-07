@@ -270,8 +270,6 @@ class QuerryController extends Controller
             ->where('users.id', $id)
             ->whereNull('bt.deleted_at')
             ->get();
-
-
         return $detail_purchase;
     }
     public function QR_book_tiket($id)

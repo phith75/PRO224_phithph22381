@@ -47,6 +47,7 @@ class PaymentController extends Controller
         $data = [
             "id_code" => $id_code,
             "amount" => $amount
+            
         ];
 
         $user = User::find($id);
