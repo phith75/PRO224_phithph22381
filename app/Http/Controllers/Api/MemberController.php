@@ -28,9 +28,9 @@ class MemberController extends Controller
         return new MemberResource($data);
     }
 
-    public function update(Request $request, string $id)
+    public function store(Request $request)
     {
-        $data = member::where('id_user', $id)->first();
+        $data = member::where('id_user', $request->id_user)->first();
         if (!$data) {
             return response()->json(['message' => 'member not found'], 404);
         }
