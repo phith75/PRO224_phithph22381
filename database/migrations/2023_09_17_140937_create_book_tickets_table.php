@@ -18,9 +18,7 @@ return new class extends Migration
             $table->tinyInteger('payment')->nullable();
             $table->integer('amount')->nullable();
             $table->string('time', 255)->nullable();
-            $table->string('id_chair', 255);
             $table->integer('id_staff_check')->default(0);
-
             $table->string('id_code')->nullable();
             $table->integer('status')->default(0);
             $table->timestamps();
