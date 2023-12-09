@@ -11,7 +11,7 @@ class TicketController extends Controller
 {
     public function printTicket($id)
     {
-        $ticket = DB::table('book_tickets')->where('id_code', $id)->update(["status" => 1]);
+        $ticket = DB::table('book_tickets')->where('id_code', $id)->update(["status" => 2]);
         // Logic để lấy thông tin vé từ $ticketId
         $book_ticket_detail = DB::table('book_tickets as bt')
             ->join('time_details as td', 'td.id', '=', 'bt.id_time_detail')

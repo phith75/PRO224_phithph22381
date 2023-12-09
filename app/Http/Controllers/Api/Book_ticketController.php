@@ -53,10 +53,7 @@ class Book_ticketController extends Controller
         }
         return new Book_ticketResource($Book_ticket);
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
+    
     public function update(Request $request, string $id)
     {
 
