@@ -119,6 +119,7 @@ class QuerryController extends Controller
             'seat' => [],
             'time' => [],
         ];
+       
         $selected_seats = explode(',', $request->selected_seats);
         // Kiểm tra ghế đã được đặt
         if (
@@ -128,19 +129,19 @@ class QuerryController extends Controller
             foreach ($selected_seats as $seat) {
                 $index = array_search($seat, $seat_reservation[$request->id_time_detail][$request->id_user]['seat']);
                 if ($index !== false) {
-                    unset($seat_reservation[$request->id_time_detail][$request->id_user]['seat'][$index]);
+                    unset($seat_reservation[$request->id_time_detail][$request->id_user]['seat'][$seat]);
                     unset($seat_reservation[$request->id_time_detail][$request->id_user]['time'][$seat]);
                 }
             }
             //   Thêm ghế vào cache
         } elseif (count(array_intersect($selected_seats, Arr::flatten($seat_reservation[$id_time_detail]))) === 0) {
             foreach ($selected_seats as $seat) {
-                $seat_reservation[$request->id_time_detail][$request->id_user]['seat'][] = $seat;
+                $seat_reservation[$request->id_time_detail][$request->id_user]['seat'][$seat] = $seat;
                 $seat_reservation[$request->id_time_detail][$request->id_user]['time'][$seat] = $currentTime->addMinutes(2);
             }
         }
         // Đặt lại dữ liệu vào Cache
-        Cache::put('seat_reservation', $seat_reservation, $currentTime->addMinutes(2));
+        Cache::put('seat_reservation', $seat_reservation);
         $pusher = new Pusher(env('PUSHER_APP_KEY'), env('PUSHER_APP_SECRET'), env('PUSHER_APP_ID'), [
             'cluster' => env('PUSHER_APP_CLUSTER'),
             'useTLS' => true,
@@ -187,6 +188,9 @@ class QuerryController extends Controller
         );
 
         return $reservedSeats;
+        // Move the dd() here if you want to see the final value of $seat
+        
+        
     }
 
 

@@ -44,13 +44,7 @@ class ChairsController extends Controller
             
         }
         
-        $pusher = new Pusher(env('PUSHER_APP_KEY'), env('PUSHER_APP_SECRET'), env('PUSHER_APP_ID'), [
-            'cluster' => env('PUSHER_APP_CLUSTER'),
-            'useTLS' => true,
-        ]);
-        $pusher->trigger('Cinema', 'room_seat', [
-            $arr
-        ]);
+       
         return $arr;
     }
 
@@ -60,13 +54,7 @@ class ChairsController extends Controller
     public function store(Request $request)
     {
         $Chairs = ModelsChairs::create($request->all());
-        $pusher = new Pusher(env('PUSHER_APP_KEY'), env('PUSHER_APP_SECRET'), env('PUSHER_APP_ID'), [
-            'cluster' => env('PUSHER_APP_CLUSTER'),
-            'useTLS' => true,
-        ]);
-        $pusher->trigger('Cinema', 'chair', [
-            $Chairs
-        ]);
+        
             return $Chairs;
         
         

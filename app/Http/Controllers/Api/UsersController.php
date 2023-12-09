@@ -60,7 +60,7 @@ class UsersController extends Controller
         if (!$user) {
             return response()->json(['message' => 'Không tìm thấy người dùng'], 404);
         }
-
+        
         // Validate the update request
         $validator = Validator::make($request->all(), [
             'name' => 'string',
@@ -69,7 +69,6 @@ class UsersController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
         // Check and handle image upload
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
             // Delete old image
