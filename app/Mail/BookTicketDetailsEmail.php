@@ -80,7 +80,7 @@ class BookTicketDetailsEmail extends Mailable
         // $bladebarcode = view('emails.file', [
         //     'bookTicketDetails' => [$latestTicket],
         // ])->render();
-        $idCode = $book_ticket_detail->id_code;
+        $idCode = $latestTicket->id_code;
         $length = strlen($idCode);
         
         $bladebarcode = DNS1DFacade::getBarcodePNG(substr($idCode, -7), "C128",1.4,50);

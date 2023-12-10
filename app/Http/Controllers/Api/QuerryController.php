@@ -381,6 +381,7 @@ class QuerryController extends Controller
         $startMonth = $monthsWithData->min();
         $endMonth = $monthsWithData->max();
         $Revenue_by_cinema_in_the_month = [];
+      
         for ($months = $startMonth; $months <= $endMonth; $months++) {
             foreach ($cinemas as $cinema) {
                 $dailyRevenue = DB::table('book_tickets')

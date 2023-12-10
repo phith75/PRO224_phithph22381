@@ -30,12 +30,11 @@ use App\Http\Controllers\Api\MovieRoomController;
 use App\Http\Controllers\Api\Book_ticketController;
 use App\Http\Controllers\Api\Time_detailController;
 use App\Http\Controllers\Api\UservoucherController;
-use App\Http\Controllers\Api\PassportAuthController;
 use App\Http\Controllers\Api\Contact_infosController;
 use App\Http\Controllers\Api\CategoryDetailController;
 use App\Http\Controllers\Api\ForgotPasswordController;
 use App\Http\Controllers\Api\Food_ticket_detailController;
-
+use App\Http\Controllers\Api\FilmMakersController;
 /*u
 |--------------------------------------------------------------------------
 | API Routes
@@ -90,7 +89,6 @@ Route::get('time_detail_film', [QuerryController::class, 'check_time_detail_by_f
 
 Route::get('chair_count', [QuerryController::class, 'chair_count']);   // Lấy số ghế đã đặt (để tính còn bao nhiêu ghế trống)  
 Route::get('categorie_detail_name', [QuerryController::class, 'categorie_detail_name']); // Lấy danh mục của phim (ví dụ: Hành động, Kinh điển)
-Route::get('chair_by_time_detail', [QuerryController::class, 'chair_by_time_detail']);
 
 Route::post('cache_seat', [QuerryController::class, 'cache_seat']); // Thêm, xóa giữ ghế
 Route::get('getReservedSeatsByTimeDetail/{id_time_detail}', [QuerryController::class, 'getReservedSeatsByTimeDetail']); // check xem có bao nhiêu ghế đang được giữ
@@ -131,13 +129,13 @@ Route::apiResource('Food', FoodController::class);
 Route::resource('time', TimeController::class);
 Route::resource('time_detail', Time_detailController::class); // crud cái này 
 Route::resource('category_detail', CategoryDetailController::class); // cái này nx
-Route::resource('filmMaker', FilmMakerController::class);
+Route::resource('filmMaker', FilmMakersController::class);
 Route::resource('movieRoom', MovieRoomController::class);
 
 Route::resource('film', FilmController::class);
 Route::resource('user', UsersController::class);
 // //api add vocher
-Route::resource('vocher', VocherController::class);
+Route::resource('vocher', VoucherController::class);
 Route::resource('voucher', VoucherController::class);
 Route::resource('user', UsersController::class);
 Route::apiResource('member', MemberController::class);

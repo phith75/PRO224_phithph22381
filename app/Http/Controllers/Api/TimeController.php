@@ -6,6 +6,7 @@ use App\Models\Time;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\TimeResource;
+use Illuminate\Support\Facades\Validator;
 
 class TimeController extends Controller
 {
@@ -22,7 +23,13 @@ class TimeController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
+    {   
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|unique:times,time',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
         $time = time::create($request->all());
         return new TimeResource($time);
     }
@@ -43,8 +50,15 @@ class TimeController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
-    {
+    {   
         $time = time::find($id);
+         
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|unique:times,time,'.$id,
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
         if (!$time) {
             return response()->json(['message' => 'time not found'], 404);
         }
