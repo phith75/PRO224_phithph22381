@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\FoodResource;
 use App\Models\Food;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\FoodResource;
+use Illuminate\Support\Facades\Validator;
 
 class FoodController extends Controller
 {
@@ -15,6 +16,7 @@ class FoodController extends Controller
     public function index()
     {
         $data = Food::all();
+       
         return FoodResource::collection($data);
     }
 
@@ -24,6 +26,12 @@ class FoodController extends Controller
     public function store(Request $request)
     {
         $Food = Food::create($request->all());
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|unique:food,name',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
         return new FoodResource($Food);
     }
 
@@ -33,6 +41,7 @@ class FoodController extends Controller
     public function show(string $id)
     {
         $Food = Food::find($id);
+        
         if (!$Food) {
             return response()->json(['message' => "food not found"], 404);
         }
@@ -46,6 +55,12 @@ class FoodController extends Controller
     {
 
         $Food = Food::find($id);
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|unique:food,name,'.$id,
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
         if (!$Food) {
             return response()->json(['message' => 'Food not found'], 404);
         }

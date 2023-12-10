@@ -7,6 +7,7 @@ use App\Models\MovieRoom;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MovieRoomResource;
+use Illuminate\Support\Facades\Validator;
 
 class MovieRoomController extends Controller
 {
@@ -16,6 +17,7 @@ class MovieRoomController extends Controller
     public function index()
     {
         $MovieRoom = MovieRoom::all();
+        
         return MovieRoomResource::collection($MovieRoom);
     }
 
@@ -24,6 +26,12 @@ class MovieRoomController extends Controller
      */
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|unique:movie_rooms,name',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
         $MovieRoom = MovieRoom::create($request->all());
         return new MovieRoomResource($MovieRoom);
     }
@@ -46,6 +54,12 @@ class MovieRoomController extends Controller
     public function update(Request $request, string $id)
     {
         $MovieRoom = MovieRoom::find($id);
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|unique:food,name,'.$id,
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
         if (!$MovieRoom) {
             return response()->json(['message' => 'MovieRoom not found'], 404);
         }

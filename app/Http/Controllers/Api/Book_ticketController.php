@@ -37,7 +37,6 @@ class Book_ticketController extends Controller
         }
 
         $bookTicket = Book_ticket::create($request->all());
-
         return new Book_ticketResource($bookTicket);
     }
 

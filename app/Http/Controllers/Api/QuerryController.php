@@ -372,16 +372,15 @@ class QuerryController extends Controller
             ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
             ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
             ->join('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
-            ->where('cinemas.id', $request->id_cinema)
             ->whereYear('book_tickets.created_at', $year)
             ->where('book_tickets.status', '<>', 2)
-
             ->select(DB::raw('MONTH(book_tickets.created_at) as month'))
             ->groupBy(DB::raw('MONTH(book_tickets.created_at)'))
             ->pluck('month');
             $startMonth = $monthsWithData->min();
             $endMonth = $monthsWithData->max();
         $Revenue_by_cinema_in_the_month = [];
+      
         for ($months = $startMonth; $months <= $endMonth; $months++) {
             foreach ($cinemas as $cinema) {
                 $dailyRevenue = DB::table('book_tickets')

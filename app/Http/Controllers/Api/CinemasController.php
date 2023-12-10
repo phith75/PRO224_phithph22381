@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\CinemasResource;
 use App\Models\Cinemas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\CinemasResource;
+use Illuminate\Support\Facades\Validator;
 
 class CinemasController extends Controller
 {
@@ -24,6 +25,12 @@ class CinemasController extends Controller
      */
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|unique:cinemas,name',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
         $Cinemas = Cinemas::create($request->all());
         return new CinemasResource($Cinemas);
     }
@@ -32,8 +39,9 @@ class CinemasController extends Controller
      * Display the specified resource.
      */
     public function show(string $id)
-    {
+    {   
         $cinemas = Cinemas::find($id);
+        
         if (!$cinemas) {
             return response()->json(['message' => "Cinemas not found"], 404);
         }
@@ -46,6 +54,12 @@ class CinemasController extends Controller
     public function update(Request $request, string $id)
     {
         $Cinemas = Cinemas::find($id);
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|unique:cinemas,name,'.$id,
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
         if (!$Cinemas) {
             return response()->json(['message' => 'Cinemas not found'], 404);
         }
