@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\ChairsController;
 use App\Http\Controllers\Api\MemberController;
 use App\Http\Controllers\Api\QuerryController;
 use App\Http\Controllers\Api\CinemasController;
+use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\VoucherController;
 use App\Http\Controllers\Api\CategoryController;
@@ -79,7 +80,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/usevoucher', [UservoucherController::class, 'useVoucher']);
     //đánh giá sao film
     Route::resource('rateStar', RateStarController::class);
-
+    Route::apiResource('Blogs.comments', CommentController::class); 
 });
 //////
 Route::get('/film-ratings/{film_id}',[RateStarController::class, 'getRatings']);
