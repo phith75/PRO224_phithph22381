@@ -1,12 +1,18 @@
 <?php
 
 use Illuminate\Support\Facades\Storage;
-
 function uploadFile($nameFolder, $file)
 {
+    // Kiểm tra sự tồn tại của thư mục trước khi lưu trữ
+    if (!Storage::exists($nameFolder)) {
+        Storage::makeDirectory($nameFolder, 0755, true); // Tạo thư mục nếu không tồn tại
+    }
     $fileName = time() . '_' . $file->getClientOriginalName();
 
-    return $file->storeAs($nameFolder, $fileName, 'public');
+    // Lưu trữ tệp tin và kiểm tra kết quả
+    $result = $file->storeAs($nameFolder, $fileName, 'public');
+    // Kiểm tra kết quả và trả về đường dẫn hoặc null nếu có lỗi
+    return $result ? Storage::url($result) : null;
 }
 function execPostRequest($url, $data)
 {

@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+use Pusher\Pusher;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Chairs;
+use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ChairsResource;
 use App\Models\Chairs as ModelsChairs;
 use Illuminate\Http\Request;
@@ -16,8 +18,34 @@ class ChairsController extends Controller
 
     public function index()
     {
-        $data = ModelsChairs::all();
-        return ChairsResource::collection($data);
+        $chair_array = [];
+        $arr = [];
+        $chairs = DB::table('movie_chairs as mc')
+            ->selectRaw('GROUP_CONCAT(name) as name, mc.id_time_detail')
+            ->whereNull('mc.deleted_at')
+            ->groupBy('mc.id_time_detail')
+            ->get();
+        
+        // Check if $chairs is not null
+        if ($chairs) {
+            foreach ($chairs as $chair) {
+                // Split the concatenated string into an array
+                $chair_array = explode(',', $chair->name);
+        
+                // Use a nested foreach loop to iterate through each seat in $chair_array
+                foreach ($chair_array as $seat) {
+                    $arr[] = [
+                        'seat' => $seat,
+                        'id_time_detail' => $chair->id_time_detail
+                    ];
+                }
+            }
+            // If you want to return it as a JSON response
+            
+        }
+        
+       
+        return $arr;
     }
 
     /**
@@ -26,6 +54,10 @@ class ChairsController extends Controller
     public function store(Request $request)
     {
         $Chairs = ModelsChairs::create($request->all());
+        
+            return $Chairs;
+        
+        
         return new ChairsResource($Chairs);
     }
 
@@ -52,7 +84,6 @@ class ChairsController extends Controller
         }
         ModelsChairs::where('id', $id)
             ->update($request->except('_token'));
-
         return new ChairsResource($Chairs);
     }
 

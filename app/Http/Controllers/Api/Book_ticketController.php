@@ -28,7 +28,7 @@ class Book_ticketController extends Controller
             'id_time_detail' => 'required',
             'user_id' => 'required',
             'payment' => 'required',
-            'amount' => 'required|',
+            'amount' => 'required',
             'id_chair' => 'required',
             'id_code' => 'required',
         ]);
@@ -53,10 +53,7 @@ class Book_ticketController extends Controller
         }
         return new Book_ticketResource($Book_ticket);
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
+    
     public function update(Request $request, string $id)
     {
 

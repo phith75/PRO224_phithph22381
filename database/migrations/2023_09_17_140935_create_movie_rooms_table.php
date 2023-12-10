@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('id_cinema');
             $table->string('name', 100);
+            $table->tinyInteger('status');
+
             $table->timestamps();
             $table->softDeletes(); 
         });

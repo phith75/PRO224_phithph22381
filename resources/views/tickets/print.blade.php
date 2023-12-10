@@ -10,8 +10,7 @@
     </style>
 </head>
 <body>
-    <?php
-    ?>
+  
     @foreach($array_chair as $key => $chair)
     <h1>Ticket</h1>
     <h1>Chair Details: {{$chair}}</h1>
@@ -27,8 +26,7 @@
     <p><strong>Total Price:</strong> {{ number_format($book_ticket_detail->total_price, 0, ',', '.') }} VND</p>
     <h2>Food Details:</h2>
     <ul>
-
-    @foreach ($food_ticket_detail as $key => $food_detail)
+    @foreach ($food_ticket_detail as $key => $food_detail)  
    <li> {{$food_detail->quantity}} *  {{$food_detail->name}}</li>
     
 @endforeach

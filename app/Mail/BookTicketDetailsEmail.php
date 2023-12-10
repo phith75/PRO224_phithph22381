@@ -26,7 +26,7 @@ class BookTicketDetailsEmail extends Mailable
         $currentUser = Auth::user();
         $arr = [];
         $latestTicket = Book_ticket::where('user_id', $currentUser->id)
-            ->latest('created_at')
+            ->latest('time')
             ->first();
         $food_ticket_detail = DB::table('food_ticket_details as ftk')
             ->join('book_tickets as btk', 'ftk.book_ticket_id', '=', 'btk.id')
@@ -35,12 +35,11 @@ class BookTicketDetailsEmail extends Mailable
                 'f.name',
                 'ftk.quantity',
                 'f.price'
-            )->where('btk.id', $currentUser->id)
+            )->where('btk.id', $latestTicket->id)
             ->get();
         $arr = [];
         $food_ticket_detail = $food_ticket_detail ? $food_ticket_detail : [];
         foreach ($food_ticket_detail as $value) {
-
             $arr[] = $value;
         }
         $book_ticket_detail = DB::table('book_tickets as bt')
@@ -57,7 +56,7 @@ class BookTicketDetailsEmail extends Mailable
                 'fl.name',
                 'bt.id_code',
                 'mv.name as movie_room_name',
-                'fl.image',
+                'fl.poster as image',
                 'cms.name as name_cinema',
                 'cms.address',
                 'td.date',
@@ -79,8 +78,6 @@ class BookTicketDetailsEmail extends Mailable
         ])->render();
         $tempFilePath = tempnam(sys_get_temp_dir(), 'email_template_');
         file_put_contents($tempFilePath, $bladebarcode);
-
-
         return $this->subject('Thông tin đặt vé xem film - mã thanh toán: ...' . substr($latestTicket->id_code, -7))
             ->markdown('emails.book_ticket_details', ['bookTicketDetails' => [$book_ticket_detail], 'food_ticket_detail' => $arr])
             ->attach($tempFilePath, [
