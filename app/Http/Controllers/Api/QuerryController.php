@@ -291,7 +291,6 @@ class QuerryController extends Controller
         $arr = [];
         $food_ticket_detail = $food_ticket_detail ? $food_ticket_detail : [];
         foreach ($food_ticket_detail as $value) {
-
             $arr[] = $value;
         }
         $book_ticket_detail = DB::table('book_tickets as bt')

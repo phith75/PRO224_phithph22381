@@ -9,24 +9,19 @@
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 
 </head>
-
-
 <body>
-    @foreach ($bookTicketDetails as $bookTicketDetails)
     <p  
     style="Margin:0 0 0 0;Padding:0px 0 7px 0;text-align:center;font:24px 'Arial','Helvetica Neue',Helvetica,'Myriad Pro',sans-serif;text-transform:uppercase;color:#ec1c23">
-    <b>
-        @php
-        $idCode = $bookTicketDetails->id_code;
-        $length = strlen($idCode);
-        @endphp
-         <svg id="barcode"></svg>
-         <script>
-             JsBarcode("#barcode", "{{substr($idCode, -7) }}");
-         </script>
-    </b>
+   <b>
+    @php
+    $idCode = $bookTicketDetails->id_code;
+    $length = strlen($idCode);
+    @endphp
+    {!! DNS1D::getBarcodeHTML(substr($idCode, -7), "C128",1.4,50) !!}
+   </b>
+
 </p>
-    @endforeach
+    
 </body>
 
 

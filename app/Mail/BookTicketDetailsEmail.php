@@ -11,7 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\DB;
-
+use Milon\Barcode\Facades\DNS1DFacade;
 
 class BookTicketDetailsEmail extends Mailable
 {
@@ -38,6 +38,10 @@ class BookTicketDetailsEmail extends Mailable
             )->where('btk.id', $latestTicket->id)
             ->get();
         $arr = [];
+             
+         // Lưu tổng giá vào mảng $arr
+    // Nếu bạn muốn lưu chi tiết đồ ăn vào mảng $arr
+                
         $food_ticket_detail = $food_ticket_detail ? $food_ticket_detail : [];
         foreach ($food_ticket_detail as $value) {
             $arr[] = $value;
@@ -73,16 +77,17 @@ class BookTicketDetailsEmail extends Mailable
             return $this->subject('Thông tin đặt vé xem film - mã thanh toán: Chưa có vé')
                 ->markdown('emails.book_ticket_details', ['bookTicketDetails' => null]);
         }
-        $bladebarcode = view('emails.file', [
-            'bookTicketDetails' => [$latestTicket],
-        ])->render();
+        // $bladebarcode = view('emails.file', [
+        //     'bookTicketDetails' => [$latestTicket],
+        // ])->render();
+        $idCode = $book_ticket_detail->id_code;
+        $length = strlen($idCode);
+        
+        $bladebarcode = DNS1DFacade::getBarcodePNG(substr($idCode, -7), "C128",1.4,50);
         $tempFilePath = tempnam(sys_get_temp_dir(), 'email_template_');
         file_put_contents($tempFilePath, $bladebarcode);
         return $this->subject('Thông tin đặt vé xem film - mã thanh toán: ...' . substr($latestTicket->id_code, -7))
-            ->markdown('emails.book_ticket_details', ['bookTicketDetails' => [$book_ticket_detail], 'food_ticket_detail' => $arr])
-            ->attach($tempFilePath, [
-                'as' => 'email_template.html',
-                'mime' => 'text/html',
-            ]);;
+            ->markdown('emails.book_ticket_details', ['bookTicketDetails' => [$book_ticket_detail], 'food_ticket_detail' => $arr,'bladebarcode' => $bladebarcode,] )
+           ;
     }
 }

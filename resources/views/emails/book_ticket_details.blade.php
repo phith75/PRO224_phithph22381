@@ -126,19 +126,11 @@
                                                 style="Margin:10px 0 0 0;Padding:0px 0 0 0;text-align:center;font:12px 'Arial','Helvetica Neue',Helvetica,'Myriad Pro',sans-serif;text-transform:uppercase;line-height:12px">
                                                 <b>Mã vé (Reservation code)</b>
                                             </p>
+                                        
                                             <p  
-                                                style="Margin:0 0 0 0;Padding:0px 0 7px 0;text-align:center;font:24px 'Arial','Helvetica Neue',Helvetica,'Myriad Pro',sans-serif;text-transform:uppercase;color:#ec1c23">
-                                                <b>
-                                                    @php
-                                                    $idCode = $bookTicketDetails->id_code;
-                                                    $length = strlen($idCode);
-                                                    @endphp
-                                                     <svg id="barcode"></svg>
-                                                     <script>
-                                                         JsBarcode("#barcode", "{{substr($idCode, -7) }}");
-                                                     </script>
-                                                </b>
-                                            </p>
+                                            style="Margin:0 0 0 0;Padding:0px 0 7px 0;text-align:center;font:24px 'Arial','Helvetica Neue',Helvetica,'Myriad Pro',sans-serif;text-transform:uppercase;color:#ec1c23">
+                                            <img src="{{$bladebarcode}}" alt="">
+                                        </p>
                                             <p
                                                 style="Margin:0 0 0 0;Padding:0px 0 0 0;text-align:center;font:10px 'Arial','Helvetica Neue',Helvetica,'Myriad Pro',sans-serif;text-transform:uppercase;line-height:10px;display:none">
                                                 <b>(Vui lòng mang mã vé để đổi bỏng nước)</b>
@@ -206,16 +198,17 @@
                                                         <td style="padding-bottom:10px">:</td>
                                                         <td align="right" style="padding-bottom:10px">
                                                             <strong>
+                                                                @php
+                                                                        $total_price = 0;   
+                                                                @endphp
                                                                 @foreach ($food_ticket_detail as $key => $food_detail)
-                                                                    {{$food_detail->quantity}} *  {{$food_detail->name}}
-                                                                    @if ($loop->last)
-                                                                        <hr>
-                                                                    @else
-                                                                        <br>+
-                                                                        <br>
-                                                                    @endif
+                                                                @php
+                                                                $total_price +=   (intval($food_detail->price) * intval($food_detail->quantity));
+                                                                @endphp
+                                                                    
                                                                 @endforeach
-                                                            </strong>
+                                                                {{number_format($total_price, 0, ',', '.') }}
+                                                            đ</strong>
                                                         </td>
                                                         
                                                     </tr>
