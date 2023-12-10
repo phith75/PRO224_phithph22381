@@ -58,7 +58,7 @@ class Kernel extends ConsoleKernel
                         // Calculate the difference in seconds
                         $secondsDifference = $currentTime->diffInSeconds($carbonObject);
                         // Nếu số giây vượt quá 1 phút, xóa thông tin ghế hết hạn
-                        if ($secondsDifference == 0) {
+                        if ($secondsDifference >= 120) {
                             unset($data['seat'][$seat]);
                             unset($data['time'][$seat]);
                             Cache::put('seat_reservation', $seat_reservation);

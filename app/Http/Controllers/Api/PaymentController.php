@@ -92,12 +92,12 @@ class PaymentController extends Controller
         $startTime = date("YmdHis");
         $expire = date('YmdHis', strtotime('+50 minutes', strtotime($startTime)));
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        if (isset($request->coin)) {
+        $vnp_Returnurl = "http://localhost:5173/payment/id_code=" . $id_code . '/'; // Đường dẫn return sau khi thanh toán
 
-            $vnp_Returnurl = "http://localhost:5173/payment/id_code=" . $id_code . '/'; // Đường dẫn return sau khi thanh toán
+
             if ($request->id_user != null) {
-                $vnp_Returnurl = "http://localhost:5173/"; // Đường dẫn return sau khi thanh toán
-
+                $vnp_Returnurl = "http://localhost:5173/ResultNapTien/id_code=" . $id_code . '/'; // Đường dẫn return sau khi thanh toán
+    
             }
             $vnp_TmnCode = "SMWBPLOI"; //Mã website tại VNPAY 
             $vnp_HashSecret = "YCXCIZUKOICUEMGAZGIFLYLLNULOSTTK"; //Chuỗi bí mật
@@ -200,8 +200,6 @@ class PaymentController extends Controller
             }
             // vui lòng tham khảo thêm tại code demo
         }
-    }
-
     public function momo_payment(Request $request)
     {
         $id_code = generateRandomString();

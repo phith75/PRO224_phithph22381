@@ -29,6 +29,7 @@ class RateStarController extends Controller
 {
     $user = auth()->user();
     // Bắt validate request
+    
     $validator = Validator::make($request->all(), [
         'star_rating' => 'required|integer|min:1|max:5',
         'film_id' => 'required|exists:films,id',
@@ -36,18 +37,28 @@ class RateStarController extends Controller
     if ($validator->fails()) {
         return response()->json(['error' => $validator->errors()], 422);
     }
+    $film_bought = DB::table('users')
+    ->join('book_tickets as bt', 'users.id', '=', 'bt.user_id')
+    ->join('time_details', 'bt.id_time_detail', '=', 'time_details.id')
+    ->join('films', 'time_details.film_id', '=', 'films.id')
+    ->where('films.id', $request->film_id)
+    ->select('films.id', 'films.name as film_name')
+    ->first();
 
+    if($film_bought){
+        $rating = RateStar::create([
+            'user_id' => $user->id,//lấy khi login
+            'film_id' => $request->film_id, // 
+            'star_rating' => $request->star_rating,//đánh giá sao
+            'comment' => $request->comment, //comment
+        ]);
+        return response()->json(['message' => 'Bình luận và đánh giá đã được thêm mới.', 'data' => $rating]);
+    }
+    return response()->json(['message' => 'Chỉ khách hàng đi xem phim này mới được đánh giá'],301);
+    
     // Tạo mới bình luận và đánh giá
-    $rating = RateStar::create([
-        'user_id' => $user->id,//lấy khi login
-        'film_id' => $request->film_id, // 
-        'star_rating' => $request->star_rating,//đánh giá sao
-        'comment' => $request->comment, //comment
-    ]);
-
-    return response()->json(['message' => 'Bình luận và đánh giá đã được thêm mới.', 'data' => $rating]);
+    
 }
-
 
     //số lượng đánh giá sao
     public function getRatings($film_id)
