@@ -28,6 +28,9 @@ class FilmController extends Controller
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
             $data['image'] = uploadFile('image', $request->file('image'));
         }
+        if ($request->hasFile('poster') && $request->file('poster')->isValid()) {
+            $data['poster'] = uploadFile('image', $request->file('poster'));
+        }
         $films = film::create($data);
 
         return new FilmResource($films);

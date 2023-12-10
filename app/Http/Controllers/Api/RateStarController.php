@@ -54,7 +54,7 @@ class RateStarController extends Controller
         ]);
         return response()->json(['message' => 'Bình luận và đánh giá đã được thêm mới.', 'data' => $rating]);
     }
-    return response()->json(['message' => 'Chỉ khách hàng đi xem phim này mới được đánh giá'],301);
+    return response()->json(['message' => 'Chỉ khách hàng đã mua vé xem phim này mới được đánh giá'],301);
     
     // Tạo mới bình luận và đánh giá
     
