@@ -766,22 +766,7 @@ $dailyRevenue = DB::table('book_tickets')
             ->groupBy('cinemas.name')
             ->get();
         // lọc theo ngày 
-        $revenue_staff_day_filter = DB::table('book_tickets')
-            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
-            ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
-            ->join('films', 'time_details.film_id', '=', 'films.id')
-            ->join('users', 'book_tickets.user_id', '=', 'users.id')
-            ->join('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
-            ->where('cinemas.id', $request->id_cinema)         
-            ->where('users.role', '<>', 0)
-            ->where('book_tickets.status','<>',2)
-
-            ->whereDay('book_tickets.created_at', $day)
-            ->whereMonth('book_tickets.created_at', $month)
-            ->whereYear('book_tickets.created_at', $year)
-            ->select('cinemas.name as cinema_name', DB::raw('SUM(book_tickets.amount) as total_amount'))
-            ->groupBy('cinemas.name')
-            ->get();
+        
 
         ///số vé bán ra theo từng tên phim của một ngày
         $tickets_total_day = DB::table('book_tickets')
@@ -980,10 +965,9 @@ $dailyRevenue = DB::table('book_tickets')
         
         return [
             "revenue_staff" => [ // thông tin cho nhân viên xem 
-                'revenue_staff_day' => $revenue_staff_day,
-                'revenue_staff_day_filter' => $revenue_staff_day_filter,
-                'tickets_total_day' => $tickets_total_day,
-                'revenue_food' => $revenue_food
+                'revenue_staff_day' => $revenue_staff_day, // thống kê 
+                'tickets_total_day' => $tickets_total_day, // xem tên nhân viên và số lượng vé check-in
+                'revenue_food' => $revenue_food // thống kê đồ ăn
             ],
             "revenue_admin_cinema" => [  // thông tin cho admin rạpp xem, nếu truyền day vào thì sẽ tính theo tháng và năm hiện tại 
                                          // ví dụ chuyền vào 5 thì sẽ tính theo 2023/12/09, nếu k chuyền thì sẽ tính theo thời gian hiện tại
@@ -998,12 +982,13 @@ $dailyRevenue = DB::table('book_tickets')
                 'ticket_staff_fill_day' => $ticket_staff_fill_day,      // số lượng vé check của nhân viên.
                 'ticket_staff_fill_mon' => $ticket_staff_fill_mon,
                 'revenue_food_day' => $revenue_food,        // tổng doanh thu đồ ăn
-                'total_food_mon' => $total_food_mon,    
+                'revenue_food_day' => $revenue_food,        // tổng doanh thu đồ ăn
+                'total_food_mon' => $total_food_mon,        
                 'total_food_year' => $total_food_year,
-                'refund_ticket_day' => $refund_ticket_day,
-                'refund_ticket_month' => $refund_ticket_month,
-                'refund_ticket_year' => $refund_ticket_year,
-                'top_5_films' => $top_5_films
+                'refund_ticket_day' => $refund_ticket_day,  // vé hoàn trong ngày
+                'refund_ticket_month' => $refund_ticket_month,  // vé hoàn tháng
+                'refund_ticket_year' => $refund_ticket_year, // vé hoàn năm
+                'top_5_films' => $top_5_films // top 5 phim
             ],
             "statistical_cinema" => [
                 'Revenue_in_months_of_the_year' => $Revenue_in_months_of_the_year, // biểu đồ các tháng trong năm của admin rạp
@@ -1013,8 +998,6 @@ $dailyRevenue = DB::table('book_tickets')
             ]
         ];
     }
-   
-
     public function time_detail_get_by_id($id)
     {
         $CinemaDetailbyId = DB::table('cinemas')
