@@ -417,8 +417,8 @@ class QuerryController extends Controller
         ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
         ->join('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
         ->where('book_tickets.status', '<>', 2)
-        ->select(DB::raw('YEAR(book_tickets.time) as year'))
-        ->groupBy(DB::raw('YEAR(book_tickets.time)'))
+        ->select(DB::raw('YEAR(book_tickets.created_at) as year'))
+        ->groupBy(DB::raw('YEAR(book_tickets.created_at)'))
         ->pluck('year');
         $startYear = $yearsWithData->min();
         $endYear = $yearsWithData->max();
@@ -717,8 +717,8 @@ class QuerryController extends Controller
             ->where('cinemas.id', $request->id_cinema)
             ->where('book_tickets.status', '<>', 2)
 
-            ->select(DB::raw('YEAR(book_tickets.time) as year'))
-            ->groupBy(DB::raw('YEAR(book_tickets.time)'))
+            ->select(DB::raw('YEAR(book_tickets.created_at) as year'))
+            ->groupBy(DB::raw('YEAR(book_tickets.created_at)'))
             ->pluck('year');
 
         // Gán giá trị của năm đầu tiên và năm cuối cùng

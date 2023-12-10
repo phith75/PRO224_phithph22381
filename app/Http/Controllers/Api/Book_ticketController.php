@@ -18,7 +18,6 @@ class Book_ticketController extends Controller
         $data = Book_ticket::all();
         return Book_ticketResource::collection($data);
     }
-
     /**
      * Store a newly created resource in storage.
      */
