@@ -7,20 +7,25 @@
     <title>Thông tin đặt vé xem phim</title>
     <script src="https://cdn.jsdelivr.net/jsbarcode/3.3.7/JsBarcode.all.min.js"></script>
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
-
+    <style>
+        .barcode {
+            width: 300px; /* Chiều rộng */
+            height: 150px; /* Chiều cao */
+        }
+    </style>
 </head>
 <body>
-    <p  
-    style="Margin:0 0 0 0;Padding:0px 0 7px 0;text-align:center;font:24px 'Arial','Helvetica Neue',Helvetica,'Myriad Pro',sans-serif;text-transform:uppercase;color:#ec1c23">
-   <b>
-    @php
-    $idCode = $bookTicketDetails->id_code;
-    $length = strlen($idCode);
-    @endphp
-    {!! DNS1D::getBarcodeHTML(substr($idCode, -7), "C128",1.4,50) !!}
-   </b>
-
-</p>
+    
+    
+    <div style="text-align:center">
+        <h1 class="barcode">
+            @php
+                $idCode = $bookTicketDetails->id_code;
+                $length = strlen($idCode);
+            @endphp
+            {!! DNS1D::getBarcodeHTML(substr($idCode, -7), "C128", 5, 250) !!}
+        </h1>
+    </div>
     
 </body>
 

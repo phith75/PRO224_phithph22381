@@ -89,6 +89,7 @@ Route::get('time_detail_film', [QuerryController::class, 'check_time_detail_by_f
 
 Route::get('chair_count', [QuerryController::class, 'chair_count']);   // Lấy số ghế đã đặt (để tính còn bao nhiêu ghế trống)  
 Route::get('categorie_detail_name', [QuerryController::class, 'categorie_detail_name']); // Lấy danh mục của phim (ví dụ: Hành động, Kinh điển)
+Route::get('chair_by_time_detail', [QuerryController::class, 'chair_by_time_detail']);
 
 Route::post('cache_seat', [QuerryController::class, 'cache_seat']); // Thêm, xóa giữ ghế
 Route::get('getReservedSeatsByTimeDetail/{id_time_detail}', [QuerryController::class, 'getReservedSeatsByTimeDetail']); // check xem có bao nhiêu ghế đang được giữ

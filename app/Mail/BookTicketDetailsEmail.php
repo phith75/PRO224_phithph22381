@@ -12,6 +12,8 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\DB;
 use Milon\Barcode\Facades\DNS1DFacade;
+use PDF;
+use Illuminate\Support\Facades\Mail;
 
 class BookTicketDetailsEmail extends Mailable
 {
@@ -80,14 +82,21 @@ class BookTicketDetailsEmail extends Mailable
         // $bladebarcode = view('emails.file', [
         //     'bookTicketDetails' => [$latestTicket],
         // ])->render();
-        $idCode = $latestTicket->id_code;
+        $idCode = $book_ticket_detail->id_code;
         $length = strlen($idCode);
         
         $bladebarcode = DNS1DFacade::getBarcodePNG(substr($idCode, -7), "C128",1.4,50);
+        $bookTicketDetails = $latestTicket;
         $tempFilePath = tempnam(sys_get_temp_dir(), 'email_template_');
         file_put_contents($tempFilePath, $bladebarcode);
+        $pdf = PDF::loadView('emails.file', compact('bookTicketDetails'));
+            
+// Gửi email và đính kèm file PDF
+
         return $this->subject('Thông tin đặt vé xem film - mã thanh toán: ...' . substr($latestTicket->id_code, -7))
             ->markdown('emails.book_ticket_details', ['bookTicketDetails' => [$book_ticket_detail], 'food_ticket_detail' => $arr,'bladebarcode' => $bladebarcode,] )
-           ;
+           ->attachData($pdf->output(), 'ticket.pdf', [
+            'mime' => 'application/pdf',
+        ]);;
     }
 }
