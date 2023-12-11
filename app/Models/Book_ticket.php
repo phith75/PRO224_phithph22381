@@ -19,7 +19,7 @@ class Book_ticket extends Model
         parent::boot();
         static::created(function ($bookTicket) {
             $bookTicket->updateMemberTotalSpending();
-            $bookTicket->deletecache_seat();
+            // $bookTicket->deletecache_seat();
         });
     }
 
