@@ -328,6 +328,7 @@ class QuerryController extends Controller
     public function Revenue(Request $request)
     {
         $now = Carbon::now();
+        
         //thống kê từ lúc bắt đầu đến hiện tại và lọc theo tháng
         $day = $request->day ?? date('d');
         $year = $request->year ?? date('Y');
@@ -510,11 +511,13 @@ class QuerryController extends Controller
             ->join('films', 'time_details.film_id', '=', 'films.id')
             ->select('films.name', DB::raw('SUM(book_tickets.amount) as TotalAmount'))
             ->whereYear('book_tickets.created_at', $year)
-            ->whereMonth('book_tickets.created_at', $month)->whereNull('book_tickets.deleted_at')
+            ->whereMonth('book_tickets.created_at', $month)
+            ->whereNull('book_tickets.deleted_at')
             ->groupBy('films.name')
             ->orderBy('TotalAmount', 'desc')
             ->take(5)
             ->get();
+           
         //----------------------------------------------------------------
         //lấy ra 5 khách hàng thân thiết
         $user_friendly = DB::table('book_tickets')
@@ -570,7 +573,9 @@ class QuerryController extends Controller
         // So sánh doanh thu
         $comparison = $currentMonthRevenue - $lastMonthRevenue;
         $revenueToday = DB::table('book_tickets')
-            ->whereDate('created_at', $now)->whereNull('book_tickets.deleted_at')
+            ->whereDay('book_tickets.created_at', $day)
+            ->whereMonth('book_tickets.created_at', $month)
+            ->whereYear('book_tickets.created_at', $year)->whereNull('book_tickets.deleted_at')
             ->sum('amount');
         //-------------------------------
         //lấy ra khách hàng mới trong ngày
@@ -582,7 +587,9 @@ class QuerryController extends Controller
             ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
             ->join('films', 'time_details.film_id', '=', 'films.id')
             ->select('films.name', DB::raw('SUM(book_tickets.amount) as TotalAmount'))
-            ->whereDate('book_tickets.created_at', $now)->whereNull('book_tickets.deleted_at')
+            ->whereDay('book_tickets.created_at', $day)
+            ->whereMonth('book_tickets.created_at', $month)
+            ->whereYear('book_tickets.created_at', $year)->whereNull('book_tickets.deleted_at')
             ->groupBy('films.name')
             ->orderBy('TotalAmount', 'desc')
             ->take(5)
@@ -595,7 +602,9 @@ class QuerryController extends Controller
             ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
             ->join('films', 'time_details.film_id', '=', 'films.id')
             ->select('films.name', DB::raw('COUNT(book_tickets.id) as TotalTickets'))
-            ->whereDate('book_tickets.created_at', $now)->whereNull('book_tickets.deleted_at')
+            ->whereDay('book_tickets.created_at', $day)
+            ->whereMonth('book_tickets.created_at', $month)
+            ->whereYear('book_tickets.created_at', $year)->whereNull('book_tickets.deleted_at')
             ->groupBy('films.name')
             ->get();
 
@@ -802,7 +811,8 @@ class QuerryController extends Controller
             ->whereMonth('book_tickets.created_at', $month)
             ->whereYear('book_tickets.created_at', $year)
             ->where('cinemas.id', $request->id_cinema)
-            ->sum('food.price');
+            ->select(DB::raw('SUM(food_ticket_details.quantity * food.price) as total_food_price'))
+            ->get();
 
 
         //lọc ra doanh thu ngày tháng năm hiện tại theo rạp (admin)
@@ -911,7 +921,8 @@ class QuerryController extends Controller
 
             ->whereYear('book_tickets.created_at', $year)
             ->where('cinemas.id', $request->id_cinema)
-            ->sum('food.price');
+            ->select(DB::raw('SUM(food_ticket_details.quantity * food.price) as total_food_price'))
+            ->get();
         $total_food_year = DB::table('book_tickets')
             ->join('food_ticket_details', 'book_tickets.id', '=', 'food_ticket_details.book_ticket_id')
             ->join('food', 'food_ticket_details.food_id', '=', 'food.id')
@@ -920,9 +931,9 @@ class QuerryController extends Controller
             ->join('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
             ->whereYear('book_tickets.created_at', $year)
             ->where('book_tickets.status', '<>', 2)
-
             ->where('cinemas.id', $request->id_cinema)
-            ->sum('food.price');
+            ->select(DB::raw('SUM(food_ticket_details.quantity * food.price) as total_food_price'))
+            ->get();
         $refund_ticket_day = DB::table('book_tickets')
             ->where('book_tickets.status', 2)
             ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
