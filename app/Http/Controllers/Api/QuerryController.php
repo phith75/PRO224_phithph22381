@@ -587,27 +587,18 @@ class QuerryController extends Controller
         $revenue_film = DB::table('book_tickets')
             ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
             ->join('films', 'time_details.film_id', '=', 'films.id')
-            ->select('films.name', DB::raw('SUM(book_tickets.amount) as TotalAmount'))
+            ->select('films.name', DB::raw('SUM(book_tickets.amount) as TotalAmount, COUNT(book_tickets.id) as TotalTickets'))
             ->whereDay('book_tickets.created_at', $day)
             ->whereMonth('book_tickets.created_at', $month)
             ->whereYear('book_tickets.created_at', $year)->whereNull('book_tickets.deleted_at')
             ->groupBy('films.name')
             ->orderBy('TotalAmount', 'desc')
-            ->take(5)
             ->get();
 
         //----------------------------------------------------------------
         //lấy ra tổng số vé bán ra trong ngày theo từng phim 
 
-        $book_total_day = DB::table('book_tickets')
-            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
-            ->join('films', 'time_details.film_id', '=', 'films.id')
-            ->select('films.name', DB::raw('COUNT(book_tickets.id) as TotalTickets'))
-            ->whereDay('book_tickets.created_at', $day)
-            ->whereMonth('book_tickets.created_at', $month)
-            ->whereYear('book_tickets.created_at', $year)->whereNull('book_tickets.deleted_at')
-            ->groupBy('films.name')
-            ->get();
+       
 
 
         $totalPricefoodday = DB::table('book_tickets')
@@ -625,8 +616,6 @@ class QuerryController extends Controller
             "revenue_day" => [
                 "revenueToday" => $revenueToday,
                 'revenue_film_day' => $revenue_film,
-
-                'book_total_day' => $book_total_day,
                 'totalPricefoodday' => $totalPricefoodday,
                 'ticket_day' => $ticket_day,
                 'ticket_mon' => $ticket_mon,
