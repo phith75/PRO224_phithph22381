@@ -334,8 +334,8 @@ class QuerryController extends Controller
         $month = $request->month ?? date('m');
         $startDate = Carbon::create($year, $month, 1, 0, 0, 0);
         // Nếu không có giá trị cho tháng, sử dụng ngày cuối tháng làm ngày kết thúc, ngược lại sử dụng ngày hiện tại
-        if (isset($request->month) && $request->month != $month) {
-            $endDate = $startDate->copy()->endOfYears();
+        if (isset($request->month) && $request->month != date('m')) {
+            $endDate = $startDate->copy()->endOfMonth();
         } else {
             $endDate = $now;
         }
@@ -381,8 +381,7 @@ class QuerryController extends Controller
         $startMonth = $monthsWithData->min();
         $endMonth = $monthsWithData->max();
         $Revenue_by_cinema_in_the_month = [];
-      
-        for ($months = $startMonth; $months <= $endMonth; $months++) {
+        for ($months = 1; $months <= 12; $months++) {
             foreach ($cinemas as $cinema) {
                 $dailyRevenue = DB::table('book_tickets')
                     ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
@@ -411,7 +410,9 @@ class QuerryController extends Controller
         }
         // Lưu kết quả vào mảng
 
-
+ $day = $request->day ?? date('d');
+        $year = $request->year ?? date('Y');
+        $month = $request->month ?? date('m');
 
         $yearsWithData = DB::table('book_tickets')
             ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
@@ -457,7 +458,7 @@ class QuerryController extends Controller
         $query =  DB::table('book_tickets')
             ->whereYear('created_at', $year);
         if ($request->month !== null) {
-            $query->whereMonth('created_at', $request->month);
+            $query->whereMonth('created_at', $month);
         }
         $revenue_month_y = $query->sum('amount');
         // Tính ngày bắt đầu của tháng
@@ -651,11 +652,14 @@ class QuerryController extends Controller
         $month = $request->month ?? date('m');
         $startDate = Carbon::create($year, $month, 1, 0, 0, 0);
         // Nếu không có giá trị cho tháng, sử dụng ngày cuối tháng làm ngày kết thúc, ngược lại sử dụng ngày hiện tại
-        if (isset($request->month) && $request->month != $month) {
+        if (isset($request->month) && $request->month != date('m')) {
             $endDate = $startDate->copy()->endOfMonth();
+
         } else {
+
             $endDate = $now;
         }
+      
         // Tính toán doanh thu từ ngày 01 đến ngày kết thúc (cuối tháng hoặc ngày hiện tại)
         $Revenue_on_days_in_the_month = [];
         for ($currentDate = $startDate; $currentDate->lte($endDate); $currentDate->addDay()) {
@@ -686,7 +690,6 @@ class QuerryController extends Controller
         }
         for ($month = 1; $month <= 12; $month++) {
             // Tính ngày bắt đầu và kết thúc của tháng
-
             // Tính toán doanh thu cho tháng hiện tại
             $monthlyRevenue = DB::table('book_tickets')
                 ->join('movie_chairs', 'book_tickets.id_chair', '=', 'movie_chairs.id')
