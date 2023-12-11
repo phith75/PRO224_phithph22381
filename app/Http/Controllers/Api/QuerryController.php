@@ -1140,7 +1140,7 @@ class QuerryController extends Controller
             ->get()->first();
         $dateTimeString = $check_time->date . ' ' . $check_time->time;
         $check = Book_ticket::where('user_id', $status->user_id)
-            ->whereBetween('time', [$startOfMonth, $endOfMonth])
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->where('status', 2)
             ->count();
         if ($check >= 2) {
@@ -1148,10 +1148,10 @@ class QuerryController extends Controller
                 'msg' => 'Bạn đã hủy tối đa trong tháng này !',
             ], 403);
         }
+
         // Tạo đối tượng Carbon từ chuỗi datetime
         $dateTime = Carbon::parse($dateTimeString);
         // Chuyển đổi thành timestamp
-
         // So sánh với thời điểm hiện tại
         $twoHoursAgo = $dateTime->subHours(2);
         if ($status && !$now->gte($twoHoursAgo)) {

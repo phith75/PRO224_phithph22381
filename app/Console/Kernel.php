@@ -107,10 +107,9 @@ class Kernel extends ConsoleKernel
             $check_time = DB::table('time_details')
                 ->join('times', 'time_details.time_id', '=', 'times.id')
                 ->where('time_details.id', $bookTicket->id_time_detail)
+                ->select('times.time','time_details.date')
                 ->get()
                 ->first();
-                
-
             $dateTimeString = $check_time->date . ' ' . $check_time->time;
             $dateTime = Carbon::parse($dateTimeString);
             if ($now->gt($dateTime)) {
