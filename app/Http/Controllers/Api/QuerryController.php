@@ -261,7 +261,6 @@ class QuerryController extends Controller
                 'mv.name as movie_room_name',
                 'cms.name as name_cinema',
                 'cms.address',
-
                 'td.date',
                 'tm.time as time_suatchieu',
                 'bt.amount as total_price',
@@ -506,24 +505,26 @@ class QuerryController extends Controller
         //-------------------------------------
         //lấy ra film có doanh thu cao nhất tháng
 
-        $revenue_film = DB::table('book_tickets')
-            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
-            ->join('films', 'time_details.film_id', '=', 'films.id')
-            ->select('films.name', DB::raw('SUM(book_tickets.amount) as TotalAmount'))
-            ->whereYear('book_tickets.created_at', $year)
-            ->whereMonth('book_tickets.created_at', $month)
-            ->whereNull('book_tickets.deleted_at')
-            ->groupBy('films.name')
-            ->orderBy('TotalAmount', 'desc')
-            ->take(5)
-            ->get();
-           
+        
+
+           $revenue_film_month =DB::table('book_tickets')
+           ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+           ->join('films', 'time_details.film_id', '=', 'films.id')
+           ->select('films.name', DB::raw('SUM(book_tickets.amount) as TotalAmount'))
+           ->whereYear('book_tickets.created_at', $year)
+           ->whereMonth('book_tickets.created_at', $month)
+           ->whereNull('book_tickets.deleted_at')
+           ->groupBy('films.name')
+           ->orderBy('TotalAmount', 'desc')
+           ->take(5)
+           ->get();
         //----------------------------------------------------------------
         //lấy ra 5 khách hàng thân thiết
         $user_friendly = DB::table('book_tickets')
             ->join('users', 'book_tickets.user_id', '=', 'users.id')
-            ->select('users.name', DB::raw('SUM(book_tickets.amount) as TotalAmount'))
-            ->groupBy('users.name')
+            ->join('members', 'members.id_user', '=', 'users.id')
+            ->select('users.name', DB::raw('SUM(book_tickets.amount) as TotalAmount'),'members.card_class')
+            ->groupBy('users.name','members.card_class')
             ->orderBy('TotalAmount', 'desc')
             ->take(5)->whereNull('book_tickets.deleted_at')
             ->get();
@@ -634,7 +635,7 @@ class QuerryController extends Controller
             "revenue_month" => [
                 'revenue_month_y' => $revenue_month_y,
 
-                'revenue_film' => $revenue_film,
+                'revenue_film_month' => $revenue_film_month,
                 'user_friendly' => $user_friendly,
                 'book_total_mon' => $book_total_mon,
                 'comparison' => $comparison,
