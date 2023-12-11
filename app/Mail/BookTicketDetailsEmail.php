@@ -28,7 +28,7 @@ class BookTicketDetailsEmail extends Mailable
         $currentUser = Auth::user();
         $arr = [];
         $latestTicket = Book_ticket::where('user_id', $currentUser->id)
-            ->latest('time')
+            ->latest('created_at')
             ->first();
         $food_ticket_detail = DB::table('food_ticket_details as ftk')
             ->join('book_tickets as btk', 'ftk.book_ticket_id', '=', 'btk.id')
@@ -58,7 +58,7 @@ class BookTicketDetailsEmail extends Mailable
             ->join('movie_rooms as mv', 'mv.id', '=', 'td.room_id')
             ->join('cinemas as cms', 'cms.id', '=', 'mv.id_cinema')
             ->select(
-                'bt.time',
+                'bt.created_at as time',
                 'fl.name',
                 'bt.id_code',
                 'mv.name as movie_room_name',
