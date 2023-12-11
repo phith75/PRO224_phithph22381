@@ -507,17 +507,16 @@ class QuerryController extends Controller
 
         
 
-           $revenue_film_month =DB::table('book_tickets')
-           ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
-           ->join('films', 'time_details.film_id', '=', 'films.id')
-           ->select('films.name', DB::raw('SUM(book_tickets.amount) as TotalAmount'))
-           ->whereYear('book_tickets.created_at', $year)
-           ->whereMonth('book_tickets.created_at', $month)
-           ->whereNull('book_tickets.deleted_at')
-           ->groupBy('films.name')
-           ->orderBy('TotalAmount', 'desc')
-           ->take(5)
-           ->get();
+        $revenue_film_month =DB::table('book_tickets')
+            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->join('films', 'time_details.film_id', '=', 'films.id')
+            ->select('films.name', DB::raw('SUM(book_tickets.amount) as TotalAmount, COUNT(book_tickets.id) as TotalTickets'))
+            ->whereMonth('book_tickets.created_at', $month)
+            ->whereYear('book_tickets.created_at', $year)
+            ->whereNull('book_tickets.deleted_at')
+            ->groupBy('films.name')
+            ->orderBy('TotalAmount', 'desc')
+            ->get();
         //----------------------------------------------------------------
         //lấy ra 5 khách hàng thân thiết
         $user_friendly = DB::table('book_tickets')
@@ -531,14 +530,7 @@ class QuerryController extends Controller
 
         //----------------------------------------------------------------
         //lấy ra tổng số vé bán ra trong tháng theo từng phim
-        $book_total_mon = DB::table('book_tickets')
-            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
-            ->join('films', 'time_details.film_id', '=', 'films.id')
-            ->select('films.name', DB::raw('COUNT(book_tickets.id) as TotalTickets'))
-            ->whereYear('book_tickets.created_at', $year)
-            ->whereMonth('book_tickets.created_at', $month)->whereNull('book_tickets.deleted_at')
-            ->groupBy('films.name')
-            ->get();
+        
         //----------------------------------------------------------------
         //lấy ra tống doanh thu từ đồ ăn theo tháng
         $totalPricefoodmon = DB::table('book_tickets')
@@ -626,7 +618,6 @@ class QuerryController extends Controller
 
                 'revenue_film_month' => $revenue_film_month,
                 'user_friendly' => $user_friendly,
-                'book_total_mon' => $book_total_mon,
                 'comparison' => $comparison,
                 'totalPricefoodmon' => $totalPricefoodmon
             ],
@@ -636,8 +627,6 @@ class QuerryController extends Controller
                 'Revenue_by_cinema_in_the_year' => $Revenue_by_cinema_in_the_year // biểu đồ các năm của admin rạp
 
             ]
-
-
         ];
 
 
@@ -782,7 +771,6 @@ class QuerryController extends Controller
             ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
             ->join('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
             ->select('films.name', DB::raw('COUNT(book_tickets.id) as total_tickets'))
-
             ->whereDay('book_tickets.created_at', $day)
             ->whereMonth('book_tickets.created_at', $month)
             ->whereYear('book_tickets.created_at', $year)
