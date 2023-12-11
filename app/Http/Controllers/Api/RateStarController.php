@@ -29,7 +29,10 @@ class RateStarController extends Controller
 {
     $user = auth()->user();
     // Bắt validate request
-    
+    $check = RateStar::where(['user_id' => $user->id, 'film_id' => $request->film_id])->get();
+    if($check){
+        return response(['message' => "Mỗi khách hàng chỉ được đánh giá 1 lần"]);
+    }
     $validator = Validator::make($request->all(), [
         'star_rating' => 'required|integer|min:1|max:5',
         'film_id' => 'required|exists:films,id',
