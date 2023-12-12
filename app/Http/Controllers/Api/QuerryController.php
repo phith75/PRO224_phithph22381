@@ -949,28 +949,44 @@ class QuerryController extends Controller
             ->select(DB::raw('SUM(food_ticket_details.quantity * food.price) as total_food_price'))
             ->get()->first();
 
-        
-
-        $refund_ticket_month = DB::table('book_tickets')
-            ->where('book_tickets.status', 2)
-            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
-            ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
-            ->join('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
+            $revenue_film = DB::table('book_tickets')
+            ->leftJoin('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->leftJoin('films', 'time_details.film_id', '=', 'films.id')
+            ->leftJoin('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
+            ->leftJoin('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
+            ->select('films.name as film_name', 
+                     DB::raw('ROUND(SUM(CASE WHEN book_tickets.status <> 2 THEN book_tickets.amount ELSE 0 END) + SUM(CASE WHEN book_tickets.status = 2 THEN 0.3 * book_tickets.amount ELSE 0 END), 0) as TotalAmount'),
+                     DB::raw('COUNT(CASE WHEN book_tickets.status <> 2 THEN book_tickets.id ELSE NULL END) as TotalTickets'),
+                     DB::raw('ROUND(SUM(CASE WHEN book_tickets.status = 2 THEN 0.3 * book_tickets.amount ELSE 0 END), 0) as RefundAmount'),
+                     DB::raw('COUNT(CASE WHEN book_tickets.status = 2 THEN 1 ELSE NULL END) as RefundTickets'))
             ->where('cinemas.id', $request->id_cinema)
+            ->whereDay('book_tickets.created_at', $day)
             ->whereMonth('book_tickets.created_at', $month)
             ->whereYear('book_tickets.created_at', $year)
-            ->select(DB::raw('count(*) as ticket_count,  0.3 * sum(book_tickets.amount) as total_amount'))
+            ->whereNull('book_tickets.deleted_at')
+            ->groupBy('films.name')
+            ->orderBy('TotalAmount', 'desc')
             ->get();
 
-        $refund_ticket_year = DB::table('book_tickets')
-            ->where('book_tickets.status', 2)
-            ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
-            ->join('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
-            ->join('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
+            $revenue_film_month = DB::table('book_tickets')
+            ->leftJoin('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
+            ->leftJoin('films', 'time_details.film_id', '=', 'films.id')
+            ->leftJoin('movie_rooms', 'time_details.room_id', '=', 'movie_rooms.id')
+            ->leftJoin('cinemas', 'cinemas.id', '=', 'movie_rooms.id_cinema')
+            ->select('films.name as film_name', 
+                     DB::raw('ROUND(SUM(CASE WHEN book_tickets.status <> 2 THEN book_tickets.amount ELSE 0 END) + SUM(CASE WHEN book_tickets.status = 2 THEN 0.3 * book_tickets.amount ELSE 0 END), 0) as TotalAmount'),
+                     DB::raw('COUNT(CASE WHEN book_tickets.status <> 2 THEN book_tickets.id ELSE NULL END) as TotalTickets'),
+                     DB::raw('ROUND(SUM(CASE WHEN book_tickets.status = 2 THEN 0.3 * book_tickets.amount ELSE 0 END), 0) as RefundAmount'),
+                     DB::raw('COUNT(CASE WHEN book_tickets.status = 2 THEN 1 ELSE NULL END) as RefundTickets'))
             ->where('cinemas.id', $request->id_cinema)
+            ->whereDay('book_tickets.created_at', $day)
+            ->whereMonth('book_tickets.created_at', $month)
             ->whereYear('book_tickets.created_at', $year)
-            ->select(DB::raw('count(*) as ticket_count,  0.3 *sum(book_tickets.amount) as total_amount'))
+            ->whereNull('book_tickets.deleted_at')
+            ->groupBy('films.name')
+            ->orderBy('TotalAmount', 'desc')
             ->get();
+
       
 
         // Lấy giá trị và đặt vào mảng
@@ -984,18 +1000,14 @@ class QuerryController extends Controller
                 'revenue_admin_day_filter' => $revenue_admin_day_filter,    //thống kê ngày của rạp
                 'revenue_admin_mon_filter' => $revenue_admin_mon_filter,    // thống kê tháng của rạp
                 'revenue_admin_year_filter' => $revenue_admin_year_filter,  // thống kê năm của rạp
-                'tickets_total_day' => $tickets_total_day,              // số lượng vé của rạp
-                'tickets_total_mon' => $tickets_total_mon,
+                'revenue_and_refund_day_cinema' => $revenue_film,  //
+                'revenue_and_refund_month_cinema' => $revenue_film_month,
                 'ticket_staff_fill_day' => $ticket_staff_fill_day,      // số lượng vé check của nhân viên.
                 'ticket_staff_fill_mon' => $ticket_staff_fill_mon,
                 'revenue_food_day' => $revenue_food->total_food_price,        // tổng doanh thu đồ ăn
                 'total_food_mon' => $total_food_mon->total_food_price,
                 'total_food_year' => $total_food_year->total_food_price,
-                "refund_ticket" => [
-                    'refund_ticket_day' => $refund_ticket_day,  // vé hoàn trong ngày
-                    'refund_ticket_month' => $refund_ticket_month,  // vé hoàn tháng
-                    'refund_ticket_year' => $refund_ticket_year, // vé hoàn năm
-                ]
+                
             ],
             "statistical_cinema" => [
                 'Revenue_in_months_of_the_year' => $Revenue_in_months_of_the_year, // biểu đồ các tháng trong năm của admin rạp
