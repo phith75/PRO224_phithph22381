@@ -499,7 +499,13 @@ class QuerryController extends Controller
         }
         $revenue_month_y = $query->sum('amount');
         // Tính ngày bắt đầu của tháng
-
+        $today = now(); 
+        $released_film_num = DB::table('films')
+        ->where('release_date', '<=', $today)
+        ->where('end_date', '>=', $today)
+        ->count();
+        $count_food = DB::table('food')->count();
+        $count_cinema =  DB::table('cinemas')->where('status',1)->count();
         $ticket_day =  DB::table('book_tickets')
         ->join('users', 'book_tickets.id_staff_check', '=', 'users.id')
         ->join('time_details', 'book_tickets.id_time_detail', '=', 'time_details.id')
@@ -645,6 +651,9 @@ class QuerryController extends Controller
             ->sum(DB::raw('food_ticket_details.quantity * food.price'));
 
         $data = [
+            "released_film_num" => $released_film_num,
+            "count_food" => $count_food,
+            "count_cinema" => $count_cinema,
             'user_count' => $user_count,
             "revenue_day" => [
                 "revenueToday" => $revenueToday,
@@ -653,6 +662,7 @@ class QuerryController extends Controller
                 'ticket_day' => $ticket_day,
                 'ticket_mon' => $ticket_mon,
                 'ticket_year' => $ticket_year
+            
             ],
             "revenue_month" => [
                 'revenue_month_y' => $revenue_month_y,
@@ -667,7 +677,7 @@ class QuerryController extends Controller
                 'Revenue_by_cinema_in_the_year' => $Revenue_by_cinema_in_the_year // biểu đồ các năm của admin rạp
 
             ],
-
+          
         ];
 
 
