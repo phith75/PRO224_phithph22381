@@ -552,7 +552,6 @@ class QuerryController extends Controller
                  DB::raw('COUNT(CASE WHEN book_tickets.status <> 2 THEN book_tickets.id ELSE NULL END) as TotalTickets'),
                  DB::raw('ROUND(SUM(CASE WHEN book_tickets.status = 2 THEN 0.3 * book_tickets.amount ELSE 0 END), 0) as RefundAmount'),
                  DB::raw('COUNT(CASE WHEN book_tickets.status = 2 THEN 1 ELSE NULL END) as RefundTickets'))
-        ->whereDay('book_tickets.created_at', $day)
         ->whereMonth('book_tickets.created_at', $month)
         ->whereYear('book_tickets.created_at', $year)
         ->whereNull('book_tickets.deleted_at')
@@ -982,7 +981,6 @@ class QuerryController extends Controller
                      DB::raw('ROUND(SUM(CASE WHEN book_tickets.status = 2 THEN 0.3 * book_tickets.amount ELSE 0 END), 0) as RefundAmount'),
                      DB::raw('COUNT(CASE WHEN book_tickets.status = 2 THEN 1 ELSE NULL END) as RefundTickets'))
             ->where('cinemas.id', $request->id_cinema)
-            ->whereDay('book_tickets.created_at', $day)
             ->whereMonth('book_tickets.created_at', $month)
             ->whereYear('book_tickets.created_at', $year)
             ->whereNull('book_tickets.deleted_at')
