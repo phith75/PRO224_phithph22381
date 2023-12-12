@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\DB;
 
 class TicketController extends Controller
 {
-    public function printTicket($id)
+    public function printTicket($id,$id_user)
     {
-        $ticket = DB::table('book_tickets')->where('id_code', $id)->update(["status" => 1]);
+        $ticket = DB::table('book_tickets')->where('id_code', $id)->update(["status" => 1,"id_staff_check" => $id_user]);
         // Logic để lấy thông tin vé từ $ticketId
         $book_ticket_detail = DB::table('book_tickets as bt')
             ->join('time_details as td', 'td.id', '=', 'bt.id_time_detail')
