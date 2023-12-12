@@ -66,7 +66,7 @@ Route::get('auth/facebook/callback', [SocialController::class, 'loginWithFaceboo
 // <a href="{{ url('/login/google') }}">Đăng nhập bằng Google</a> dành cho mấy ông fe
 
 
-Route::get('print-ticket/{ticketId}', [TicketController::class, 'printTicket']);
+Route::get('print-ticket/{ticketId}/{id_user}', [TicketController::class, 'printTicket']); //// in vé
 //////
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('refund_coin/{id}', [QuerryController::class, 'refund_coin']); // Hoàn tiền vào ví coin 70%
@@ -101,6 +101,7 @@ Route::get('purchase_history_user/{id}', [QuerryController::class, 'purchase_his
 Route::get('QR_book/{id}', [QuerryController::class, 'QR_book_tiket']);       
 Route::post('Revenue', [QuerryController::class, 'Revenue']);
 Route::post('Revenue_cinema', [QuerryController::class, 'Revenue_cinema']);
+Route::post('Revenue_cinema_staff', [QuerryController::class, 'Revenue_cinema_staff']);
 Route::get('getShiftRevenue/{id}', [QuerryController::class, 'getShiftRevenue']);
 Route::get('get_used_vouchers_by_id_user/{id}', [QuerryController::class, 'get_used_vouchers_by_id_user']); // lấy voucher sử dụng r
 Route::get('get_room_by_id_cinema/{id}', [QuerryController::class, 'get_room_by_id_cinema']);
