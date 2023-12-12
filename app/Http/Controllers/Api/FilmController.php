@@ -85,4 +85,6 @@ class FilmController extends Controller
         $fims->delete();
         return response()->json(['message' => 'Film đã được xóa']);
     }
+
+    
 }
