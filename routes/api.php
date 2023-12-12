@@ -31,13 +31,11 @@ use App\Http\Controllers\Api\MovieRoomController;
 use App\Http\Controllers\Api\Book_ticketController;
 use App\Http\Controllers\Api\Time_detailController;
 use App\Http\Controllers\Api\UservoucherController;
-use App\Http\Controllers\Api\PassportAuthController;
 use App\Http\Controllers\Api\Contact_infosController;
 use App\Http\Controllers\Api\CategoryDetailController;
 use App\Http\Controllers\Api\ForgotPasswordController;
 use App\Http\Controllers\Api\Food_ticket_detailController;
-use App\Http\Controllers\Api\FilmMakersController;
-use App\Http\Controllers\Api\Delete_atController;
+
 /*u
 |--------------------------------------------------------------------------
 | API Routes
@@ -68,7 +66,7 @@ Route::get('auth/facebook/callback', [SocialController::class, 'loginWithFaceboo
 // <a href="{{ url('/login/google') }}">Đăng nhập bằng Google</a> dành cho mấy ông fe
 
 
-Route::get('print-ticket/{ticketId}', [TicketController::class, 'printTicket']);
+Route::get('print-ticket/{ticketId}/{id_user}', [TicketController::class, 'printTicket']); //// in vé
 //////
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('refund_coin/{id}', [QuerryController::class, 'refund_coin']); // Hoàn tiền vào ví coin 70%
@@ -85,7 +83,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 });
 //////
 Route::get('/film-ratings/{film_id}',[RateStarController::class, 'getRatings']);
-Route::get('film_cinema/{id}', [QuerryController::class, 'film_cinema']);  // Lấy thông tin phim theo rạp
+Route::get('film_cinema/{id}', [QuerryController::class, 'film_cinema']);  // Lấy thông tin phim theo rạp 
 Route::get('time_detail_get_by_id/{id}', [QuerryController::class, 'time_detail_get_by_id']);
 Route::get('check_time_detail_by_film_id/{id_cinema}', [QuerryController::class, 'check_time_detail_by_film_id']); /////
 Route::get('time_detail_film', [QuerryController::class, 'check_time_detail_by_film']); /////
@@ -103,6 +101,7 @@ Route::get('purchase_history_user/{id}', [QuerryController::class, 'purchase_his
 Route::get('QR_book/{id}', [QuerryController::class, 'QR_book_tiket']);       
 Route::post('Revenue', [QuerryController::class, 'Revenue']);
 Route::post('Revenue_cinema', [QuerryController::class, 'Revenue_cinema']);
+Route::post('Revenue_cinema_staff', [QuerryController::class, 'Revenue_cinema_staff']);
 Route::get('getShiftRevenue/{id}', [QuerryController::class, 'getShiftRevenue']);
 Route::get('get_used_vouchers_by_id_user/{id}', [QuerryController::class, 'get_used_vouchers_by_id_user']); // lấy voucher sử dụng r
 Route::get('get_room_by_id_cinema/{id}', [QuerryController::class, 'get_room_by_id_cinema']);
@@ -140,6 +139,7 @@ Route::resource('film', FilmController::class);
 
 Route::resource('user', UsersController::class);
 // //api add vocher
+Route::resource('vocher', VocherController::class);
 Route::resource('voucher', VoucherController::class);
 Route::resource('user', UsersController::class);
 Route::apiResource('member', MemberController::class);

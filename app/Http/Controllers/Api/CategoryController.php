@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\CategoryResource;
 use App\Models\Categories;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\CategoryResource;
+use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
@@ -16,14 +17,23 @@ class CategoryController extends Controller
     {
         $data = Categories::all();
         return CategoryResource::collection($data);
+       
     }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
+    {   
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|unique:categories,name',
+            'slug' => 'required|unique:categories,slug',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
         return Categories::create($request->all());
+
     }
 
     /**
@@ -32,6 +42,7 @@ class CategoryController extends Controller
     public function show(string $id)
     {
         $Categories = Categories::find($id);
+        
         if (!$Categories) {
             return response()->json(['message' => "category not found"], 404);
         }
@@ -44,6 +55,13 @@ class CategoryController extends Controller
     public function update(Request $request, string $id)
     {
         $categories = Categories::find($id);
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|unique:categories,name,'.$id,
+            'slug' => 'required|unique:categories,slug,'.$id,
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
         if (!$categories) {
             return response()->json(['message' => 'category not found'], 404);
         }

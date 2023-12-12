@@ -18,7 +18,6 @@ class Book_ticketController extends Controller
         $data = Book_ticket::all();
         return Book_ticketResource::collection($data);
     }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -38,7 +37,6 @@ class Book_ticketController extends Controller
         }
 
         $bookTicket = Book_ticket::create($request->all());
-
         return new Book_ticketResource($bookTicket);
     }
 

@@ -171,11 +171,31 @@
                                                 Phòng chiếu (Hall):<br>
                                                 <b>{{$bookTicketDetails->movie_room_name }}</b>
                                             </p>
-                                            <p
-                                                style="Margin:0px 4% 14px 4%;Padding:0 0 0 0;text-align:left;font:14px 'Arial','Helvetica Neue',Helvetica,'Myriad Pro',sans-serif;line-height:18px">
-                                                Ghế (Seat):<br>
-                                                <b>{{$bookTicketDetails->chair_name }}</b>
-                                            </p>
+                                            <table
+                                            style="width:90%;margin-left:4%;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:19px">
+                                            <tbody>
+                                                <tr style="">
+                                                    <td align="left" colspan="2" style="padding-bottom:10px">
+                                                        <strong> Ghế (Seat):</strong>
+                                                        <br>
+                                                        <b>{{$bookTicketDetails->chair_name }}</b>
+                                                    </td>
+                                                    <td style="padding-bottom:10px">:</td>
+                                                    <td align="right" style="padding-bottom:10px">
+                                                        @php
+                                                        $total_price_food = 0;   
+                                                @endphp
+                                                @foreach ($food_ticket_detail as $key => $food_detail)
+                                                @php
+                                                $total_price_food +=   intval($food_detail->price);
+                                                @endphp
+                                                @endforeach
+                                                        <strong>{{ number_format((intval($bookTicketDetails->total_price)-$total_price_food), 0, ',', '.') }}
+                                                            đ</strong>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                             <p
                                                 style="Margin:0px 4% 14px 4%;Padding:0 0 0 0;text-align:left;font:14px 'Arial','Helvetica Neue',Helvetica,'Myriad Pro',sans-serif;line-height:18px;display:none">
                                                 Loại combo:
@@ -232,9 +252,9 @@
                                                                 @endphp
                                                                 @foreach ($food_ticket_detail as $key => $food_detail)
                                                                 @php
-                                                                $total_price +=   intval($food_detail->price);
+                                                                $total_price +=  ( intval($food_detail->price) *  intval($food_detail->quantity));
                                                                 @endphp
-                                                                    
+                                                                                 
                                                                 @endforeach
                                                                 {{number_format($total_price, 0, ',', '.') }}
                                                             đ</strong>

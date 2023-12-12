@@ -11,7 +11,9 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\DB;
-
+use Milon\Barcode\Facades\DNS1DFacade;
+use PDF;
+use Illuminate\Support\Facades\Mail;
 
 class BookTicketDetailsEmail extends Mailable
 {
@@ -26,7 +28,7 @@ class BookTicketDetailsEmail extends Mailable
         $currentUser = Auth::user();
         $arr = [];
         $latestTicket = Book_ticket::where('user_id', $currentUser->id)
-            ->latest('time')
+            ->latest('created_at')
             ->first();
         $food_ticket_detail = DB::table('food_ticket_details as ftk')
             ->join('book_tickets as btk', 'ftk.book_ticket_id', '=', 'btk.id')
@@ -38,6 +40,10 @@ class BookTicketDetailsEmail extends Mailable
             )->where('btk.id', $latestTicket->id)
             ->get();
         $arr = [];
+             
+         // Lưu tổng giá vào mảng $arr
+    // Nếu bạn muốn lưu chi tiết đồ ăn vào mảng $arr
+                
         $food_ticket_detail = $food_ticket_detail ? $food_ticket_detail : [];
         foreach ($food_ticket_detail as $value) {
             $arr[] = $value;
@@ -52,7 +58,7 @@ class BookTicketDetailsEmail extends Mailable
             ->join('movie_rooms as mv', 'mv.id', '=', 'td.room_id')
             ->join('cinemas as cms', 'cms.id', '=', 'mv.id_cinema')
             ->select(
-                'bt.time',
+                'bt.created_at as time',
                 'fl.name',
                 'bt.id_code',
                 'mv.name as movie_room_name',
@@ -73,16 +79,24 @@ class BookTicketDetailsEmail extends Mailable
             return $this->subject('Thông tin đặt vé xem film - mã thanh toán: Chưa có vé')
                 ->markdown('emails.book_ticket_details', ['bookTicketDetails' => null]);
         }
-        $bladebarcode = view('emails.file', [
-            'bookTicketDetails' => [$latestTicket],
-        ])->render();
+        // $bladebarcode = view('emails.file', [
+        //     'bookTicketDetails' => [$latestTicket],
+        // ])->render();
+        $idCode = $book_ticket_detail->id_code;
+        $length = strlen($idCode);
+        
+        $bladebarcode = DNS1DFacade::getBarcodePNG(substr($idCode, -7), "C128",1.4,50);
+        $bookTicketDetails = $latestTicket;
         $tempFilePath = tempnam(sys_get_temp_dir(), 'email_template_');
         file_put_contents($tempFilePath, $bladebarcode);
+        $pdf = PDF::loadView('emails.file', compact('bookTicketDetails'));
+            
+// Gửi email và đính kèm file PDF
+
         return $this->subject('Thông tin đặt vé xem film - mã thanh toán: ...' . substr($latestTicket->id_code, -7))
-            ->markdown('emails.book_ticket_details', ['bookTicketDetails' => [$book_ticket_detail], 'food_ticket_detail' => $arr])
-            ->attach($tempFilePath, [
-                'as' => 'email_template.html',
-                'mime' => 'text/html',
-            ]);;
+            ->markdown('emails.book_ticket_details', ['bookTicketDetails' => [$book_ticket_detail], 'food_ticket_detail' => $arr,'bladebarcode' => $bladebarcode,] )
+           ->attachData($pdf->output(), 'ticket.pdf', [
+            'mime' => 'application/pdf',
+        ]);;
     }
 }
