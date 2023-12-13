@@ -58,6 +58,7 @@ class BookTicketDetailsEmail extends Mailable
             ->join('movie_rooms as mv', 'mv.id', '=', 'td.room_id')
             ->join('cinemas as cms', 'cms.id', '=', 'mv.id_cinema')
             ->select(
+                'bt.discount_vo',
                 'bt.created_at as time',
                 'fl.name',
                 'bt.id_code',

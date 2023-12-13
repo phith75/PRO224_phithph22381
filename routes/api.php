@@ -54,9 +54,7 @@ Route::post('reset-password', [ForgotPasswordController::class, 'resetPassword']
 //đăng kí
 Route::post('/signup', [authController::class, 'sign_up']);
 Route::post('/login', [AuthController::class, 'login']);
-//đăng nhập bằng fb
-Route::get('auth/facebook', [SocialController::class, 'facebookRedirect']);
-Route::get('auth/facebook/callback', [SocialController::class, 'loginWithFacebook']);
+
 
 //
 //đăng nhập bằng tk gg

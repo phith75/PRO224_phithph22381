@@ -182,15 +182,8 @@
                                                     </td>
                                                     <td style="padding-bottom:10px">:</td>
                                                     <td align="right" style="padding-bottom:10px">
-                                                        @php
-                                                        $total_price_food = 0;   
-                                                @endphp
-                                                @foreach ($food_ticket_detail as $key => $food_detail)
-                                                @php
-                                                $total_price_food +=   (intval($food_detail->price) *intval($food_detail->quantity));
-                                                @endphp
-                                                @endforeach
-                                                        <strong>{{ number_format((intval($bookTicketDetails->total_price)-$total_price_food), 0, ',', '.') }}
+                                                    
+                                                        <strong>{{ number_format(intval($bookTicketDetails->chair_price), 0, ',', '.') }}
                                                             đ</strong>
                                                     </td>
                                                 </tr>
@@ -268,7 +261,17 @@
                                                         </td>
                                                         <td style="padding-bottom:10px">:</td>
                                                         <td align="right" style="padding-bottom:10px">
-                                                            <strong>{{ number_format($bookTicketDetails->total_price, 0, ',', '.') }}
+                                                            <strong>{{ number_format($total_price +$bookTicketDetails->chair_price, 0, ',', '.') }}
+                                                                đ</strong>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td align="left" colspan="2" style="padding-bottom:10px">
+                                                            <strong>Giảm giá từ voucher và điểm: </strong>
+                                                        </td>
+                                                        <td style="padding-bottom:10px">:</td>
+                                                        <td align="right" style="padding-bottom:10px">
+                                                            <strong>{{ number_format($total_price +$bookTicketDetails->chair_price - $bookTicketDetails->total_price, 0, ',', '.') }}
                                                                 đ</strong>
                                                         </td>
                                                     </tr>
@@ -312,23 +315,18 @@
 
                                 <p
                                     style="Padding:0px 10px 10px 5%;Margin:0;text-align:left;font:14px 'Arial','Helvetica Neue',Helvetica,'Myriad Pro',sans-serif;color:#000;line-height:20px">
-                                    Vé đã mua không thể hủy, đổi hoặc trả lại. Vui lòng liên hệ Ban Quản Lý rạp hoặc tra
-                                    cứu thông tin tại mục <a
+                                    Vé đã mua có thể hoàn trước 2 tiếng khi suất chiếu diễn ra và chỉ có thể hoàn tối đa 2 lần 1 tháng <a
                                         href="https://qldt.vnpay.vn/vexemphim/dieu-khoan-dieu-le.html" target="_blank"
                                         data-saferedirecturl="https://www.google.com/url?q=https://qldt.vnpay.vn/vexemphim/dieu-khoan-dieu-le.html&amp;source=gmail&amp;ust=1700937506805000&amp;usg=AOvVaw2yBtkDxqG3BH4ODzvdjh-7">Điều
                                         khoản mua và sử dung vé xem phim</a> để biết thêm chi tiết. Cảm ơn bạn đã lựa
-                                    chọn mua vé qua ứng dụng Ứng dụng Ví điện tử VNPAY. Chúc bạn xem phim vui vẻ!
+                                    chọn rạp chiếu phim STC của chúng tôi. Chúc bạn xem phim vui vẻ!
                                     <br><br>
-
-                                    The successful movie ticket cannot be canceled, exchanged or refunded. If you have
-                                    any questions or problems with this order, you can contact Theater Manager or see
-                                    our <a href="https://qldt.vnpay.vn/vexemphim/dieu-khoan-dieu-le.html"
+                                    The successful movie ticket can be canceled, exchanged or can be refunded 2 hours in advance when the projection occurs and can only be refunded up to 2 times a month<a href="https://qldt.vnpay.vn/vexemphim/dieu-khoan-dieu-le.html"
                                         target="_blank"
                                         data-saferedirecturl="https://www.google.com/url?q=https://qldt.vnpay.vn/vexemphim/dieu-khoan-dieu-le.html&amp;source=gmail&amp;ust=1700937506805000&amp;usg=AOvVaw2yBtkDxqG3BH4ODzvdjh-7">Condition
                                         to purchase and use movie tickets</a> for more information. Thank you for
-                                    choosing Ứng dụng Ví điện tử VNPAY and Enjoy the movie!
+                                    choosing STC cinemas of us and Enjoy the movie!
                                     <br><span style="color:#fff">28/12/2022 08:11:14</span>
-
                                 </p>
                                 <div class="yj6qo"></div>
                                 <div class="adL">

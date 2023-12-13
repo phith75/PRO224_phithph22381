@@ -33,39 +33,31 @@ class PaymentController extends Controller
         if (!$coin) {
             return response()->json(['message' => 'giao dịch chưa hoàn thành do lỗi trong lúc nạp coin'], 404);
         }
-
         $coin += $coin_total->coin;
         $coin_total->update(['coin' => $coin]);
-
         // Redirect to a new route or reload the current page after processing the form
         return response()->json(['status' => 'success', 'message' => 'giao dịch thành công'], 200);
     }
-
     public function coin_payment(Request $request)
     {   
-       
         $id_code = generateRandomString();
         $amount = (int)$request->amount;
         $data = [
             "id_code" => $id_code,
             "amount" => $amount
         ];
-
         $user = User::find($request->id);
         if (!$user) {
             return response()->json(['message' => 'Sai thông tin người dùng'], 404);
         }
-
         // Validate the request
         $validator = Validator::make($request->all(), [
             'amount' => 'integer',
             'password' => 'required|string', // Thêm quy tắc kiểm tra mật khẩu
         ]);
-
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
         if (Hash::check($request->input('password'), $user->password)) {
             if ($user->coin >= $amount) {
                 $coin = $user->coin - $amount;
@@ -77,7 +69,6 @@ class PaymentController extends Controller
                 ];
                 return response()->json($response, 200);
             }
-
             return response()->json(['msg' => 'Số dư của bạn không đủ'], 200);
         } else {
             return response()->json(['msg' => 'Nhập sai mật khẩu, vui lòng thử lại!'], 201);

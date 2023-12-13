@@ -235,7 +235,60 @@ class QuerryController extends Controller
 
         return $book_ticket_detail;
     }
-
+    public function time_detail_get_by_id($id)
+    {
+        $CinemaDetailbyId = DB::table('cinemas')
+            ->join('movie_rooms', 'cinemas.id', '=', 'movie_rooms.id_cinema')
+            ->join('time_details', 'movie_rooms.id', '=', 'time_details.room_id')
+            ->join('films', 'films.id', '=', 'time_details.film_id')
+            ->join('times', 'times.id', '=', 'time_details.time_id')
+            ->select(
+                'cinemas.id as id_cinema',
+                'cinemas.address as adrress_cinema',
+                'cinemas.name as name_cinema',
+                'cinemas.status as status_cinema',
+                'time_details.film_id',
+                'films.name as name_film',
+                'films.image as image_film',
+                'films.trailer as id_trailer',
+                'films.release_date',
+                'films.end_date',
+                'films.description',
+                'films.status as status_film',
+                'time_details.time_id',
+                'times.time',
+                'time_details.room_id',
+                'time_details.date',
+                'movie_rooms.name as room_name',
+            )->where('time_details.id', $id)
+            ->whereNull('cinemas.deleted_at')
+            ->first();
+        return $CinemaDetailbyId;
+    }
+    public function check_time_detail_by_film_id(Request $request, $id_cinema)
+    {
+        $now = now(); // Assuming $now is already defined
+        $time_detail_by_film_id = DB::table('time_details as td')
+            ->join('movie_rooms as mv', 'mv.id', '=', 'td.room_id')
+            ->join('cinemas as cms', 'cms.id', '=', 'mv.id_cinema')
+            ->join('times as tms', 'tms.id', '=', 'td.time_id')
+            ->where('cms.id', $id_cinema)
+            ->where(function ($query) use ($now) {
+                $query->where('td.date', '>', $now->format('Y-m-d'))
+                    ->orWhere(function ($subQuery) use ($now) {
+                        $subQuery->where('td.date', '=', $now->format('Y-m-d'))
+                            ->whereTime('tms.time', '>=', $now->format('H:i'));
+                    });
+            })
+            ->whereNull('td.deleted_at')
+            ->whereBetween('td.date', [$now->format('Y-m-d'), $now->addDays(4)->format('Y-m-d')])
+            ->select(
+                'td.film_id',
+                'td.id as show',
+            )
+            ->get();
+        return $time_detail_by_film_id;
+    }
     public function purchase_history_ad()
     {
       return $this->purchase_history_check([0,1]);
@@ -299,6 +352,7 @@ class QuerryController extends Controller
                 'f.price'
             )->where('btk.id_code', $id)->whereNull('ftk.deleted_at')
             ->get();
+        
         $arr = [];
         $food_ticket_detail = $food_ticket_detail ? $food_ticket_detail : [];
         foreach ($food_ticket_detail as $value) {
@@ -314,6 +368,7 @@ class QuerryController extends Controller
             ->join('movie_rooms as mv', 'mv.id', '=', 'td.room_id')
             ->join('cinemas as cms', 'cms.id', '=', 'mv.id_cinema')
             ->select(
+                'bt.discount_voucher',
                 'bt.created_at as time',
                 'fl.name',
                 'bt.id_code',

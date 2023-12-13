@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('id_staff_check')->default(0);
             $table->string('id_code')->nullable();
             $table->integer('status')->default(0);
+            $table->integer('discount_voucher')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });
