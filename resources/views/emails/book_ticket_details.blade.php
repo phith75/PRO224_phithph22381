@@ -179,7 +179,7 @@
                                                     @endphp
                                                     @foreach ($food_ticket_detail as $key => $food_detail)
                                                     @php
-                                                    $total_price_food +=   intval($food_detail->price);
+                                                    $total_price_food += (  intval($food_detail->price) *   intval($food_detail->quantity));
                                                     @endphp
                                                     @endforeach
                                                             <strong>{{ number_format((intval($bookTicketDetails->total_price)-$total_price_food), 0, ',', '.') }}

@@ -1188,6 +1188,7 @@ class QuerryController extends Controller
         // Sử dụng whereBetween để xác định khoảng thời gian
         $status = Book_ticket::find($id);
         $check_time = DB::table('time_details')->join('times', 'time_details.time_id', '=', 'times.id')
+        ->where('time_details.id',$status->id_time_detail)
             ->get()->first();
         $dateTimeString = $check_time->date . ' ' . $check_time->time;
         $check = Book_ticket::where('user_id', $status->user_id)
