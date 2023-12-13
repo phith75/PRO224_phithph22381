@@ -43,6 +43,7 @@ class RateStarController extends Controller
     ->join('time_details', 'bt.id_time_detail', '=', 'time_details.id')
     ->join('films', 'time_details.film_id', '=', 'films.id')
     ->where('films.id', $request->film_id)
+    ->where('bt.status', 1)
     ->select('films.id', 'films.name as film_name')
     ->first();
 
@@ -59,7 +60,7 @@ class RateStarController extends Controller
         return response()->json(['message' => 'Bình luận và đánh giá đã được thêm mới.', 'data' => $rating]);
     }
    
-    return response()->json(['message' => 'Chỉ khách hàng đã mua vé xem phim này mới được đánh giá'],301);
+    return response()->json(['message' => 'Chỉ khách hàng đã xem phim này mới được đánh giá'],301);
     
     // Tạo mới bình luận và đánh giá
     
