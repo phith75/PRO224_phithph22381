@@ -63,11 +63,12 @@ class Kernel extends ConsoleKernel
                             unset($data['time'][$seat]);
                             Cache::put('seat_reservation', $seat_reservation);
                             $reservedSeats = [];
-
-                            if (isset($seat_reservation[$id_time_detail])) {
-                                foreach ($seat_reservation[$id_time_detail] as $id_user => $userData) {
+                            foreach ($seat_reservation as $id_time_detail => $check) {
+    
+                                foreach ($check as $id_user => $userData) {
                                     // Lấy danh sách ghế được giữ cho mỗi người dùng
                                     $userSeats = $userData['seat'];
+                    
                                     // Thêm danh sách ghế vào danh sách ghế đã được giữ
                                     foreach ($userSeats as $seat) {
                                         $reservedSeats[] = [
@@ -76,8 +77,7 @@ class Kernel extends ConsoleKernel
                                             'id_time_detail' => $id_time_detail
                                         ];
                                     }
-                                }
-                            }
+                                }}
                             $pusher = new Pusher(env('PUSHER_APP_KEY'), env('PUSHER_APP_SECRET'), env('PUSHER_APP_ID'), [
                                 'cluster' => env('PUSHER_APP_CLUSTER'),
                                 'useTLS' => true,

@@ -90,7 +90,7 @@ Route::get('categorie_detail_name', [QuerryController::class, 'categorie_detail_
 Route::get('chair_by_time_detail', [QuerryController::class, 'chair_by_time_detail']);
 
 Route::post('cache_seat', [QuerryController::class, 'cache_seat']); // Thêm, xóa giữ ghế
-Route::get('getReservedSeatsByTimeDetail/{id_time_detail}', [QuerryController::class, 'getReservedSeatsByTimeDetail']); // check xem có bao nhiêu ghế đang được giữ
+Route::get('getReservedSeatsByTimeDetail', [QuerryController::class, 'getReservedSeatsByTimeDetail']); // check xem có bao nhiêu ghế đang được giữ
 
 Route::get('purchase_history_ad', [QuerryController::class, 'purchase_history_ad']); // chi tiết vé a   min
 Route::get('purchase_history_ad_refund', [QuerryController::class, 'purchase_history_ad_refund']); // chi tiết vé a   min

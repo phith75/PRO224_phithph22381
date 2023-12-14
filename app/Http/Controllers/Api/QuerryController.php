@@ -116,7 +116,6 @@ class QuerryController extends Controller
             'seat' => [],
             'time' => [],
         ];
-
         $selected_seats = explode(',', $request->selected_seats);
         // Kiểm tra ghế đã được đặt
         if (
@@ -153,13 +152,14 @@ class QuerryController extends Controller
 
     }
 
-    public function getReservedSeatsByTimeDetail($id_time_detail)
+    public function getReservedSeatsByTimeDetail()
     {
         $seat_reservation = Cache::get('seat_reservation', []);
         $reservedSeats = [];
 
-        if (isset($seat_reservation[$id_time_detail])) {
-            foreach ($seat_reservation[$id_time_detail] as $id_user => $userData) {
+        foreach ($seat_reservation as $id_time_detail => $check) {
+    
+            foreach ($check as $id_user => $userData) {
                 // Lấy danh sách ghế được giữ cho mỗi người dùng
                 $userSeats = $userData['seat'];
 
@@ -171,8 +171,8 @@ class QuerryController extends Controller
                         'id_time_detail' => $id_time_detail
                     ];
                 }
-            }
-        }
+            }}
+        
         $pusher = new Pusher(env('PUSHER_APP_KEY'), env('PUSHER_APP_SECRET'), env('PUSHER_APP_ID'), [
             'cluster' => env('PUSHER_APP_CLUSTER'),
             'useTLS' => true,
