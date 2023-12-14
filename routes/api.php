@@ -30,6 +30,7 @@ use App\Http\Controllers\Api\FeedbackController;
 use App\Http\Controllers\Api\RateStarController;
 use App\Http\Controllers\Api\MovieRoomController;
 use App\Http\Controllers\Api\FilmMakersController;
+use App\Http\Controllers\Api\Delete_atController;
 use App\Http\Controllers\Api\Book_ticketController;
 use App\Http\Controllers\Api\Time_detailController;
 use App\Http\Controllers\Api\UservoucherController;
@@ -133,9 +134,39 @@ Route::resource('filmMaker', FilmMakersController::class);
 Route::resource('movieRoom', MovieRoomController::class);
 
 Route::resource('film', FilmController::class);
+
 Route::resource('user', UsersController::class);
 // //api add vocher
 Route::resource('voucher', VoucherController::class);
 Route::resource('user', UsersController::class);
 Route::apiResource('member', MemberController::class);
 Route::apiResource('photo', PhotoController::class);
+
+//thùng rác và khôi phục 
+
+
+
+//film
+Route::get('/trash/film', [Delete_atController::class, 'trash_film']); //vô thùng rác xem tất cả đã xóa
+Route::post('/restore/film/{id}', [Delete_atController::class, 'restore_film']); //Khôi phục 
+Route::delete('/hard-delete/film/{id}', [Delete_atController::class, 'hardDelete_film']);//xóa vĩnh viễn 
+//category
+Route::get('/trash/category', [Delete_atController::class, 'trash_category']);
+Route::post('/restore/category/{id}', [Delete_atController::class, 'restore_category']);
+Route::delete('/hard-delete/category/{id}', [Delete_atController::class, 'hardDelete_category']);
+//MovieRoom
+Route::get('/trash/movieRoom', [Delete_atController::class, 'trash_MovieRoom']);
+Route::post('/restore/movieRoom/{id}', [Delete_atController::class, 'restore_MovieRoom']);
+Route::delete('/hard-delete/movieRoom/{id}', [Delete_atController::class, 'hardDelete_MovieRoom']);
+//Cinemas
+Route::get('/trash/cinemas', [Delete_atController::class, 'trash_Cinemas']);
+Route::post('/restore/cinemas/{id}', [Delete_atController::class, 'restore_Cinemas']);
+Route::delete('/hard-delete/cinemas/{id}', [Delete_atController::class, 'hardDelete_Cinemas']);
+//food
+Route::get('/trash/food', [Delete_atController::class, 'trash_Food']);
+Route::post('/restore/food/{id}', [Delete_atController::class, 'restore_Food']);
+Route::delete('/hard-delete/food/{id}', [Delete_atController::class, 'hardDelete_Food']);
+//Blogs
+Route::get('/trash/blogs', [Delete_atController::class, 'trash_Blogs']);
+Route::post('/restore/blogs/{id}', [Delete_atController::class, 'restore_Blogs']);
+Route::delete('/hard-delete/blogs/{id}', [Delete_atController::class, 'hardDelete_Blogs']);
