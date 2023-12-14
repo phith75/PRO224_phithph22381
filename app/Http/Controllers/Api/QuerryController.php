@@ -135,7 +135,7 @@ class QuerryController extends Controller
         } elseif (count(array_intersect($selected_seats, Arr::flatten($seat_reservation[$id_time_detail]))) === 0) {
             foreach ($selected_seats as $seat) {
                 $seat_reservation[$request->id_time_detail][$request->id_user]['seat'][$seat] = $seat;
-                $seat_reservation[$request->id_time_detail][$request->id_user]['time'][$seat] = $currentTime->addMinutes(2);
+                $seat_reservation[$request->id_time_detail][$request->id_user]['time'][$seat] = $currentTime->addMinutes(1);
             }
         }
         // Đặt lại dữ liệu vào Cache
@@ -406,7 +406,6 @@ class QuerryController extends Controller
             ->join('movie_rooms as mv', 'mv.id', '=', 'td.room_id')
             ->join('cinemas as cms', 'cms.id', '=', 'mv.id_cinema')
             ->select(
-                'bt.discount_voucher',
                 'bt.created_at as time',
                 'fl.name',
                 'bt.id_code',
