@@ -29,7 +29,7 @@ class RateStarController extends Controller
 {
     $user = auth()->user();
     // Bắt validate request
-    $check = RateStar::where(['user_id' => $user->id, 'film_id' => $request->film_id])->get();
+    $check = RateStar::where(['user_id' => $user->id, 'film_id' => $request->film_id])->get()->first();
     
     $validator = Validator::make($request->all(), [
         'star_rating' => 'required|integer|min:1|max:5',
@@ -48,13 +48,13 @@ class RateStarController extends Controller
     ->first();
 
     if($film_bought){
-        if($check){
+        if(!empty($check)){
             return response(['message' => "Mỗi khách hàng chỉ được đánh giá 1 lần"]);
         }
         $rating = RateStar::create([
             'user_id' => $user->id,//lấy khi login
             'film_id' => $request->film_id, // 
-            'star_rating' => $request->star_rating,//đánh giá sao
+            'star' => $request->star_rating,//đánh giá sao
             'comment' => $request->comment, //comment
         ]);
         return response()->json(['message' => 'Bình luận và đánh giá đã được thêm mới.', 'data' => $rating]);
@@ -75,7 +75,7 @@ class RateStarController extends Controller
         $ratings = RateStar::where('film_id', $film_id)->get();
 
         // Tính trung bình số sao
-        $averageStars = $ratings->avg('star_rating');
+        $averageStars = $ratings->avg('star');
 
         // Lấy số sao và comment mà user đang đăng nhập đã đánh giá (nếu có)
         $userRating = null;
@@ -92,7 +92,7 @@ class RateStarController extends Controller
         // Thêm thông tin đánh giá của user vào response
         if ($userRating) {
             $response['userRating'] = [
-                'star_rating' => $userRating->star_rating,
+                'star' => $userRating->star,
                 'comment' => $userRating->comment,
             ];
         }

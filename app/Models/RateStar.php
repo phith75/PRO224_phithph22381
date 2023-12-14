@@ -11,7 +11,7 @@ class RateStar extends Model
 {
     use HasFactory, SoftDeletes;
     protected $table = "rate_stars";
-    protected $fillable = ['id', 'user_id', 'film_id','star_rating', 'comment'];
+    protected $fillable = ['id', 'user_id', 'film_id','star', 'comment'];
 
     public function user()
     {
