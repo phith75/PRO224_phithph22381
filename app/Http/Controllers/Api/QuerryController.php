@@ -73,7 +73,6 @@ class QuerryController extends Controller
         return $movieRooms;
     }
 
-
     public function chair_count()
     {
         $sql = DB::table('time_details')
