@@ -74,9 +74,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/send-book-ticket-details-email', [EmailController::class, 'sendBookTicketDetailsEmail']); // router cho vào sau khi thanh toán
     Route::post('/sendEmail', [EmailController::class, 'sendEmail']); //không cần qtam cái này đừng ai xóa  
-    //check khi nhập voucher
     Route::post('/usevoucher', [UservoucherController::class, 'useVoucher']);
-    //đánh giá sao film
     Route::resource('rateStar', RateStarController::class);
 });
 //////
@@ -137,7 +135,6 @@ Route::resource('movieRoom', MovieRoomController::class);
 Route::resource('film', FilmController::class);
 Route::resource('user', UsersController::class);
 // //api add vocher
-Route::resource('vocher', VoucherController::class);
 Route::resource('voucher', VoucherController::class);
 Route::resource('user', UsersController::class);
 Route::apiResource('member', MemberController::class);
