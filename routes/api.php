@@ -27,7 +27,9 @@ use App\Http\Controllers\Api\VoucherController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\FeedbackController;
 use App\Http\Controllers\Api\RateStarController;
+use App\Http\Controllers\Api\Delete_atController;
 use App\Http\Controllers\Api\MovieRoomController;
+use App\Http\Controllers\Api\FilmMakersController;
 use App\Http\Controllers\Api\Book_ticketController;
 use App\Http\Controllers\Api\Time_detailController;
 use App\Http\Controllers\Api\UservoucherController;
@@ -35,7 +37,6 @@ use App\Http\Controllers\Api\Contact_infosController;
 use App\Http\Controllers\Api\CategoryDetailController;
 use App\Http\Controllers\Api\ForgotPasswordController;
 use App\Http\Controllers\Api\Food_ticket_detailController;
-
 /*u
 |--------------------------------------------------------------------------
 | API Routes
@@ -139,7 +140,6 @@ Route::resource('film', FilmController::class);
 
 Route::resource('user', UsersController::class);
 // //api add vocher
-Route::resource('vocher', VocherController::class);
 Route::resource('voucher', VoucherController::class);
 Route::resource('user', UsersController::class);
 Route::apiResource('member', MemberController::class);
