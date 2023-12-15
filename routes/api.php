@@ -77,9 +77,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/sendEmail', [EmailController::class, 'sendEmail']); //không cần qtam cái này đừng ai xóa  
     Route::post('/usevoucher', [UservoucherController::class, 'useVoucher']);
     Route::resource('rateStar', RateStarController::class);
+Route::get('/film-ratings/{film_id}',[RateStarController::class, 'getRatings']);
+
 });
 //////
-Route::get('/film-ratings/{film_id}',[RateStarController::class, 'getRatings']);
 Route::get('film_cinema/{id}', [QuerryController::class, 'film_cinema']);  // Lấy thông tin phim theo rạp 
 Route::get('time_detail_get_by_id/{id}', [QuerryController::class, 'time_detail_get_by_id']);
 Route::get('check_time_detail_by_film_id/{id_cinema}', [QuerryController::class, 'check_time_detail_by_film_id']); /////
