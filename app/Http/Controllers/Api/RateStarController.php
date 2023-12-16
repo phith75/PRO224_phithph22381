@@ -70,7 +70,6 @@ class RateStarController extends Controller
     public function getRatings($film_id)
     {   
         $user = auth()->user();
-
         // Lấy tất cả đánh giá cho bộ phim có film_id tương ứng
         $ratings = DB::table('rate_stars')->join('films','films.id', '=', 'rate_stars.film_id')
         ->join('users','users.id', '=', 'rate_stars.user_id')
@@ -90,7 +89,6 @@ class RateStarController extends Controller
             'totalReviews' => $ratings->count(),
             'averageStars' => $averageStars,
         ];
-
         // Thêm thông tin đánh giá của user vào response
         if ($userRating) {
             $response['userRating'] = [
@@ -103,7 +101,26 @@ class RateStarController extends Controller
         }
         // Thêm tất cả đánh giá vào response
         $response['allRatings'] = $ratings;
-       
+        return response()->json($response);
+    }
+    public function ratingAvg($film_id)
+    {   
+        // Lấy tất cả đánh giá cho bộ phim có film_id tương ứng
+        $ratings = DB::table('rate_stars')->join('films','films.id', '=', 'rate_stars.film_id')
+        ->join('users','users.id', '=', 'rate_stars.user_id')
+        ->where('film_id', $film_id)->get();
+        // Tính trung bình số sao
+        $averageStars = $ratings->avg('star');
+        // Lấy số sao và comment mà user đang đăng nhập đã đánh giá (nếu có)
+        $userRating = null;
+      
+        $response = [
+            'totalReviews' => $ratings->count(),
+            'averageStars' => $averageStars,
+        ];
+        // Thêm thông tin đánh giá của user vào response
+        
+        // Thêm tất cả đánh giá vào response
         return response()->json($response);
     }
 

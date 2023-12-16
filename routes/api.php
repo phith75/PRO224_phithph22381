@@ -77,9 +77,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/sendEmail', [EmailController::class, 'sendEmail']); //không cần qtam cái này đừng ai xóa  
     Route::post('/usevoucher', [UservoucherController::class, 'useVoucher']);
     Route::resource('rateStar', RateStarController::class);
-Route::get('/film-ratings/{film_id}',[RateStarController::class, 'getRatings']);
-
+    Route::get('/film-ratings/{film_id}',[RateStarController::class, 'getRatings']);
 });
+Route::get('/rating_avgs/{film_id}',[RateStarController::class, 'ratingAvg']); // đánh giá trung bình phim
+
 //////
 Route::get('film_cinema/{id}', [QuerryController::class, 'film_cinema']);  // Lấy thông tin phim theo rạp 
 Route::get('time_detail_get_by_id/{id}', [QuerryController::class, 'time_detail_get_by_id']);
@@ -95,7 +96,6 @@ Route::get('getReservedSeatsByTimeDetail', [QuerryController::class, 'getReserve
 
 Route::get('purchase_history_ad', [QuerryController::class, 'purchase_history_ad']); // chi tiết vé a   min
 Route::get('purchase_history_ad_refund', [QuerryController::class, 'purchase_history_ad_refund']); // chi tiết vé a   min
-
 Route::get('purchase_history_user/{id}', [QuerryController::class, 'purchase_history_user']); // chi tiết vé user
 
 Route::get('QR_book/{id}', [QuerryController::class, 'QR_book_tiket']);       
