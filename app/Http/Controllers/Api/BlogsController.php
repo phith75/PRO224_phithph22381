@@ -34,7 +34,6 @@ class BlogsController extends Controller
 // BlogsController.php
 public function show(string $id)
 {
-   
 
     $blog = Blogs::find($id);
 
@@ -56,8 +55,7 @@ public function show(string $id)
         if (!$Blogs) {
             return response()->json(['message' => 'Blog not found'], 404);
         }
-        Blogs::where('id', $id)
-            ->update($request->all());
+        $Blogs->update($request->except('_token'));
 
         return new BlogsResource($Blogs);
     }

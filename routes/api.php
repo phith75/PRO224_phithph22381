@@ -79,7 +79,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::resource('rateStar', RateStarController::class);
     Route::get('/film-ratings/{film_id}',[RateStarController::class, 'getRatings']);
 });
-Route::get('/rating_avgs/{film_id}',[RateStarController::class, 'ratingAvg']); // đánh giá trung bình phim
+Route::get('/rating_avgs',[RateStarController::class, 'ratingAvg']); // đánh giá trung bình phim
 
 //////
 Route::get('film_cinema/{id}', [QuerryController::class, 'film_cinema']);  // Lấy thông tin phim theo rạp 
