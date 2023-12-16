@@ -12,8 +12,5 @@ class Blogs extends Model
     protected $table = "blogs"; // phải điền đúng tên bảng mà mình cần trỏ tới trong csdl
     protected $fillable = ['id', 'title', 'slug', 'image', 'content', 'status'];
 
-    public function comments()
-    {
-        return $this->hasMany(Comment::class);
-    }
+    
 }

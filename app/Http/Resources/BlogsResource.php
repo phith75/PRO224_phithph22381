@@ -23,8 +23,6 @@ public function toArray($request)
         'image' => $this->image,
         'content' => $this->content,
         'status' => $this->status,
-        'comments_count' => $this->comments->count(),
-        'comments' => CommentResource::collection($this->whenLoaded('comments')),
         'created_at' => $this->created_at,
         'updated_at' => $this->updated_at,
     ];

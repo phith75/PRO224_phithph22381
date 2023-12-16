@@ -34,9 +34,9 @@ class BlogsController extends Controller
 // BlogsController.php
 public function show(string $id)
 {
-    $withUser = auth()->check() ? ['comments.user'] : ['comments'];
+   
 
-    $blog = Blogs::with($withUser)->find($id);
+    $blog = Blogs::find($id);
 
     if (!$blog) {
         return response()->json(['message' => "Blog not found"], 404);
@@ -57,7 +57,7 @@ public function show(string $id)
             return response()->json(['message' => 'Blog not found'], 404);
         }
         Blogs::where('id', $id)
-            ->update($request->except('_token'));
+            ->update($request->all());
 
         return new BlogsResource($Blogs);
     }

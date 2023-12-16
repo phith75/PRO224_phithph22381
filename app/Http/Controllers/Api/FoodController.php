@@ -25,13 +25,14 @@ class FoodController extends Controller
      */
     public function store(Request $request)
     {
-        $Food = Food::create($request->all());
         $validator = Validator::make($request->all(), [
             'name' => 'required|unique:food,name',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
+        $Food = Food::create($request->all());
+
         return new FoodResource($Food);
     }
 
