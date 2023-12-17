@@ -12,8 +12,21 @@ class BlogsResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-    public function toArray(Request $request): array
-    {
-        return parent::toArray($request);
-    }
+    // BlogResource.php
+// BlogsResource.php
+public function toArray($request)
+{
+    return [
+        'id' => $this->id,
+        'title' => $this->title,
+        'slug' => $this->slug,
+        'image' => $this->image,
+        'content' => $this->content,
+        'status' => $this->status,
+        'created_at' => $this->created_at,
+        'updated_at' => $this->updated_at,
+    ];
+}
+
+
 }

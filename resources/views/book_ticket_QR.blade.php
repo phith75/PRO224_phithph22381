@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thông tin đặt vé xem phim</title>
+    <script src="https://cdn.jsdelivr.net/jsbarcode/3.3.7/JsBarcode.all.min.js"></script>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+
 </head>
 
 
@@ -123,20 +126,24 @@
                                                 style="Margin:10px 0 0 0;Padding:0px 0 0 0;text-align:center;font:12px 'Arial','Helvetica Neue',Helvetica,'Myriad Pro',sans-serif;text-transform:uppercase;line-height:12px">
                                                 <b>Mã vé (Reservation code)</b>
                                             </p>
-                                            <p
+                                            <p  
                                                 style="Margin:0 0 0 0;Padding:0px 0 7px 0;text-align:center;font:24px 'Arial','Helvetica Neue',Helvetica,'Myriad Pro',sans-serif;text-transform:uppercase;color:#ec1c23">
                                                 <b>
                                                     @php
                                                     $idCode = $bookTicketDetails->id_code;
                                                     $length = strlen($idCode);
-                                                    echo ($length > 7) ? '...' . substr($idCode, -7) : $idCode;
                                                     @endphp
+                                                     <svg id="barcode"></svg>
+                                                     <script>
+                                                         JsBarcode("#barcode", "{{substr($idCode, -7) }}");
+                                                     </script>
                                                 </b>
                                             </p>
                                             <p
                                                 style="Margin:0 0 0 0;Padding:0px 0 0 0;text-align:center;font:10px 'Arial','Helvetica Neue',Helvetica,'Myriad Pro',sans-serif;text-transform:uppercase;line-height:10px;display:none">
                                                 <b>(Vui lòng mang mã vé để đổi bỏng nước)</b>
                                             </p>
+                                           
                                             <p
                                                 style="Margin:0 0 0 0;Padding:0px 0 0 0;text-align:center;font:12px 'Arial','Helvetica Neue',Helvetica,'Myriad Pro',sans-serif;text-transform:uppercase;line-height:12px">
                                                 <b>Suất chiếu (Session)</b>
@@ -164,11 +171,24 @@
                                                 Phòng chiếu (Hall):<br>
                                                 <b>{{$bookTicketDetails->movie_room_name }}</b>
                                             </p>
-                                            <p
-                                                style="Margin:0px 4% 14px 4%;Padding:0 0 0 0;text-align:left;font:14px 'Arial','Helvetica Neue',Helvetica,'Myriad Pro',sans-serif;line-height:18px">
-                                                Ghế (Seat):<br>
-                                                <b>{{$bookTicketDetails->chair_name }}</b>
-                                            </p>
+                                            <table
+                                            style="width:90%;margin-left:4%;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:19px">
+                                            <tbody>
+                                                <tr style="">
+                                                    <td align="left" colspan="2" style="padding-bottom:10px">
+                                                        <strong> Ghế (Seat):</strong>
+                                                        <br>
+                                                        <b>{{$bookTicketDetails->chair_name }}</b>
+                                                    </td>
+                                                    <td style="padding-bottom:10px">:</td>
+                                                    <td align="right" style="padding-bottom:10px">
+                                                    
+                                                        <strong>{{ number_format(intval($bookTicketDetails->chair_price), 0, ',', '.') }}
+                                                            đ</strong>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                             <p
                                                 style="Margin:0px 4% 14px 4%;Padding:0 0 0 0;text-align:left;font:14px 'Arial','Helvetica Neue',Helvetica,'Myriad Pro',sans-serif;line-height:18px;display:none">
                                                 Loại combo:
@@ -225,9 +245,9 @@
                                                                 @endphp
                                                                 @foreach ($food_ticket_detail as $key => $food_detail)
                                                                 @php
-                                                                $total_price +=   intval($food_detail->price);
+                                                                $total_price +=  ( intval($food_detail->price) *  intval($food_detail->quantity));
                                                                 @endphp
-                                                                    
+                                                                                 
                                                                 @endforeach
                                                                 {{number_format($total_price, 0, ',', '.') }}
                                                             đ</strong>
@@ -241,7 +261,17 @@
                                                         </td>
                                                         <td style="padding-bottom:10px">:</td>
                                                         <td align="right" style="padding-bottom:10px">
-                                                            <strong>{{ number_format($bookTicketDetails->total_price, 0, ',', '.') }}
+                                                            <strong>{{ number_format($total_price +$bookTicketDetails->chair_price, 0, ',', '.') }}
+                                                                đ</strong>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td align="left" colspan="2" style="padding-bottom:10px">
+                                                            <strong>Giảm giá từ voucher và điểm: </strong>
+                                                        </td>
+                                                        <td style="padding-bottom:10px">:</td>
+                                                        <td align="right" style="padding-bottom:10px">
+                                                            <strong>{{ number_format($total_price + $bookTicketDetails->chair_price - $bookTicketDetails->total_price, 0, ',', '.') }}
                                                                 đ</strong>
                                                         </td>
                                                     </tr>
@@ -285,23 +315,18 @@
 
                                 <p
                                     style="Padding:0px 10px 10px 5%;Margin:0;text-align:left;font:14px 'Arial','Helvetica Neue',Helvetica,'Myriad Pro',sans-serif;color:#000;line-height:20px">
-                                    Vé đã mua không thể hủy, đổi hoặc trả lại. Vui lòng liên hệ Ban Quản Lý rạp hoặc tra
-                                    cứu thông tin tại mục <a
+                                    Vé đã mua có thể hoàn trước 2 tiếng khi suất chiếu diễn ra và chỉ có thể hoàn tối đa 2 lần 1 tháng <a
                                         href="https://qldt.vnpay.vn/vexemphim/dieu-khoan-dieu-le.html" target="_blank"
                                         data-saferedirecturl="https://www.google.com/url?q=https://qldt.vnpay.vn/vexemphim/dieu-khoan-dieu-le.html&amp;source=gmail&amp;ust=1700937506805000&amp;usg=AOvVaw2yBtkDxqG3BH4ODzvdjh-7">Điều
                                         khoản mua và sử dung vé xem phim</a> để biết thêm chi tiết. Cảm ơn bạn đã lựa
-                                    chọn mua vé qua ứng dụng Ứng dụng Ví điện tử VNPAY. Chúc bạn xem phim vui vẻ!
+                                    chọn rạp chiếu phim STC của chúng tôi. Chúc bạn xem phim vui vẻ!
                                     <br><br>
-
-                                    The successful movie ticket cannot be canceled, exchanged or refunded. If you have
-                                    any questions or problems with this order, you can contact Theater Manager or see
-                                    our <a href="https://qldt.vnpay.vn/vexemphim/dieu-khoan-dieu-le.html"
+                                    The successful movie ticket can be canceled, exchanged or can be refunded 2 hours in advance when the projection occurs and can only be refunded up to 2 times a month<a href="https://qldt.vnpay.vn/vexemphim/dieu-khoan-dieu-le.html"
                                         target="_blank"
                                         data-saferedirecturl="https://www.google.com/url?q=https://qldt.vnpay.vn/vexemphim/dieu-khoan-dieu-le.html&amp;source=gmail&amp;ust=1700937506805000&amp;usg=AOvVaw2yBtkDxqG3BH4ODzvdjh-7">Condition
                                         to purchase and use movie tickets</a> for more information. Thank you for
-                                    choosing Ứng dụng Ví điện tử VNPAY and Enjoy the movie!
+                                    choosing STC cinemas of us and Enjoy the movie!
                                     <br><span style="color:#fff">28/12/2022 08:11:14</span>
-
                                 </p>
                                 <div class="yj6qo"></div>
                                 <div class="adL">
@@ -330,6 +355,9 @@
         <div class="WhmR8e" data-hash="0"></div>
     </div>
     @endforeach
+   
 </body>
+
+
 
 </html>

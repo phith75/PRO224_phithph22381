@@ -11,4 +11,6 @@ class Blogs extends Model
     use HasFactory, SoftDeletes;
     protected $table = "blogs"; // phải điền đúng tên bảng mà mình cần trỏ tới trong csdl
     protected $fillable = ['id', 'title', 'slug', 'image', 'content', 'status'];
+
+    
 }

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\TimeDetail;
+use Illuminate\Support\Facades\DB;
+
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
@@ -21,7 +23,20 @@ class Time_detailController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
+    {   
+        $check_time_detail = DB::table('time_details')
+            ->where('time_details.room_id', $request->room_id)           
+            ->join('times as tms', 'tms.id', '=', 'time_details.time_id')
+            ->where('time_details.time_id', $request->time_id)
+            ->where('time_details.date', $request->date)
+            ->whereNull('time_details.deleted_at')->get()->first();
+            $ngay_format = date("d/m/Y", strtotime($request->date));
+        if($check_time_detail){
+            return response([
+                'message' => 'Suất chiếu '. $ngay_format .' '.$check_time_detail->time .' đã tồn tại',
+            ], 401);
+
+        }
         // Định nghĩa các quy tắc validation
         $rules = [
             'date' => [
@@ -30,12 +45,12 @@ class Time_detailController extends Controller
                 'after_or_equal:' . now()->format('Y-m-d'),
             ],
         ];
-            $validator = Validator::make($request->all(), $rules);
-            if ($validator->fails()) {
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
-            $timeDetail = TimeDetail::create($request->all());
-    
+        $timeDetail = TimeDetail::create($request->all());
+
         return new TimeDetailResource($timeDetail);
     }
 
@@ -54,28 +69,31 @@ class Time_detailController extends Controller
     /**
      * Update the specified resource in storage.
      */
-public function update(Request $request, string $id)
-{
-    // Tìm TimeDetail theo id
-    $timeDetail = TimeDetail::find($id);
-    if (!$timeDetail) {
-        return response()->json(['message' => 'TimeDetail not found'], 404);
-    }
-    $rules = [
-        'date' => [
-            'required',
-            'date',
-            'after_or_equal:' . now()->format('Y-m-d'),
-        ],
-    ];
-    $validator = Validator::make($request->all(), $rules);
-    if ($validator->fails()) {
-        return response()->json(['error' => $validator->errors()], 422);
-    }
-    $timeDetail->update($request->all());
+    public function update(Request $request, string $id)
+    {
+        // Tìm TimeDetail theo id
+        $timeDetail = TimeDetail::find($id);
+        if (!$timeDetail) {
+            return response()->json(['message' => 'TimeDetail not found'], 404);
+        }
+        $rules = [];
+        if ($request->date) {
+            $rules = [
+                'date' => [
+                    'required',
+                    'date',
+                    'after_or_equal:' . now()->format('Y-m-d'),
+                ],
+            ];
+        }
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+        $timeDetail->update($request->all());
 
-    return new TimeDetailResource($timeDetail);
-}
+        return new TimeDetailResource($timeDetail);
+    }
 
 
     /**

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Book_ticketResource;
 use App\Models\Book_ticket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class Book_ticketController extends Controller
 {
@@ -17,14 +18,26 @@ class Book_ticketController extends Controller
         $data = Book_ticket::all();
         return Book_ticketResource::collection($data);
     }
-
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        $Book_ticket = Book_ticket::create($request->all());
-        return new Book_ticketResource($Book_ticket);
+        $validator = Validator::make($request->all(), [
+            'id_time_detail' => 'required',
+            'user_id' => 'required',
+            'payment' => 'required',
+            'amount' => 'required',
+            'id_chair' => 'required',
+            'id_code' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $bookTicket = Book_ticket::create($request->all());
+        return new Book_ticketResource($bookTicket);
     }
 
     /**
@@ -38,10 +51,7 @@ class Book_ticketController extends Controller
         }
         return new Book_ticketResource($Book_ticket);
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
+    
     public function update(Request $request, string $id)
     {
 

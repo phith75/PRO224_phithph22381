@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('name', 200);
             $table->string('slug', 255);
             $table->string('image', 255);
+            $table->string('poster', 255);
+            $table->string('limit_age', 255);
             $table->string('trailer', 255);
             $table->string('time', 20);
             $table->date('release_date');

@@ -18,6 +18,6 @@ class UsedVoucher extends Model
     // Quan hệ với bảng Vouchers
     public function voucher()
     {
-        return $this->belongsTo(Vocher::class, 'voucher_code', 'code');
+        return $this->belongsTo(voucher::class, 'voucher_code', 'code');
     }
 }

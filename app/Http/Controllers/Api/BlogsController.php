@@ -30,14 +30,21 @@ class BlogsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        $Blogs = Blogs::find($id);
-        if (!$Blogs) {
-            return response()->json(['message' => "Blog not found"], 404);
-        }
-        return new BlogsResource($Blogs);
+    // BlogsController.php
+// BlogsController.php
+public function show(string $id)
+{
+
+    $blog = Blogs::find($id);
+
+    if (!$blog) {
+        return response()->json(['message' => "Blog not found"], 404);
     }
+
+    return new BlogsResource($blog);
+}
+
+
 
     /**
      * Update the specified resource in storage.
@@ -48,8 +55,7 @@ class BlogsController extends Controller
         if (!$Blogs) {
             return response()->json(['message' => 'Blog not found'], 404);
         }
-        Blogs::where('id', $id)
-            ->update($request->except('_token'));
+        $Blogs->update($request->except('_token'));
 
         return new BlogsResource($Blogs);
     }
@@ -58,13 +64,15 @@ class BlogsController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
-    {
+{
+    $blog = Blogs::find($id);
 
-        $Blog = Blogs::find($id);
-        if (!$Blog) {
-            return response()->json(['message' => 'Blog not found'], 404);
-        }
-        $Blog->delete();
-        return response()->json(['message' => "delete success"], 200);
+    if (!$blog) {
+        return response()->json(['message' => "Blog not found"], 404);
     }
+
+    $blog->delete();
+
+    return response()->json(['message' => "Blog deleted successfully"], 200);
+}
 }

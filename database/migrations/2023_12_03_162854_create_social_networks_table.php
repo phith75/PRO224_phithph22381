@@ -11,14 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('contact_infos', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->bigInteger('user_id');
-            $table->string('email', 150);
-            $table->string('address', 255);
-            $table->string('phone', 14);
+        Schema::create('social_networks', function (Blueprint $table) {
+            $table->id();
+            $table->integer('user_id');
+            $table->tinyInteger('type'); // 1: facebook; 2:twitter; 3:google
+            $table->string('social_id')->nullable();
             $table->timestamps();
-            $table->softDeletes(); // add
         });
     }
 
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('contact_infos');
+        Schema::dropIfExists('social_networks');
     }
 };

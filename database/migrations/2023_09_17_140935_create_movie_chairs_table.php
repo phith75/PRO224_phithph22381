@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name', 150);
             $table->string('price');
             $table->bigInteger('id_time_detail');
+            $table->bigInteger('book_ticket_detail')->nullable();
             $table->timestamps();
             $table->softDeletes(); // add
         });

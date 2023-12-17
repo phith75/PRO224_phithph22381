@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->integer('id_cinema')->nullable();
             $table->string('image', 255)->nullable();
             $table->string('phone', 255)->nullable();
             $table->tinyInteger('role')->default(0);
