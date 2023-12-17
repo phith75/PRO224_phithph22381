@@ -141,7 +141,6 @@ Route::resource('user', UsersController::class);
 Route::resource('voucher', VoucherController::class);
 Route::resource('user', UsersController::class);
 Route::apiResource('member', MemberController::class);
-Route::apiResource('photo', PhotoController::class);
 
 //thùng rác và khôi phục 
 

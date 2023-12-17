@@ -110,10 +110,10 @@ class RateStarController extends Controller
     ->select('films.id as film_id', 'rate_stars.star')
     ->get();
 
-$averageStars = $ratings->avg('star');
+    $averageStars = $ratings->avg('star');
 
 // Assuming you have a user ID available (replace 'USER_ID' with the actual user ID)
-$userID = 'USER_ID';
+    $userID = 'USER_ID';
 
 // Retrieve the user's rating for each film
     $userRatings = DB::table('rate_stars')
@@ -123,7 +123,6 @@ $response = [
     'filmRatings' => $ratings,
 ];
 
-dd($response);
 
         // Thêm thông tin đánh giá của user vào response
         
