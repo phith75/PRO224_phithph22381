@@ -106,6 +106,7 @@ Route::post('Revenue_cinema_staff', [RevenueController::class, 'Revenue_cinema_s
 Route::get('getShiftRevenue/{id}', [QuerryController::class, 'getShiftRevenue']);
 Route::get('get_used_vouchers_by_id_user/{id}', [QuerryController::class, 'get_used_vouchers_by_id_user']); // lấy voucher sử dụng r
 Route::get('get_room_by_id_cinema/{id}', [QuerryController::class, 'get_room_by_id_cinema']);
+Route::get('get_time_detail_by_id_cinema/{id_cinema}', [Time_detailController::class, 'get_time_detail_by_id_cinema']);
 
 ///////
 Route::post('Payment', [PaymentController::class, 'vnpay_payment']); // thanh toán VNPAY

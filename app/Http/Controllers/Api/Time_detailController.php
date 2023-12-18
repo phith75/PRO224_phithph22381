@@ -18,7 +18,16 @@ class Time_detailController extends Controller
         $TimeDetail = TimeDetail::all();
         return TimeDetailResource::collection($TimeDetail);
     }
+    public function get_time_detail_by_id_cinema($id_cinema)
+    {   
+        $TimeDetail = TimeDetail::join('movie_rooms as mv', 'mv.id', '=', 'time_details.room_id')
+        ->join('cinemas as cms', 'cms.id', '=', 'mv.id_cinema')
+        ->where('cms.id', $id_cinema)
+        ->get();
 
+return TimeDetailResource::collection($TimeDetail);
+
+    }
     /**
      * Store a newly created resource in storage.
      */
