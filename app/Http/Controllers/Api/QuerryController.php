@@ -285,8 +285,7 @@ class QuerryController extends Controller
         return $time_detail_by_film_id;
     }
     public function purchase_history_ad()
-    
-        {
+        {   
             $book_ticket_detail = DB::table('book_tickets as bt')
             ->join('time_details as td', 'td.id', '=', 'bt.id_time_detail')
             ->join('movie_chairs as mc', 'mc.id', '=', 'bt.id_chair')
@@ -325,15 +324,52 @@ class QuerryController extends Controller
             ->orderBy('bt.created_at', 'desc')
             ->whereNull('bt.deleted_at')
             ->get();
-        
-    
             return $book_ticket_detail;
         }
-    
-    public function purchase_history_ad_refund()
-    {
-      return $this->purchase_history_check([2,3]);
-    }
+        public function purchase_history_ad_cinema($id_cinema)
+        {   
+            $book_ticket_detail = DB::table('book_tickets as bt')
+            ->join('time_details as td', 'td.id', '=', 'bt.id_time_detail')
+            ->join('movie_chairs as mc', 'mc.id', '=', 'bt.id_chair')
+            ->join('times', 'times.id', '=', 'td.time_id')
+            ->join('users', 'users.id', '=', 'bt.user_id')
+            ->join('members', 'members.id_user', '=', 'bt.user_id')
+            ->join('films as fl', 'fl.id', '=', 'td.film_id')
+            ->join('times as tm', 'tm.id', '=', 'td.time_id')
+            ->join('movie_rooms as mv', 'mv.id', '=', 'td.room_id')
+            ->join('cinemas as cms', 'cms.id', '=', 'mv.id_cinema')
+            ->leftJoin(DB::raw('(SELECT book_ticket_id, GROUP_CONCAT(CONCAT(quantity, " x ", name)) as food_items FROM food_ticket_details JOIN food ON food.id = food_ticket_details.food_id GROUP BY book_ticket_id) as food_ticket_details'), function ($join) {
+                $join->on('food_ticket_details.book_ticket_id', '=', 'bt.id');
+            })
+            ->leftJoin('users as staff', 'staff.id', '=', 'bt.id_staff_check')
+            ->select(
+                'bt.created_at as time',
+                'fl.name',
+                'fl.image',
+                'bt.id_code',
+                'bt.status',
+                'members.id_card',
+                'mv.name as movie_room_name',
+                'cms.name as name_cinema',
+                'cms.address',
+                'td.date',
+                'tm.time as time_suatchieu',
+                'bt.amount as total_price',
+                'food_ticket_details.food_items',
+                'mc.name as chair_name',
+                'mc.price as chair_price',
+                'users.name as users_name',
+                'users.email as users_email',
+                'users.id as user_id',
+                'staff.name as staff_name' // Thêm cột để lấy tên của người kiểm tra
+            )   
+            ->orderBy('bt.created_at', 'desc')
+            ->whereNull('bt.deleted_at')
+            ->where('cms.id', $id_cinema)
+            ->get();
+            return $book_ticket_detail;
+        }
+   
     public function purchase_history_user($id)
     {
 
