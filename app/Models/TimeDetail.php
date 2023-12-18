@@ -11,5 +11,5 @@ class TimeDetail extends Model
 {
     use HasFactory, SoftDeletes;
     protected $table = "time_details"; // phải điền đúng tên bảng mà mình cần trỏ tới trong csdl
-    protected $fillable = ['id', 'date', 'time_id', 'film_id', 'room_id'];
+    protected $fillable = ['id', 'date', 'time_id', 'film_id', 'room_id', 'status'];
 }
