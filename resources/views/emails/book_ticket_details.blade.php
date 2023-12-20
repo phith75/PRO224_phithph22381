@@ -278,10 +278,11 @@
                                                         </td>
                                                         <td style="padding-bottom:10px">:</td>
                                                         <td align="right" style="padding-bottom:10px">
-                                                            <strong>{{ number_format($bookTicketDetails->discount_voucher, 0, ',', '.') }}
+                                                            <strong>{{ number_format($total_price + $bookTicketDetails->chair_price - $bookTicketDetails->total_price, 0, ',', '.') }}
                                                                 đ</strong>
                                                         </td>
                                                     </tr>
+                                                    <tr>
                                                     <tr>
                                                         <td align="left" colspan="2"><strong>Số tiền thanh toán</strong>
                                                         </td>
